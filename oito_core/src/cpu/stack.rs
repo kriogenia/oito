@@ -26,8 +26,15 @@ impl Stack {
 		}
 	}
 
-	pub fn pop() {
-
+	/// Takes out the top value of the stack and returns it
+	pub fn pop(&mut self) -> Result<Address, Exception> {
+		let i = self.pointer as usize;
+		if i == 0 {
+			Err(Exception::StackUnderflow)
+		} else {
+			self.pointer -= 1;
+			Ok(self.content[i - 1])
+		}
 	}
 
 }
@@ -40,6 +47,8 @@ impl Default for Stack {
 
 #[cfg(test)]
 mod test {
+    use crate::exception::Exception;
+
     use super::{Stack, STACK_SIZE};
 
 	#[test]
@@ -60,7 +69,24 @@ mod test {
 		for i in 0..STACK_SIZE - 1 {
 			assert!(stack.push(i as u16).is_ok());
 		}
-		assert!(stack.push(0).is_err());
+		assert_eq!(stack.push(0).unwrap_err(), Exception::StackOverflow);
+	}
+
+	#[test]
+	fn pop() {
+		let mut stack = Stack::default();
+		stack.push(0).unwrap();
+		stack.push(1).unwrap();
+		stack.push(2).unwrap();
+		assert_eq!(stack.pop().unwrap(), 2);
+		assert_eq!(stack.pop().unwrap(), 1);
+		assert_eq!(stack.pop().unwrap(), 0);
+	}
+
+	#[test]
+	fn underflow_exception() {
+		let mut stack = Stack::default();
+		assert_eq!(stack.pop().unwrap_err(), Exception::StackUnderflow);
 	}
 
 }
