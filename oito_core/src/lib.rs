@@ -32,6 +32,13 @@ impl OitoCore {
 		Self::default()
 	}
 
+	/// Executes the emulator
+	pub fn run(&mut self) {
+		loop {
+			self.cpu.tick(|add| self.ram.read(add))
+		}
+	}
+
 }
 
 impl Default for OitoCore {
