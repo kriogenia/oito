@@ -1,22 +1,20 @@
-mod ireg;
 mod stack;
 mod timer;
-mod vreg;
+mod register;
 
-use ireg::IRegister;
+use register::{VRegister, IRegister};
 use stack::Stack;
 use timer::Timer;
-use vreg::VRegister;
+
+use crate::Address;
 
 const NUMBER_OF_REGISTERS: usize = 16;
-
-/// Making a whole entity of this would be going way overboard, but this allows me to see the CPU as a collection of named components
-type ProgramCounter = u16;
+const STARTING_ADDRESS: Address = 0x200;
 
 /// Simmulated CPU
 pub struct Cpu {
 	/// Program Counter
-	pc: ProgramCounter,
+	pc: Address,
 	/// V-Registers
 	vreg: [VRegister; NUMBER_OF_REGISTERS],
 	/// Stack
@@ -27,4 +25,17 @@ pub struct Cpu {
 	dt: Timer,
 	/// Sound timer
 	st: Timer,
+}
+
+impl Default for Cpu {
+    fn default() -> Self {
+        Self { 
+			pc: STARTING_ADDRESS, 
+			vreg: Default::default(), 
+			stack: Default::default(), 
+			iref: Default::default(), 
+			dt: Default::default(), 
+			st: Default::default() 
+		}
+    }
 }
