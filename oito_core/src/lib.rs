@@ -2,6 +2,8 @@ mod cpu;
 mod ram;
 mod vram;
 
+pub(crate) mod exception;
+
 use cpu::Cpu;
 use ram::Ram;
 use vram::VRam;
