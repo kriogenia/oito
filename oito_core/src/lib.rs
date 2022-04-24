@@ -10,8 +10,10 @@ use vram::VRam;
 
 /// Specification of the address type to correctly indicate when it's being used
 pub type Address = u16;
+/// Specification of the instruction type to correctly indicate when it's being used
+pub type Instruction = u16;		// each Chip8 instruction is made of two bytes
 /// Specification of the bit type to correctly indicate what it's built upon bits
-pub type Bit = u8;
+pub type Byte = u8;
 
 /// Core of the emmulator
 pub struct OitoCore {

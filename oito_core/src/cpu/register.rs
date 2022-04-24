@@ -1,10 +1,10 @@
-use crate::{Address, Bit};
+use crate::{Address, Byte};
 
 const IREG_INIT: Address = 0;
-const VREG_INIT: Bit = 0;
+const VREG_INIT: Byte = 0;
 
 pub type IRegister = Register<Address>;
-pub type VRegister = Register<Bit>;
+pub type VRegister = Register<Byte>;
 
 /// Representation of one of the CPU's Registers
 pub struct Register<T>(T);

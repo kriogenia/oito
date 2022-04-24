@@ -10,10 +10,11 @@ You can find it over [bitacora](/bitacora), each chapter will also represent the
 
 Current state:
 - [x] Architecture defined
-- [ ] Initialization
-- [ ] Working stack
+- [x] Initialization
+- [x] Working stack
+- [x] Working RAM
 - [ ] Working clock
-- [ ] Opcodes [0/32]
+- [ ] Opcodes [0/35]
 - [ ] Core interface
 - [ ] SDL2 rendering
 - [ ] Web rendering
