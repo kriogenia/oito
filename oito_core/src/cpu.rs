@@ -38,6 +38,13 @@ impl Cpu {
 		// Execute instruction
 	}
 
+	/// Performs a frame tick, triggering the timer clocks
+	pub fn frame_tick(&mut self) {
+		self.dt.decrease();
+		self.st.decrease();
+		// sound
+	}
+
 	/// Reads from memory the next instruction and points to the next one
 	fn fetch<M>(&mut self, address: Address, read: M) -> Result<OpCode, Exception> 
 	where M: Fn(Address) -> Result<Byte, Exception> {
@@ -72,7 +79,6 @@ impl Default for Cpu {
 #[cfg(test)]
 mod test {
     use super::{ STARTING_ADDRESS, Cpu };
-
 
 	#[test]
 	fn fetch() {
