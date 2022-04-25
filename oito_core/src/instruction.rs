@@ -38,6 +38,10 @@ pub enum Instruction {
     AND { vx: RegIndex, vy: RegIndex },
     /// 8xy3 - Vx = Vx XOR Vy
     XOR { vx: RegIndex, vy: RegIndex },
+	/// 8xy4 - Add Vy content into Vx
+	ADDr { vx: RegIndex, vy: RegIndex },
+	/// 8xy5 - Substract Vy content from Vx content
+	SUB { vx: RegIndex, vy: RegIndex },
 }
 
 impl TryFrom<OpCode> for Instruction {
@@ -85,6 +89,14 @@ impl TryFrom<OpCode> for Instruction {
                 vy: vy as RegIndex,
             }),
             (0x8, vx, vy, 3) => Ok(XOR {
+                vx: vx as RegIndex,
+                vy: vy as RegIndex,
+            }),
+            (0x8, vx, vy, 4) => Ok(ADDr {
+                vx: vx as RegIndex,
+                vy: vy as RegIndex,
+            }),
+            (0x8, vx, vy, 5) => Ok(SUB {
                 vx: vx as RegIndex,
                 vy: vy as RegIndex,
             }),
@@ -161,6 +173,14 @@ mod test {
         assert_eq!(
             Instruction::XOR { vx: 12, vy: 13 },
             Instruction::try_from(0x8CD3).unwrap()
+        );
+        assert_eq!(
+            Instruction::ADDr { vx: 14, vy: 15 },
+            Instruction::try_from(0x8EF4).unwrap()
+        );
+        assert_eq!(
+            Instruction::SUB { vx: 0, vy: 2 },
+            Instruction::try_from(0x8025).unwrap()
         );
         assert_eq!(
             Exception::WrongOpCode(0xFFFF),
