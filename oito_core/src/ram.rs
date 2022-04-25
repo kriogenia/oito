@@ -11,6 +11,7 @@ pub struct Ram {
 }
 
 impl Ram {
+	/// Returns the content of the specified address
 	pub fn read(&self, address: Address) -> Result<Byte, Exception> {
 		let i = address as usize;
 		if i >= RAM_SIZE {
@@ -18,6 +19,11 @@ impl Ram {
 		} else {
 			Ok(self.memory[address as usize])
 		}
+	}
+
+	#[cfg(test)]
+	pub(crate) fn set(&mut self, address: Address, value: Byte) {
+		self.memory[address as usize] = value;
 	}
 }
 

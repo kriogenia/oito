@@ -14,6 +14,16 @@ impl Timer {
 		}
 	}
 
+	#[cfg(test)]
+	pub(crate) fn set(&mut self, value: u8) {
+		self.count = value;
+	}
+
+	#[cfg(test)]
+	pub(crate) fn count(&self) -> u8 {
+		self.count
+	}
+
 }
 
 #[cfg(test)]

@@ -15,6 +15,5 @@ In fact, Rust will perform it. But I've decided to create an Error and handle ev
 Why? Well, I'm trying to replicate a system and good system always have ways to handle exceptions.
 It's not like I will be handling everything in a different way than just halting the program, but I want to simulate how the system would know about the problem and be able to perform the exception handling.
 
-One thing note is that I've decided to name the errors enum with the name `Exception`, my fellow rustaceans will probably
-suffer a bit looking at it but remember than I'm simulating a system, and those throw exceptions.
+One thing to note is that I've decided to name the errors enum with the name `Exception`, my fellow rustaceans will probably suffer a bit looking at it but remember than I'm simulating a system, and those throw exceptions, not errors.
 It's not like I've forgotten how Rust considers the errors, but I'm faithful to my simulation.
