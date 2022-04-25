@@ -21,7 +21,6 @@ pub struct Cpu {
 }
 
 impl Cpu {
-
     /// Increases the Program Counter to point to the next instruction
     pub fn increase(&mut self) {
         self.pc += INSTRUCTION_SIZE;

@@ -1,35 +1,37 @@
-use crate::{Byte, Address, exception::Exception};
+use crate::{exception::Exception, Address, Byte};
 
 /// 4KB of RAM
-const RAM_SIZE: usize = 4096; 
+const RAM_SIZE: usize = 4096;
 const EMPTY_MEM: Byte = 0;
 
 /// Simmulated RAM
 pub struct Ram {
-	/// Buffer with the memory mantained by the RAM
-	memory: [Byte; RAM_SIZE]
+    /// Buffer with the memory mantained by the RAM
+    memory: [Byte; RAM_SIZE],
 }
 
 impl Ram {
-	/// Returns the content of the specified address
-	pub fn read(&self, address: Address) -> Result<Byte, Exception> {
-		let i = address as usize;
-		if i >= RAM_SIZE {
-			Err(Exception::SegmentationFault)
-		} else {
-			Ok(self.memory[address as usize])
-		}
-	}
+    /// Returns the content of the specified address
+    pub fn read(&self, address: Address) -> Result<Byte, Exception> {
+        let i = address as usize;
+        if i >= RAM_SIZE {
+            Err(Exception::SegmentationFault)
+        } else {
+            Ok(self.memory[address as usize])
+        }
+    }
 
-	#[cfg(test)]
-	pub(crate) fn set(&mut self, address: Address, value: Byte) {
-		self.memory[address as usize] = value;
-	}
+    #[cfg(test)]
+    pub(crate) fn set(&mut self, address: Address, value: Byte) {
+        self.memory[address as usize] = value;
+    }
 }
 
 impl Default for Ram {
     fn default() -> Self {
-        Self { memory: [ EMPTY_MEM; RAM_SIZE ] }
+        Self {
+            memory: [EMPTY_MEM; RAM_SIZE],
+        }
     }
 }
 
@@ -39,20 +41,22 @@ mod test {
 
     use super::Ram;
 
-	#[test]
-	fn read() {
-		let mut ram = Ram::default();
-		for i in 0..4 {
-			ram.memory[i] = i as u8;
-		}
-		for i in 0..4 {
-			assert_eq!(i, ram.read(i as u16).unwrap());
-		}
-	}
+    #[test]
+    fn read() {
+        let mut ram = Ram::default();
+        for i in 0..4 {
+            ram.memory[i] = i as u8;
+        }
+        for i in 0..4 {
+            assert_eq!(i, ram.read(i as u16).unwrap());
+        }
+    }
 
-	#[test]
-	fn seg_fault() {
-		assert_eq!(Ram::default().read(5000).unwrap_err(), Exception::SegmentationFault);
-	}
-
+    #[test]
+    fn seg_fault() {
+        assert_eq!(
+            Ram::default().read(5000).unwrap_err(),
+            Exception::SegmentationFault
+        );
+    }
 }
