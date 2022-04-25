@@ -14,7 +14,8 @@ Current state:
 - [x] Working stack
 - [x] Working RAM
 - [ ] Working clock
-- [ ] Opcodes [0/35]
+- [ ] Instructions declaration [1/35]
+- [ ] Instructions execution [0/35]
 - [ ] Core interface
 - [ ] SDL2 rendering
 - [ ] Web rendering

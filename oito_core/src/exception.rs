@@ -1,11 +1,15 @@
 use thiserror::Error;
 
+use crate::{Address, OpCode};
+
 #[derive(Error, Debug, PartialEq)]
 pub enum Exception {
-    #[error("segmentation fault: invalid RAM address")]
-    SegmentationFault,
-    #[error("stack overflow")]
+    #[error("Segmentation fault. Invalid RAM address: {0:04x}")]
+    SegmentationFault(Address),
+    #[error("Stack overflow")]
     StackOverflow,
-    #[error("stack underflow")]
+    #[error("Stack underflow")]
     StackUnderflow,
+    #[error("Wrong OpCode: {0:04x}")]
+    WrongOpCode(OpCode),
 }

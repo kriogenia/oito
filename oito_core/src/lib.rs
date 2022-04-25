@@ -2,6 +2,7 @@ pub mod core;
 pub(crate) mod exception;
 
 mod cpu;
+mod instruction;
 mod ram;
 mod stack;
 mod timer;

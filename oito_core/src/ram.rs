@@ -15,7 +15,7 @@ impl Ram {
     pub fn read(&self, address: Address) -> Result<Byte, Exception> {
         let i = address as usize;
         if i >= RAM_SIZE {
-            Err(Exception::SegmentationFault)
+            Err(Exception::SegmentationFault(address))
         } else {
             Ok(self.memory[address as usize])
         }
@@ -56,7 +56,7 @@ mod test {
     fn seg_fault() {
         assert_eq!(
             Ram::default().read(5000).unwrap_err(),
-            Exception::SegmentationFault
+            Exception::SegmentationFault(5000)
         );
     }
 }
