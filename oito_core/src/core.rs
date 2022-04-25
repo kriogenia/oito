@@ -32,9 +32,9 @@ impl OitoCore {
     /// Performs a cycle of the emulator
     pub fn tick(&mut self) -> Result<(), Exception> {
         let opcode = self.fetch(self.cpu.pc)?; // fetch
+        self.cpu.increase(); // advance
         let instruction = Instruction::try_from(opcode)?; // decode
         self.execute(instruction)?; // execute
-        self.cpu.increase(); // advance
         Ok(())
     }
 
@@ -55,7 +55,6 @@ impl OitoCore {
     fn execute(&mut self, instruction: Instruction) -> Result<(), Exception> {
         use Instruction::*;
         match instruction {
-            NOP => {}
             CLS => self.vram.clear(),
             RET => {
                 let address = self.stack.pop()?;
@@ -106,6 +105,9 @@ mod api_test {
     #[test]
     fn tick() {
         let mut oito = OitoCore::default();
+		// Next instruction - SE V0 == 1 -> don't skip		// TODO use different and testable instruction
+		oito.ram.set(Cpu::STARTING_ADDRESS, 0x30);
+		oito.ram.set(Cpu::STARTING_ADDRESS + 1, 0x01);
 
         oito.tick().unwrap();
         assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc);

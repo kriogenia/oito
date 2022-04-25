@@ -8,8 +8,6 @@ const BYTE_MASK: u16 = 0x00FF;
 
 #[derive(Debug, PartialEq)]
 pub enum Instruction {
-    /// 0000 - Do nothing
-    NOP,
     /// 00E0 - Clear screen
     CLS,
     /// 00EE - Return
@@ -50,7 +48,6 @@ impl TryFrom<OpCode> for Instruction {
     fn try_from(value: OpCode) -> Result<Self, Self::Error> {
         use Instruction::*;
         match split(value) {
-            (0x0, 0x0, 0x0, 0x0) => Ok(NOP),
             (0x0, 0x0, 0xE, 0x0) => Ok(CLS),
             (0x0, 0x0, 0xE, 0xE) => Ok(RET),
             (0x0, ..) => Ok(SYS(value & ADDRESS_MASK)),
@@ -123,7 +120,6 @@ mod test {
 
     #[test]
     fn try_from() {
-        assert_eq!(Instruction::NOP, Instruction::try_from(0x0000).unwrap());
         assert_eq!(Instruction::CLS, Instruction::try_from(0x00E0).unwrap());
         assert_eq!(Instruction::RET, Instruction::try_from(0x00EE).unwrap());
         assert_eq!(
