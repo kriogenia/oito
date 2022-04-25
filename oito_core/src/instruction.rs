@@ -1,6 +1,11 @@
 use crate::exception::Exception;
 use crate::{Address, Byte, OpCode, RegIndex};
 
+/// Mask to convert a word into 12-byte address
+const ADDRESS_MASK: u16 = 0x0FFF;
+/// Mask to convert a word into a single byte
+const BYTE_MASK: u16 = 0x00FF;
+
 #[derive(Debug, PartialEq)]
 pub enum Instruction {
     /// 0000 - Do nothing
@@ -38,34 +43,34 @@ impl TryFrom<OpCode> for Instruction {
             (0x0, 0x0, 0x0, 0x0) => Ok(NOP),
             (0x0, 0x0, 0xE, 0x0) => Ok(CLS),
             (0x0, 0x0, 0xE, 0xE) => Ok(RET),
-            (0x0, a1, a2, a3) => Ok(SYS(to_address(a1, a2, a3))),
-            (0x1, a1, a2, a3) => Ok(JP(to_address(a1, a2, a3))),
-            (0x2, a1, a2, a3) => Ok(CALL(to_address(a1, a2, a3))),
-            (0x3, vx, b1, b2) => Ok(SEb {
+            (0x0, ..) => Ok(SYS(value & ADDRESS_MASK)),
+            (0x1, ..) => Ok(JP(value & ADDRESS_MASK)),
+            (0x2, ..) => Ok(CALL(value & ADDRESS_MASK)),
+            (0x3, vx, ..) => Ok(SEb {
                 vx: vx as RegIndex,
-                byte: to_byte(b1, b2),
+                byte: (value & BYTE_MASK) as Byte,
             }),
-            (0x4, vx, b1, b2) => Ok(SNEb {
+            (0x4, vx, ..) => Ok(SNEb {
                 vx: vx as RegIndex,
-                byte: to_byte(b1, b2),
+                byte: (value & BYTE_MASK) as Byte,
             }),
             (0x5, vx, vy, 0) => Ok(SEr {
                 vx: vx as RegIndex,
                 vy: vy as RegIndex,
             }),
-            (0x6, vx, b1, b2) => Ok(LDb {
+            (0x6, vx, ..) => Ok(LDb {
                 vx: vx as RegIndex,
-                byte: to_byte(b1, b2),
+                byte: (value & BYTE_MASK) as Byte,
             }),
-            (0x7, vx, b1, b2) => Ok(ADDb {
+            (0x7, vx, ..) => Ok(ADDb {
                 vx: vx as RegIndex,
-                byte: to_byte(b1, b2),
+                byte: (value & BYTE_MASK) as Byte,
             }),
             (0x8, vx, vy, 0) => Ok(LDr {
                 vx: vx as RegIndex,
                 vy: vy as RegIndex,
             }),
-            (_, _, _, _) => Err(Exception::WrongOpCode(value)),
+            (..) => Err(Exception::WrongOpCode(value)),
         }
     }
 }
@@ -78,16 +83,6 @@ fn split(opcode: OpCode) -> (u16, u16, u16, u16) {
         (opcode & 0x00F0) >> 4,
         opcode & 0x000F,
     )
-}
-
-/// Merges three nibbles in a single word
-fn to_address(first: u16, second: u16, third: u16) -> Address {
-    first << 8 | second << 4 | third
-}
-
-/// Merges two nibbles in a single byte
-fn to_byte(first: u16, second: u16) -> Byte {
-    (first << 4 | second) as u8
 }
 
 #[cfg(test)]
@@ -146,15 +141,5 @@ mod test {
     #[test]
     fn split() {
         assert_eq!((0x2, 0xA, 0x9, 0x0), super::split(0x2A90))
-    }
-
-    #[test]
-    fn to_address() {
-        assert_eq!(0xB32, super::to_address(0xB, 0x3, 0x2))
-    }
-
-    #[test]
-    fn to_byte() {
-        assert_eq!(0x12, super::to_byte(0x1, 0x2));
     }
 }

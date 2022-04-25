@@ -60,10 +60,10 @@ impl OitoCore {
             RET => {
                 let address = self.stack.pop()?;
                 self.cpu.point_at(address);
-            },
-			SYS(address) => {
-				self.cpu.point_at(address);
-			}
+            }
+            SYS(address) => {
+                self.cpu.point_at(address);
+            }
             _ => unimplemented!("this instruction is yet to be implemented"),
         }
         Ok(())
