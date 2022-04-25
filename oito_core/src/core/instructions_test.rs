@@ -68,3 +68,16 @@ fn call_and_ret() {
     assert_eq!(Cpu::STARTING_ADDRESS, oito.cpu.pc);
     assert!(oito.stack.peek().is_none());
 }
+
+#[test]
+fn se_byte() {
+	let mut oito = OitoCore::default();
+	assert_eq!(Cpu::STARTING_ADDRESS, oito.cpu.pc);
+	// Skip
+	oito.execute(Instruction::SEb { vx: 0, byte: 0 }).unwrap();
+	assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc);
+    // Don't skip
+	oito.execute(Instruction::SEb { vx: 0, byte: 1 }).unwrap();
+	assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc);
+    
+}

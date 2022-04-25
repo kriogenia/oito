@@ -7,11 +7,13 @@ This are the functions that I want working before moving to the next phase:
 * `CPU`
   * `increase`, to point the PC to the next opcode.
   * `point_at`, to point the PC to the specified address.
+* `RAM`
+  * `read`, to return the value stored in the given address.
+* `Register`
+  * `get` to return the stored content.
 * `Stack`
   * `push`, to add a new value at top of the stack.
   * `pop`, to return to the top most value of the stack.
-* `RAM`
-  * `read`, to return the value stored in the given address.
 * `Timer`
   * `decrease`, to decrease the count of the timer.
 * `VRAM`

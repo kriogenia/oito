@@ -70,7 +70,12 @@ impl OitoCore {
             CALL(address) => {
                 self.stack.push(self.cpu.pc)?;
                 self.cpu.point_at(address);
-            }
+            },
+			SEb { vx, byte } => {
+				if self.cpu.register(vx) == byte {
+					self.cpu.increase();
+				}
+			},
             _ => unimplemented!("this instruction is yet to be implemented"),
         }
         Ok(())

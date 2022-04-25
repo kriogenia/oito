@@ -2,7 +2,7 @@ mod register;
 
 use register::{IRegister, VRegister};
 
-use crate::Address;
+use crate::{Address, RegIndex, Byte};
 
 const INSTRUCTION_SIZE: u16 = 2;
 const NUMBER_OF_REGISTERS: usize = 16;
@@ -30,6 +30,11 @@ impl Cpu {
     pub fn point_at(&mut self, position: Address) {
         self.pc = position;
     }
+
+	/// Returns the value stored in the specified register
+	pub fn register(&self, index: RegIndex) -> Byte {
+		self.vreg[index as usize].get()
+	}
 }
 
 impl Default for Cpu {

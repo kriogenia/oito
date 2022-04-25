@@ -38,10 +38,10 @@ pub enum Instruction {
     AND { vx: RegIndex, vy: RegIndex },
     /// 8xy3 - Vx = Vx XOR Vy
     XOR { vx: RegIndex, vy: RegIndex },
-	/// 8xy4 - Add Vy content into Vx
-	ADDr { vx: RegIndex, vy: RegIndex },
-	/// 8xy5 - Substract Vy content from Vx content
-	SUB { vx: RegIndex, vy: RegIndex },
+    /// 8xy4 - Add Vy content into Vx
+    ADDr { vx: RegIndex, vy: RegIndex },
+    /// 8xy5 - Substract Vy content from Vx content
+    SUB { vx: RegIndex, vy: RegIndex },
 }
 
 impl TryFrom<OpCode> for Instruction {
