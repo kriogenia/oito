@@ -1,4 +1,4 @@
-use crate::{instruction::Instruction, vram::VRam};
+use crate::{cpu::Cpu, instruction::Instruction, vram::VRam};
 
 use super::OitoCore;
 
@@ -10,8 +10,18 @@ fn cls() {
         assert_eq!(oito.vram.get(i), VRam::WHITE);
     }
 
-    oito.execute(Instruction::CLS);
+    oito.execute(Instruction::CLS).unwrap();
     for i in 0..8 {
         assert_eq!(oito.vram.get(i), VRam::BLACK);
     }
+}
+
+#[test]
+fn ret() {
+	let mut oito = OitoCore::default();
+	oito.stack.push(0x1234).unwrap();
+	assert_eq!(Cpu::STARTING_ADDRESS, oito.cpu.pc);
+
+	oito.execute(Instruction::RET).unwrap();
+	assert_eq!(0x1234, oito.cpu.pc);
 }

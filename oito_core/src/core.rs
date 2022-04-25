@@ -52,13 +52,18 @@ impl OitoCore {
     }
 
     /// Executes the provided instruction
-    fn execute(&mut self, instruction: Instruction) {
+    fn execute(&mut self, instruction: Instruction) -> Result<(), Exception> {
         use Instruction::*;
         match instruction {
             NOP => {}
             CLS => self.vram.clear(),
+			RET => {
+				let address = self.stack.pop()?;
+				self.cpu.point_at(address);
+			},
 			_ => unimplemented!("this instruction is yet to be implemented")
         }
+		Ok(())
     }
 }
 
