@@ -1,5 +1,6 @@
 use crate::cpu::Cpu;
 use crate::exception::Exception;
+use crate::instruction::{Instruction, self};
 use crate::ram::Ram;
 use crate::stack::Stack;
 use crate::timer::Timer;
@@ -30,12 +31,10 @@ impl OitoCore {
 
     /// Performs a cycle of the emulator
     pub fn tick(&mut self) -> Result<(), Exception> {
-        let _opcode = self.fetch(self.cpu.pc)?;
-        // Decode instruction
-        // Execute instruction
-
-        self.cpu.increase();
-
+        let opcode = self.fetch(self.cpu.pc)?;				// fetch
+		let instruction = Instruction::try_from(opcode)?;	// decode 
+		self.execute(instruction);							// execute
+        self.cpu.increase();								// advance
         Ok(())
     }
 
@@ -51,6 +50,13 @@ impl OitoCore {
         let small_byte = self.ram.read(address + 1)? as u16;
         Ok((big_byte << 8) | small_byte)
     }
+
+	fn execute(&mut self, instruction: Instruction) {
+		use Instruction::*;
+        match instruction {
+			NOP => {},
+		}
+	}
 }
 
 impl Default for OitoCore {

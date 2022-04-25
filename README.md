@@ -13,7 +13,7 @@ Current state:
 - [x] Initialization
 - [x] Working stack
 - [x] Working RAM
-- [ ] Working clock
+- [x] Tick
 - [ ] Instructions declaration [1/35]
 - [ ] Instructions execution [0/35]
 - [ ] Core interface
