@@ -34,3 +34,12 @@ fn sys() {
     oito.execute(Instruction::SYS(0xF10F)).unwrap();
     assert_eq!(0xF10F, oito.cpu.pc);
 }
+
+#[test]
+fn jp() {
+    let mut oito = OitoCore::default();
+    assert_eq!(Cpu::STARTING_ADDRESS, oito.cpu.pc);
+
+    oito.execute(Instruction::JP(0x01CF)).unwrap();
+    assert_eq!(0x01CF, oito.cpu.pc);
+}
