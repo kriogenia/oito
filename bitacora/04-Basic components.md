@@ -6,6 +6,7 @@ So, the idea is to build the stack or the RAM and their unit tests before jumpin
 This are the functions that I want working before moving to the next phase:
 * `CPU`
   * `increase`, to point the PC to the next opcode.
+  * `point_at`, to point the PC to the specified address.
 * `Stack`
   * `push`, to add a new value at top of the stack.
   * `pop`, to return to the top most value of the stack.
