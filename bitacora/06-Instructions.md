@@ -29,3 +29,9 @@ I think that this could be a nice opportunity to perform some benchmarking to me
 
 If I build everything to check what is fastest it would a bad idea to just delete the slowest code and lose that example.
 I'll probably define the different implementations as features so we could run any of them whenever we want.
+
+## Testing
+
+The ideal option would be to test all the instructions' execution.
+In order to do that and keep everything as clean as possible I will make a module in `core` named `instructions_test`.
+Thsi way the test at `core` can keep being just unit tests and the big explosion of tests for the instruction can be made inside a dedicated file.

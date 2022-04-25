@@ -31,10 +31,10 @@ impl OitoCore {
 
     /// Performs a cycle of the emulator
     pub fn tick(&mut self) -> Result<(), Exception> {
-        let opcode = self.fetch(self.cpu.pc)?;				// fetch
-		let instruction = Instruction::try_from(opcode)?;	// decode 
-		self.execute(instruction);							// execute
-        self.cpu.increase();								// advance
+        let opcode = self.fetch(self.cpu.pc)?; // fetch
+        let instruction = Instruction::try_from(opcode)?; // decode
+        self.execute(instruction); // execute
+        self.cpu.increase(); // advance
         Ok(())
     }
 
@@ -51,13 +51,14 @@ impl OitoCore {
         Ok((big_byte << 8) | small_byte)
     }
 
-	/// Executes the provided instruction
-	fn execute(&mut self, instruction: Instruction) {
-		use Instruction::*;
+    /// Executes the provided instruction
+    fn execute(&mut self, instruction: Instruction) {
+        use Instruction::*;
         match instruction {
-			NOP => {},
-		}
-	}
+            NOP => {}
+            CLS => self.vram.clear(),
+        }
+    }
 }
 
 impl Default for OitoCore {
@@ -74,16 +75,19 @@ impl Default for OitoCore {
 }
 
 #[cfg(test)]
-mod test {
+mod instructions_test;
+
+#[cfg(test)]
+mod api_test {
     use super::OitoCore;
-    use crate::cpu;
+    use crate::cpu::Cpu;
 
     #[test]
     fn tick() {
         let mut oito = OitoCore::default();
 
         oito.tick().unwrap();
-        assert_eq!(cpu::STARTING_ADDRESS + 2, oito.cpu.pc);
+        assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc);
     }
 
     #[test]

@@ -3,7 +3,8 @@ use crate::OpCode;
 
 #[derive(Debug, PartialEq)]
 pub enum Instruction {
-    NOP,
+    NOP, // 0000
+    CLS, // 00E0
 }
 
 impl TryFrom<OpCode> for Instruction {
@@ -11,7 +12,8 @@ impl TryFrom<OpCode> for Instruction {
 
     fn try_from(value: OpCode) -> Result<Self, Self::Error> {
         match split(value) {
-            (0, 0, 0, 0) => Ok(Instruction::NOP),
+            (0x0, 0x0, 0x0, 0x0) => Ok(Instruction::NOP),
+            (0x0, 0x0, 0xE, 0x0) => Ok(Instruction::CLS),
             (_, _, _, _) => Err(Exception::WrongOpCode(value)),
         }
     }
@@ -35,6 +37,7 @@ mod test {
     #[test]
     fn try_from() {
         assert_eq!(Instruction::NOP, Instruction::try_from(0x0000).unwrap());
+        assert_eq!(Instruction::CLS, Instruction::try_from(0x00E0).unwrap());
         assert_eq!(
             Exception::WrongOpCode(0xFFFF),
             Instruction::try_from(0xFFFF).unwrap_err()
