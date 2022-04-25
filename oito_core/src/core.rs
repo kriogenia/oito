@@ -57,6 +57,7 @@ impl OitoCore {
         match instruction {
             NOP => {}
             CLS => self.vram.clear(),
+			_ => unimplemented!("this instruction is yet to be implemented")
         }
     }
 }
