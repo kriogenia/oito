@@ -18,10 +18,19 @@ fn cls() {
 
 #[test]
 fn ret() {
-	let mut oito = OitoCore::default();
-	oito.stack.push(0x1234).unwrap();
-	assert_eq!(Cpu::STARTING_ADDRESS, oito.cpu.pc);
+    let mut oito = OitoCore::default();
+    oito.stack.push(0x1234).unwrap();
+    assert_eq!(Cpu::STARTING_ADDRESS, oito.cpu.pc);
 
-	oito.execute(Instruction::RET).unwrap();
-	assert_eq!(0x1234, oito.cpu.pc);
+    oito.execute(Instruction::RET).unwrap();
+    assert_eq!(0x1234, oito.cpu.pc);
+}
+
+#[test]
+fn sys() {
+    let mut oito = OitoCore::default();
+    assert_eq!(Cpu::STARTING_ADDRESS, oito.cpu.pc);
+
+    oito.execute(Instruction::SYS(0xF10F)).unwrap();
+    assert_eq!(0xF10F, oito.cpu.pc);
 }

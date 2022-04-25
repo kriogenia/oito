@@ -15,7 +15,7 @@ Current state:
 - [x] Working RAM
 - [x] Tick
 - [ ] Instructions declaration [12/35]
-- [ ] Instructions execution [3/35]
+- [ ] Instructions execution [4/35]
 - [ ] Core interface
 - [ ] SDL2 rendering
 - [ ] Web rendering

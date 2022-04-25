@@ -26,10 +26,10 @@ impl Cpu {
         self.pc += INSTRUCTION_SIZE;
     }
 
-	/// Points the Program Counter to the specified address
-	pub fn point_at(&mut self, position: Address) {
-		self.pc = position;
-	}
+    /// Points the Program Counter to the specified address
+    pub fn point_at(&mut self, position: Address) {
+        self.pc = position;
+    }
 }
 
 impl Default for Cpu {
@@ -50,19 +50,19 @@ mod test {
     fn increase() {
         let mut cpu = Cpu::default();
         assert_eq!(Cpu::STARTING_ADDRESS, cpu.pc);
-        
-		for i in 1..4 {
+
+        for i in 1..4 {
             cpu.increase();
             assert_eq!(i * 2 + Cpu::STARTING_ADDRESS, cpu.pc);
         }
     }
 
-	#[test]
-	fn point_at() {
-		let mut cpu = Cpu::default();
-		assert_eq!(Cpu::STARTING_ADDRESS, cpu.pc);
+    #[test]
+    fn point_at() {
+        let mut cpu = Cpu::default();
+        assert_eq!(Cpu::STARTING_ADDRESS, cpu.pc);
 
-		cpu.point_at(0x100);
-		assert_eq!(0x100, cpu.pc);
-	}
+        cpu.point_at(0x100);
+        assert_eq!(0x100, cpu.pc);
+    }
 }

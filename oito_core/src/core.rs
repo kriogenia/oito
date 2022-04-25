@@ -33,7 +33,7 @@ impl OitoCore {
     pub fn tick(&mut self) -> Result<(), Exception> {
         let opcode = self.fetch(self.cpu.pc)?; // fetch
         let instruction = Instruction::try_from(opcode)?; // decode
-        self.execute(instruction); // execute
+        self.execute(instruction)?; // execute
         self.cpu.increase(); // advance
         Ok(())
     }
@@ -57,13 +57,16 @@ impl OitoCore {
         match instruction {
             NOP => {}
             CLS => self.vram.clear(),
-			RET => {
-				let address = self.stack.pop()?;
+            RET => {
+                let address = self.stack.pop()?;
+                self.cpu.point_at(address);
+            },
+			SYS(address) => {
 				self.cpu.point_at(address);
-			},
-			_ => unimplemented!("this instruction is yet to be implemented")
+			}
+            _ => unimplemented!("this instruction is yet to be implemented"),
         }
-		Ok(())
+        Ok(())
     }
 }
 
