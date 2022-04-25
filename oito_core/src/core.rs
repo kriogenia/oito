@@ -1,6 +1,6 @@
 use crate::cpu::Cpu;
 use crate::exception::Exception;
-use crate::instruction::{Instruction, self};
+use crate::instruction::Instruction;
 use crate::ram::Ram;
 use crate::stack::Stack;
 use crate::timer::Timer;
@@ -51,6 +51,7 @@ impl OitoCore {
         Ok((big_byte << 8) | small_byte)
     }
 
+	/// Executes the provided instruction
 	fn execute(&mut self, instruction: Instruction) {
 		use Instruction::*;
         match instruction {
