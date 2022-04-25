@@ -32,6 +32,12 @@ pub enum Instruction {
     ADDb { vx: RegIndex, byte: Byte },
     /// 8xy0 - Load Vy content into Vx
     LDr { vx: RegIndex, vy: RegIndex },
+	/// 8xy1 - Vx = Vx OR Vy
+    OR { vx: RegIndex, vy: RegIndex },
+	/// 8xy2 - Vx = Vx AND Vy
+    AND { vx: RegIndex, vy: RegIndex },
+	/// 8xy3 - Vx = Vx XOR Vy
+    XOR { vx: RegIndex, vy: RegIndex },
 }
 
 impl TryFrom<OpCode> for Instruction {
@@ -67,6 +73,18 @@ impl TryFrom<OpCode> for Instruction {
                 byte: (value & BYTE_MASK) as Byte,
             }),
             (0x8, vx, vy, 0) => Ok(LDr {
+                vx: vx as RegIndex,
+                vy: vy as RegIndex,
+            }),
+            (0x8, vx, vy, 1) => Ok(OR {
+                vx: vx as RegIndex,
+                vy: vy as RegIndex,
+            }),
+            (0x8, vx, vy, 2) => Ok(AND {
+                vx: vx as RegIndex,
+                vy: vy as RegIndex,
+            }),
+            (0x8, vx, vy, 3) => Ok(XOR {
                 vx: vx as RegIndex,
                 vy: vy as RegIndex,
             }),
@@ -131,6 +149,18 @@ mod test {
         assert_eq!(
             Instruction::LDr { vx: 6, vy: 7 },
             Instruction::try_from(0x8670).unwrap()
+        );
+        assert_eq!(
+            Instruction::OR { vx: 8, vy: 9 },
+            Instruction::try_from(0x8891).unwrap()
+        );
+        assert_eq!(
+            Instruction::AND { vx: 10, vy: 11 },
+            Instruction::try_from(0x8AB2).unwrap()
+        );
+        assert_eq!(
+            Instruction::XOR { vx: 12, vy: 13 },
+            Instruction::try_from(0x8CD3).unwrap()
         );
         assert_eq!(
             Exception::WrongOpCode(0xFFFF),
