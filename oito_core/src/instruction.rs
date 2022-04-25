@@ -21,6 +21,12 @@ pub enum Instruction {
 	SNEb { vx: RegIndex, byte: Byte },
 	/// 5xy0 - Skip next instruction if *Vx = *Vy
 	SEr { vx: RegIndex, vy: RegIndex },
+	/// 6xkk - Load doubleword value into Vx
+	LDb { vx: RegIndex, byte: Byte },
+	/// 7xkk - Add kk value into Vx
+	ADDb { vx: RegIndex, byte: Byte },
+	/// 8xy0 - Load Vy content into Vx
+	LDr { vx: RegIndex, vy: RegIndex },
 }
 
 impl TryFrom<OpCode> for Instruction {
@@ -38,6 +44,9 @@ impl TryFrom<OpCode> for Instruction {
 			(0x3, vx, b1, b2) => Ok(SEb { vx: vx as RegIndex, byte: to_byte(b1, b2) }),
 			(0x4, vx, b1, b2) => Ok(SNEb { vx: vx as RegIndex, byte: to_byte(b1, b2) }),
 			(0x5, vx, vy, 0) => Ok(SEr { vx: vx as RegIndex, vy: vy as RegIndex }),
+			(0x6, vx, b1, b2) => Ok(LDb { vx: vx as RegIndex, byte: to_byte(b1, b2) }),
+			(0x7, vx, b1, b2) => Ok(ADDb { vx: vx as RegIndex, byte: to_byte(b1, b2) }),
+			(0x8, vx, vy, 0) => Ok(LDr { vx: vx as RegIndex, vy: vy as RegIndex }),
             (_, _, _, _) => Err(Exception::WrongOpCode(value)),
         }
     }
@@ -80,6 +89,9 @@ mod test {
         assert_eq!(Instruction::SEb { vx: 0, byte: 0x12 }, Instruction::try_from(0x3012).unwrap());
         assert_eq!(Instruction::SNEb { vx: 1, byte: 0x34 }, Instruction::try_from(0x4134).unwrap());
         assert_eq!(Instruction::SEr { vx: 2, vy: 3 }, Instruction::try_from(0x5230).unwrap());
+        assert_eq!(Instruction::LDb { vx: 4, byte: 0x56 }, Instruction::try_from(0x6456).unwrap());
+        assert_eq!(Instruction::ADDb { vx: 5, byte: 0x67 }, Instruction::try_from(0x7567).unwrap());
+        assert_eq!(Instruction::LDr { vx: 6, vy: 7 }, Instruction::try_from(0x8670).unwrap());
         assert_eq!(
             Exception::WrongOpCode(0xFFFF),
             Instruction::try_from(0xFFFF).unwrap_err()
