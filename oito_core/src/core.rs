@@ -56,19 +56,21 @@ impl OitoCore {
         use Instruction::*;
         match instruction {
             NOP => {}
-            CLS => {
-				self.vram.clear()
-			},
+            CLS => self.vram.clear(),
             RET => {
                 let address = self.stack.pop()?;
                 self.cpu.point_at(address);
-            },
+            }
             SYS(address) => {
                 self.cpu.point_at(address);
-            },
+            }
             JP(address) => {
                 self.cpu.point_at(address);
-            },
+            }
+            CALL(address) => {
+                self.stack.push(self.cpu.pc)?;
+                self.cpu.point_at(address);
+            }
             _ => unimplemented!("this instruction is yet to be implemented"),
         }
         Ok(())

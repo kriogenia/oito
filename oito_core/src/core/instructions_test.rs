@@ -21,9 +21,11 @@ fn ret() {
     let mut oito = OitoCore::default();
     oito.stack.push(0x1234).unwrap();
     assert_eq!(Cpu::STARTING_ADDRESS, oito.cpu.pc);
+    assert_eq!(0x1234, oito.stack.peek().unwrap());
 
     oito.execute(Instruction::RET).unwrap();
     assert_eq!(0x1234, oito.cpu.pc);
+    assert!(oito.stack.peek().is_none());
 }
 
 #[test]
@@ -42,4 +44,27 @@ fn jp() {
 
     oito.execute(Instruction::JP(0x01CF)).unwrap();
     assert_eq!(0x01CF, oito.cpu.pc);
+}
+
+#[test]
+fn call() {
+    let mut oito = OitoCore::default();
+    assert_eq!(Cpu::STARTING_ADDRESS, oito.cpu.pc);
+    assert!(oito.stack.peek().is_none());
+
+    oito.execute(Instruction::CALL(0x1CC0)).unwrap();
+    assert_eq!(0x1CC0, oito.cpu.pc);
+    assert_eq!(Cpu::STARTING_ADDRESS, oito.stack.peek().unwrap());
+}
+
+#[test]
+fn call_and_ret() {
+    let mut oito = OitoCore::default();
+    assert_eq!(Cpu::STARTING_ADDRESS, oito.cpu.pc);
+    assert!(oito.stack.peek().is_none());
+
+    oito.execute(Instruction::CALL(0x2371)).unwrap();
+    oito.execute(Instruction::RET).unwrap();
+    assert_eq!(Cpu::STARTING_ADDRESS, oito.cpu.pc);
+    assert!(oito.stack.peek().is_none());
 }

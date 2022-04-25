@@ -32,11 +32,11 @@ pub enum Instruction {
     ADDb { vx: RegIndex, byte: Byte },
     /// 8xy0 - Load Vy content into Vx
     LDr { vx: RegIndex, vy: RegIndex },
-	/// 8xy1 - Vx = Vx OR Vy
+    /// 8xy1 - Vx = Vx OR Vy
     OR { vx: RegIndex, vy: RegIndex },
-	/// 8xy2 - Vx = Vx AND Vy
+    /// 8xy2 - Vx = Vx AND Vy
     AND { vx: RegIndex, vy: RegIndex },
-	/// 8xy3 - Vx = Vx XOR Vy
+    /// 8xy3 - Vx = Vx XOR Vy
     XOR { vx: RegIndex, vy: RegIndex },
 }
 

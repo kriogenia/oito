@@ -35,6 +35,15 @@ impl Stack {
             Ok(self.content[i - 1])
         }
     }
+
+    #[cfg(test)]
+    pub(crate) fn peek(&self) -> Option<Address> {
+        if self.pointer == 0 {
+            None
+        } else {
+            Some(self.content[self.pointer as usize - 1])
+        }
+    }
 }
 
 impl Default for Stack {
