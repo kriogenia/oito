@@ -40,6 +40,12 @@ pub enum Instruction {
     ADDr { vx: RegIndex, vy: RegIndex },
     /// 8xy5 - Substract Vy content from Vx content
     SUB { vx: RegIndex, vy: RegIndex },
+	/// 8xy6 - Shift right
+	SHR(RegIndex),
+	/// 8xy7 - Substract register: *Vx = *Vy - *Vx
+	SUBN { vx: RegIndex, vy: RegIndex },
+	/// 8xyE - Shift left
+	SHL(RegIndex),
 }
 
 impl TryFrom<OpCode> for Instruction {
@@ -61,7 +67,7 @@ impl TryFrom<OpCode> for Instruction {
                 vx: vx as RegIndex,
                 byte: (value & BYTE_MASK) as Byte,
             }),
-            (0x5, vx, vy, 0) => Ok(SEr {
+            (0x5, vx, vy, 0x0) => Ok(SEr {
                 vx: vx as RegIndex,
                 vy: vy as RegIndex,
             }),
@@ -73,30 +79,36 @@ impl TryFrom<OpCode> for Instruction {
                 vx: vx as RegIndex,
                 byte: (value & BYTE_MASK) as Byte,
             }),
-            (0x8, vx, vy, 0) => Ok(LDr {
+            (0x8, vx, vy, 0x0) => Ok(LDr {
                 vx: vx as RegIndex,
                 vy: vy as RegIndex,
             }),
-            (0x8, vx, vy, 1) => Ok(OR {
+            (0x8, vx, vy, 0x1) => Ok(OR {
                 vx: vx as RegIndex,
                 vy: vy as RegIndex,
             }),
-            (0x8, vx, vy, 2) => Ok(AND {
+            (0x8, vx, vy, 0x2) => Ok(AND {
                 vx: vx as RegIndex,
                 vy: vy as RegIndex,
             }),
-            (0x8, vx, vy, 3) => Ok(XOR {
+            (0x8, vx, vy, 0x3) => Ok(XOR {
                 vx: vx as RegIndex,
                 vy: vy as RegIndex,
             }),
-            (0x8, vx, vy, 4) => Ok(ADDr {
+            (0x8, vx, vy, 0x4) => Ok(ADDr {
                 vx: vx as RegIndex,
                 vy: vy as RegIndex,
             }),
-            (0x8, vx, vy, 5) => Ok(SUB {
+            (0x8, vx, vy, 0x5) => Ok(SUB {
                 vx: vx as RegIndex,
                 vy: vy as RegIndex,
             }),
+            (0x8, vx, _, 0x6) => Ok(SHR(vx as RegIndex)),
+            (0x8, vx, vy, 0x7) => Ok(SUBN {
+                vx: vx as RegIndex,
+                vy: vy as RegIndex,
+            }),
+            (0x8, vx, _, 0xE) => Ok(SHL(vx as RegIndex)),
             (..) => Err(Exception::WrongOpCode(value)),
         }
     }
@@ -177,6 +189,18 @@ mod test {
         assert_eq!(
             Instruction::SUB { vx: 0, vy: 2 },
             Instruction::try_from(0x8025).unwrap()
+        );
+        assert_eq!(
+            Instruction::SHR(1),
+            Instruction::try_from(0x8126).unwrap()
+        );
+        assert_eq!(
+            Instruction::SUBN { vx: 4, vy: 6 },
+            Instruction::try_from(0x8467).unwrap()
+        );
+        assert_eq!(
+            Instruction::SHL(3),
+            Instruction::try_from(0x835E).unwrap()
         );
         assert_eq!(
             Exception::WrongOpCode(0xFFFF),
