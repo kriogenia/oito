@@ -9,12 +9,11 @@ You can find it over [bitacora](/bitacora), each chapter will also represent the
 **Hope you like it**.
 
 Current state:
-- [x] Architecture defined
-- [x] Initialization
-- [x] Working stack
-- [x] Working RAM
-- [x] Tick
-- [ ] Instructions declaration [30/35]
+- [x] Architecture definition
+- [x] Components initialization
+- [x] Basic components functionality
+- [x] Emulator cycle
+- [x] Instructions declaration [35/35]
 - [ ] Instructions execution [10/35]
 - [ ] Core interface
 - [ ] SDL2 rendering
