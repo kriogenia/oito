@@ -137,3 +137,14 @@ fn and() {
     assert_eq!(*oito.cpu.v(0), 0x5);
 }
 
+#[test]
+fn xor() {
+    let mut oito = OitoCore::default();
+	oito.cpu.load_to_v(0, 0b1010);
+	oito.cpu.load_to_v(1, 0b0111);
+
+    oito.execute(Instruction::XOR { x: 0, y: 1 })
+        .unwrap();
+    assert_eq!(*oito.cpu.v(0), 0b1101);
+}
+

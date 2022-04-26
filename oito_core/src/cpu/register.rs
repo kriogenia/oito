@@ -1,6 +1,6 @@
 use std::{
     fmt::{Debug, LowerHex},
-    ops::{AddAssign, BitOrAssign, BitAndAssign},
+    ops::{AddAssign, BitOrAssign, BitAndAssign, BitXorAssign},
 };
 
 use num_traits::WrappingAdd;
@@ -60,6 +60,12 @@ impl<T: BitAndAssign> BitAndAssign for Register<T> {
 impl<T: BitOrAssign> BitOrAssign for Register<T> {
 	fn bitor_assign(&mut self, rhs: Self) {
 		self.0 |= rhs.0
+	}
+}
+
+impl<T: BitXorAssign> BitXorAssign for Register<T> {
+	fn bitxor_assign(&mut self, rhs: Self) {
+		self.0 ^= rhs.0
 	}
 }
 	
@@ -135,6 +141,15 @@ mod test {
 		vy.load(0x9);
 		vx |= vy;
 		assert_eq!(vx, 0xB);
+	}
+
+	#[test]
+	fn bitxor_assign() {
+        let mut vx = Register(6u8);
+        let vy = Register(5u8);
+		
+		vx ^= vy;
+        assert_eq!(vx, 0x3);
 	}
 
 	#[test]
