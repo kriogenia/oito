@@ -37,8 +37,13 @@ impl Cpu {
     }
 
     /// Loads the value into the specified register
-    pub fn load_v(&mut self, index: RegIndex, value: Byte) {
+    pub fn load_to_v(&mut self, index: RegIndex, value: Byte) {
         self.vreg[index as usize].load(value);
+    }
+
+    /// Adds the value to the specified register
+    pub fn add_to_v(&mut self, index: RegIndex, value: Byte) {
+        self.vreg[index as usize] += value
     }
 }
 

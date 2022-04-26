@@ -85,7 +85,8 @@ impl OitoCore {
                     self.cpu.increase();
                 }
             }
-            LDbr { x, byte } => self.cpu.load_v(x, byte),
+            LDbr { x, byte } => self.cpu.load_to_v(x, byte),
+            ADDbr { x, byte } => self.cpu.add_to_v(x, byte),
             _ => unimplemented!("this instruction is yet to be implemented"),
         }
         Ok(())

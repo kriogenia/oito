@@ -61,10 +61,10 @@ pub enum Instruction {
         y: RegIndex,
         sprite: Sprite,
     },
-	/// Ex9E - Skip if the key matching Vx is pressed: `if key() == Vx`
-	SKP(RegIndex),
-	/// ExA1 - Skip if the key pressed don't match Vx: `if key != Vx`
-	SKNP(RegIndex),
+    /// Ex9E - Skip if the key matching Vx is pressed: `if key() == Vx`
+    SKP(RegIndex),
+    /// ExA1 - Skip if the key pressed don't match Vx: `if key != Vx`
+    SKNP(RegIndex),
 }
 
 impl TryFrom<OpCode> for Instruction {
@@ -143,8 +143,8 @@ impl TryFrom<OpCode> for Instruction {
                 y: vy as RegIndex,
                 sprite: sprite as Sprite,
             }),
-			(0xE, vx, 0x9, 0xE) => Ok(SKP(vx as RegIndex)),
-			(0xE, vx, 0xA, 0x1) => Ok(SKNP(vx as RegIndex)),
+            (0xE, vx, 0x9, 0xE) => Ok(SKP(vx as RegIndex)),
+            (0xE, vx, 0xA, 0x1) => Ok(SKNP(vx as RegIndex)),
             (..) => Err(Exception::WrongOpCode(value)),
         }
     }
@@ -256,14 +256,8 @@ mod test {
             },
             Instruction::try_from(0xD036).unwrap()
         );
-		assert_eq!(
-			Instruction::SKP(1),
-			Instruction::try_from(0xE19E).unwrap()
-		);
-		assert_eq!(
-			Instruction::SKNP(2),
-			Instruction::try_from(0xE2A1).unwrap()
-		);
+        assert_eq!(Instruction::SKP(1), Instruction::try_from(0xE19E).unwrap());
+        assert_eq!(Instruction::SKNP(2), Instruction::try_from(0xE2A1).unwrap());
         assert_eq!(
             Exception::WrongOpCode(0xFFFF),
             Instruction::try_from(0xFFFF).unwrap_err()
