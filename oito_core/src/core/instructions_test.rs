@@ -101,7 +101,17 @@ fn se_register() {
     oito.execute(Instruction::SErr { x: 0, y: 0 }).unwrap();
     assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc);
     // No Skip
-    oito.cpu.load_vx(1, 0x1);
+    oito.cpu.load_v(1, 0x1);
     oito.execute(Instruction::SErr { x: 0, y: 1 }).unwrap();
     assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc);
+}
+
+#[test]
+fn ld_byte_to_register() {
+    let x = 1;
+    let mut oito = OitoCore::default();
+    assert!(oito.cpu.v(x) == 0x0);
+
+    oito.execute(Instruction::LDbr { x, byte: 0x1 }).unwrap();
+    assert!(oito.cpu.v(x) == 0x1);
 }

@@ -6,6 +6,7 @@ const ADDRESS_MASK: u16 = 0x0FFF;
 /// Mask to convert a word into a single byte
 const BYTE_MASK: u16 = 0x00FF;
 
+#[allow(clippy::upper_case_acronyms)]
 #[derive(Debug, PartialEq)]
 pub enum Instruction {
     /// 00E0 - Clear screen: `cls`
@@ -133,11 +134,11 @@ impl TryFrom<OpCode> for Instruction {
                 x: vx as RegIndex,
                 byte: (value & BYTE_MASK) as Byte,
             }),
-			(0xD, vx, vy, sprite) => Ok(DRW { 
-				x: vx as RegIndex, 
-				y: vy as RegIndex, 
-				sprite: sprite as Sprite 
-			}),
+            (0xD, vx, vy, sprite) => Ok(DRW {
+                x: vx as RegIndex,
+                y: vy as RegIndex,
+                sprite: sprite as Sprite,
+            }),
             (..) => Err(Exception::WrongOpCode(value)),
         }
     }
@@ -241,10 +242,14 @@ mod test {
             Instruction::RND { x: 11, byte: 0xDF },
             Instruction::try_from(0xCBDF).unwrap()
         );
-		assert_eq!(
-			Instruction::DRW { x: 0, y: 3, sprite: 0x6 },
-			Instruction::try_from(0xD036).unwrap()
-		);
+        assert_eq!(
+            Instruction::DRW {
+                x: 0,
+                y: 3,
+                sprite: 0x6
+            },
+            Instruction::try_from(0xD036).unwrap()
+        );
         assert_eq!(
             Exception::WrongOpCode(0xFFFF),
             Instruction::try_from(0xFFFF).unwrap_err()
