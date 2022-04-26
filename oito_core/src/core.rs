@@ -75,6 +75,11 @@ impl OitoCore {
 					self.cpu.increase();
 				}
 			},
+			SNEb { vx, byte } => {
+				if self.cpu.register(vx) != byte {
+					self.cpu.increase();
+				}
+			},
             _ => unimplemented!("this instruction is yet to be implemented"),
         }
         Ok(())
