@@ -129,3 +129,16 @@ fn add_byte_to_register() {
         .unwrap();
     assert_eq!(*oito.cpu.v(0), 0xA);
 }
+
+#[test]
+fn or() {
+    let mut oito = OitoCore::default();
+	oito.cpu.load_to_v(1, 0x1);
+    assert_eq!(*oito.cpu.v(0), 0x0);
+    assert_eq!(*oito.cpu.v(1), 0x1);
+
+    oito.execute(Instruction::OR { x: 0, y: 1 })
+        .unwrap();
+    assert_eq!(*oito.cpu.v(0), 0x1);
+}
+

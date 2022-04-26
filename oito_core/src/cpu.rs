@@ -2,7 +2,7 @@ mod register;
 
 use register::{IRegister, VRegister};
 
-use crate::{Address, Byte, RegIndex};
+use crate::{Address, Byte, RegIndex, core::operations::BitOp};
 
 const INSTRUCTION_SIZE: u16 = 2;
 const NUMBER_OF_REGISTERS: usize = 16;
@@ -31,7 +31,7 @@ impl Cpu {
         self.pc = position;
     }
 
-    /// Returns the value stored in the specified register
+    /// Returns the specified register
     pub fn v(&self, index: RegIndex) -> &VRegister {
         &self.vreg[index as usize]
     }
@@ -45,6 +45,14 @@ impl Cpu {
     pub fn add_to_v(&mut self, index: RegIndex, value: Byte) {
         self.vreg[index as usize] += value
     }
+
+	/// Performs the specified bit operation with the registers
+	pub fn bit_op(&mut self, operation: BitOp) {
+		match operation {
+			BitOp::Or(x, y) => self.vreg[x as usize] |= self.vreg[y as usize],
+			_ => unimplemented!("BitOp not yet implemented"),
+		}
+	}
 }
 
 impl Default for Cpu {
@@ -59,6 +67,8 @@ impl Default for Cpu {
 
 #[cfg(test)]
 mod test {
+    use crate::core::operations::BitOp;
+
     use super::Cpu;
 
     #[test]
@@ -80,4 +90,16 @@ mod test {
         cpu.point_at(0x100);
         assert_eq!(0x100, cpu.pc);
     }
+
+	#[test]
+	fn bit_op() {
+		let mut cpu = Cpu::default();
+		cpu.load_to_v(0, 0x1);
+		cpu.load_to_v(1, 0x2);
+		assert_eq!(*cpu.v(0), 0x1);
+		
+		cpu.bit_op(BitOp::Or(0, 1));
+		assert_eq!(*cpu.v(0), 0x3);
+	}
+	
 }

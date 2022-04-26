@@ -1,3 +1,4 @@
+use crate::core::operations::BitOp;
 use crate::cpu::Cpu;
 use crate::exception::Exception;
 use crate::instruction::Instruction;
@@ -6,6 +7,8 @@ use crate::stack::Stack;
 use crate::timer::Timer;
 use crate::vram::VRam;
 use crate::{Address, OpCode};
+
+pub(crate) mod operations;
 
 /// Core of the emmulator
 pub struct OitoCore {
@@ -88,6 +91,7 @@ impl OitoCore {
             LDbr { x, byte } => self.cpu.load_to_v(x, byte),
             ADDbr { x, byte } => self.cpu.add_to_v(x, byte),
             LDrr { x, y } => self.cpu.load_to_v(x, self.cpu.v(y).get()),
+			OR { x, y } => self.cpu.bit_op(BitOp::Or(x, y)),
             _ => unimplemented!("this instruction is yet to be implemented"),
         }
         Ok(())
