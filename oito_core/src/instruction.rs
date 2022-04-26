@@ -8,44 +8,48 @@ const BYTE_MASK: u16 = 0x00FF;
 
 #[derive(Debug, PartialEq)]
 pub enum Instruction {
-    /// 00E0 - Clear screen
+    /// 00E0 - Clear screen: `cls`
     CLS,
-    /// 00EE - Return
+    /// 00EE - Return from subroutine: `return;`
     RET,
-    /// 0nnn - SYS jump
-    SYS(Address),
-    /// 1nnn - Jump to address
-    JP(Address),
-    /// 2nnn - Call subroutine at address
-    CALL(Address),
-    /// 3xkk - Skip next instruction if *Vx == kk
-    SEb { vx: RegIndex, byte: Byte },
-    /// 4xkk - Skip next instruction if *Vx != kk
-    SNEb { vx: RegIndex, byte: Byte },
-    /// 5xy0 - Skip next instruction if *Vx = *Vy
-    SEr { vx: RegIndex, vy: RegIndex },
-    /// 6xkk - Load doubleword value into Vx
-    LDb { vx: RegIndex, byte: Byte },
-    /// 7xkk - Add kk value into Vx
-    ADDb { vx: RegIndex, byte: Byte },
-    /// 8xy0 - Load Vy content into Vx
-    LDr { vx: RegIndex, vy: RegIndex },
-    /// 8xy1 - Vx = Vx OR Vy
-    OR { vx: RegIndex, vy: RegIndex },
-    /// 8xy2 - Vx = Vx AND Vy
-    AND { vx: RegIndex, vy: RegIndex },
-    /// 8xy3 - Vx = Vx XOR Vy
-    XOR { vx: RegIndex, vy: RegIndex },
-    /// 8xy4 - Add Vy content into Vx
-    ADDr { vx: RegIndex, vy: RegIndex },
-    /// 8xy5 - Substract Vy content from Vx content
-    SUB { vx: RegIndex, vy: RegIndex },
-	/// 8xy6 - Shift right
-	SHR(RegIndex),
-	/// 8xy7 - Substract register: *Vx = *Vy - *Vx
-	SUBN { vx: RegIndex, vy: RegIndex },
-	/// 8xyE - Shift left
-	SHL(RegIndex),
+    /// 0nnn - SYS jump to address. Legacy call.
+    SYS (Address),
+    /// 1nnn - Jump to address: `goto nnn`
+    JP (Address),
+    /// 2nnn - Call subroutine at address: `*(0xNNN)()`
+    CALL (Address),
+    /// 3xkk - Skip next instruction when register equals byte: `Vx == kk`
+    SErb { vx: RegIndex, byte: Byte },
+    /// 4xkk - Skip next instruction when register don't equals byte `Vx != kk`
+    SNErb { vx: RegIndex, byte: Byte },
+    /// 5xy0 - Skip next instruction when registers are equal. `Vx == Vy`
+    SErr { vx: RegIndex, vy: RegIndex },
+    /// 6xkk - Load byte into register `Vx = nn`
+    LDbr { vx: RegIndex, byte: Byte },
+    /// 7xkk - Add byte to register `Vx += kk`
+    ADDbr { vx: RegIndex, byte: Byte },
+    /// 8xy0 - Load register Vy into register Vx `Vx = Vy`
+    LDrr { vx: RegIndex, vy: RegIndex },
+    /// 8xy1 - Load into register Vx the result of Vx OR Vy `Vx |= Vy`
+    ORrr { vx: RegIndex, vy: RegIndex },
+    /// 8xy2 - Load into register Vx the result of Vx AND Vy `Vx &= Vy`
+    ANDrr { vx: RegIndex, vy: RegIndex },
+    /// 8xy3 - Load into register Vx the result of Vx XOR Vy `Vx ^= Vy`
+    XORrr { vx: RegIndex, vy: RegIndex },
+    /// 8xy4 - Add register Vy to register Vx `Vx += Vy`
+    ADDrr { vx: RegIndex, vy: RegIndex },
+    /// 8xy5 - Substract register Vy from register Vx `Vx -= Vy`
+    SUBrr { vx: RegIndex, vy: RegIndex },
+	/// 8xy6 - Shift right register `Vx >>= 1`
+	SHRr (RegIndex),
+	/// 8xy7 - Substract register Vx from register Vy and stores in Vx: `Vx = Vy - Vx`
+	SUBNrr { vx: RegIndex, vy: RegIndex },
+	/// 8xyE - Shift left register `Vx <<= 1
+	SHLr (RegIndex),
+	/// 9xy0 - Skip next instruction when registers are not equals `Vx != Vy`
+	SNEr { vx: RegIndex, vy: RegIndex },
+	/// Annn - Load address into I `I = nnn`
+	LDi(Address),
 }
 
 impl TryFrom<OpCode> for Instruction {
@@ -59,56 +63,61 @@ impl TryFrom<OpCode> for Instruction {
             (0x0, ..) => Ok(SYS(value & ADDRESS_MASK)),
             (0x1, ..) => Ok(JP(value & ADDRESS_MASK)),
             (0x2, ..) => Ok(CALL(value & ADDRESS_MASK)),
-            (0x3, vx, ..) => Ok(SEb {
+            (0x3, vx, ..) => Ok(SErb {
                 vx: vx as RegIndex,
                 byte: (value & BYTE_MASK) as Byte,
             }),
-            (0x4, vx, ..) => Ok(SNEb {
+            (0x4, vx, ..) => Ok(SNErb {
                 vx: vx as RegIndex,
                 byte: (value & BYTE_MASK) as Byte,
             }),
-            (0x5, vx, vy, 0x0) => Ok(SEr {
+            (0x5, vx, vy, 0x0) => Ok(SErr {
                 vx: vx as RegIndex,
                 vy: vy as RegIndex,
             }),
-            (0x6, vx, ..) => Ok(LDb {
+            (0x6, vx, ..) => Ok(LDbr {
                 vx: vx as RegIndex,
                 byte: (value & BYTE_MASK) as Byte,
             }),
-            (0x7, vx, ..) => Ok(ADDb {
+            (0x7, vx, ..) => Ok(ADDbr {
                 vx: vx as RegIndex,
                 byte: (value & BYTE_MASK) as Byte,
             }),
-            (0x8, vx, vy, 0x0) => Ok(LDr {
+            (0x8, vx, vy, 0x0) => Ok(LDrr {
                 vx: vx as RegIndex,
                 vy: vy as RegIndex,
             }),
-            (0x8, vx, vy, 0x1) => Ok(OR {
+            (0x8, vx, vy, 0x1) => Ok(ORrr {
                 vx: vx as RegIndex,
                 vy: vy as RegIndex,
             }),
-            (0x8, vx, vy, 0x2) => Ok(AND {
+            (0x8, vx, vy, 0x2) => Ok(ANDrr {
                 vx: vx as RegIndex,
                 vy: vy as RegIndex,
             }),
-            (0x8, vx, vy, 0x3) => Ok(XOR {
+            (0x8, vx, vy, 0x3) => Ok(XORrr {
                 vx: vx as RegIndex,
                 vy: vy as RegIndex,
             }),
-            (0x8, vx, vy, 0x4) => Ok(ADDr {
+            (0x8, vx, vy, 0x4) => Ok(ADDrr {
                 vx: vx as RegIndex,
                 vy: vy as RegIndex,
             }),
-            (0x8, vx, vy, 0x5) => Ok(SUB {
+            (0x8, vx, vy, 0x5) => Ok(SUBrr {
                 vx: vx as RegIndex,
                 vy: vy as RegIndex,
             }),
-            (0x8, vx, _, 0x6) => Ok(SHR(vx as RegIndex)),
-            (0x8, vx, vy, 0x7) => Ok(SUBN {
+            (0x8, vx, _, 0x6) => Ok(SHRr(vx as RegIndex)),
+            (0x8, vx, vy, 0x7) => Ok(SUBNrr {
                 vx: vx as RegIndex,
                 vy: vy as RegIndex,
             }),
-            (0x8, vx, _, 0xE) => Ok(SHL(vx as RegIndex)),
+            (0x8, vx, _, 0xE) => Ok(SHLr(vx as RegIndex)),
+            (0x9, vx, vy, 0x0) => Ok(SNEr {
+                vx: vx as RegIndex,
+                vy: vy as RegIndex,
+            }),
+			(0xA, ..) => Ok(LDi(value & ADDRESS_MASK)),
             (..) => Err(Exception::WrongOpCode(value)),
         }
     }
@@ -147,60 +156,68 @@ mod test {
             Instruction::try_from(0x2232).unwrap()
         );
         assert_eq!(
-            Instruction::SEb { vx: 0, byte: 0x12 },
+            Instruction::SErb { vx: 0, byte: 0x12 },
             Instruction::try_from(0x3012).unwrap()
         );
         assert_eq!(
-            Instruction::SNEb { vx: 1, byte: 0x34 },
+            Instruction::SNErb { vx: 1, byte: 0x34 },
             Instruction::try_from(0x4134).unwrap()
         );
         assert_eq!(
-            Instruction::SEr { vx: 2, vy: 3 },
+            Instruction::SErr { vx: 2, vy: 3 },
             Instruction::try_from(0x5230).unwrap()
         );
         assert_eq!(
-            Instruction::LDb { vx: 4, byte: 0x56 },
+            Instruction::LDbr { vx: 4, byte: 0x56 },
             Instruction::try_from(0x6456).unwrap()
         );
         assert_eq!(
-            Instruction::ADDb { vx: 5, byte: 0x67 },
+            Instruction::ADDbr { vx: 5, byte: 0x67 },
             Instruction::try_from(0x7567).unwrap()
         );
         assert_eq!(
-            Instruction::LDr { vx: 6, vy: 7 },
+            Instruction::LDrr { vx: 6, vy: 7 },
             Instruction::try_from(0x8670).unwrap()
         );
         assert_eq!(
-            Instruction::OR { vx: 8, vy: 9 },
+            Instruction::ORrr { vx: 8, vy: 9 },
             Instruction::try_from(0x8891).unwrap()
         );
         assert_eq!(
-            Instruction::AND { vx: 10, vy: 11 },
+            Instruction::ANDrr { vx: 10, vy: 11 },
             Instruction::try_from(0x8AB2).unwrap()
         );
         assert_eq!(
-            Instruction::XOR { vx: 12, vy: 13 },
+            Instruction::XORrr { vx: 12, vy: 13 },
             Instruction::try_from(0x8CD3).unwrap()
         );
         assert_eq!(
-            Instruction::ADDr { vx: 14, vy: 15 },
+            Instruction::ADDrr { vx: 14, vy: 15 },
             Instruction::try_from(0x8EF4).unwrap()
         );
         assert_eq!(
-            Instruction::SUB { vx: 0, vy: 2 },
+            Instruction::SUBrr { vx: 0, vy: 2 },
             Instruction::try_from(0x8025).unwrap()
         );
         assert_eq!(
-            Instruction::SHR(1),
+            Instruction::SHRr(1),
             Instruction::try_from(0x8126).unwrap()
         );
         assert_eq!(
-            Instruction::SUBN { vx: 4, vy: 6 },
+            Instruction::SUBNrr { vx: 4, vy: 6 },
             Instruction::try_from(0x8467).unwrap()
         );
         assert_eq!(
-            Instruction::SHL(3),
+            Instruction::SHLr(3),
             Instruction::try_from(0x835E).unwrap()
+        );
+        assert_eq!(
+            Instruction::SNEr { vx: 8, vy: 10 },
+            Instruction::try_from(0x98A0).unwrap()
+        );
+        assert_eq!(
+            Instruction::LDi(0x579),
+            Instruction::try_from(0xA579).unwrap()
         );
         assert_eq!(
             Exception::WrongOpCode(0xFFFF),

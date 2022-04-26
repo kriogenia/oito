@@ -70,12 +70,12 @@ impl OitoCore {
                 self.stack.push(self.cpu.pc)?;
                 self.cpu.point_at(address);
             },
-			SEb { vx, byte } => {
+			SErb { vx, byte } => {
 				if self.cpu.register(vx) == byte {
 					self.cpu.increase();
 				}
 			},
-			SNEb { vx, byte } => {
+			SNErb { vx, byte } => {
 				if self.cpu.register(vx) != byte {
 					self.cpu.increase();
 				}
