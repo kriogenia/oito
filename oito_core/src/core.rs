@@ -80,6 +80,11 @@ impl OitoCore {
 					self.cpu.increase();
 				}
 			},
+			SErr { vx, vy } => {
+				if self.cpu.register(vx) == self.cpu.register(vy) {
+					self.cpu.increase();
+				}
+			},
             _ => unimplemented!("this instruction is yet to be implemented"),
         }
         Ok(())

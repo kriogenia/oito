@@ -35,6 +35,12 @@ impl Cpu {
 	pub fn register(&self, index: RegIndex) -> Byte {
 		self.vreg[index as usize].get()
 	}
+
+	/// Loads the value into the specified register
+	pub fn load_vx(&mut self, index: RegIndex, value: Byte) {
+		self.vreg[index as usize].set(value);
+	}
+
 }
 
 impl Default for Cpu {

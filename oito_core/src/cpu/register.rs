@@ -13,9 +13,15 @@ impl<T> Register<T>
 where
     T: Copy,
 {
+	/// Returns the register content
     pub fn get(&self) -> T {
         self.0
     }
+
+	/// Sets the register content
+	pub fn set(&mut self, value: T) {
+		self.0 = value
+	}
 }
 
 impl Default for IRegister {

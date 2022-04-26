@@ -78,8 +78,7 @@ fn se_byte() {
 	assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc);
     // No Skip
 	oito.execute(Instruction::SErb { vx: 0, byte: 1 }).unwrap();
-	assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc);
-    
+	assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc); 
 }
 
 #[test]
@@ -91,6 +90,18 @@ fn sne() {
 	assert_eq!(Cpu::STARTING_ADDRESS, oito.cpu.pc);
     // skip
 	oito.execute(Instruction::SNErb { vx: 0, byte: 1 }).unwrap();
+	assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc);   
+}
+
+#[test]
+fn se_register() {
+	let mut oito = OitoCore::default();
+	assert_eq!(Cpu::STARTING_ADDRESS, oito.cpu.pc);
+	// Skip
+	oito.execute(Instruction::SErr { vx: 0, vy: 0 }).unwrap();
 	assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc);
-    
+    // No Skip
+	oito.cpu.load_vx(1, 0x1);
+	oito.execute(Instruction::SErr { vx: 0, vy: 1 }).unwrap();
+	assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc); 
 }
