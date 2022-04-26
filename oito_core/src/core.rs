@@ -69,22 +69,22 @@ impl OitoCore {
             CALL(address) => {
                 self.stack.push(self.cpu.pc)?;
                 self.cpu.point_at(address);
-            },
-			SErb { x, byte } => {
-				if self.cpu.v(x) == byte {
-					self.cpu.increase();
-				}
-			},
-			SNErb { x, byte } => {
-				if self.cpu.v(x) != byte {
-					self.cpu.increase();
-				}
-			},
-			SErr { x, y } => {
-				if self.cpu.v(x) == self.cpu.v(y) {
-					self.cpu.increase();
-				}
-			},
+            }
+            SErb { x, byte } => {
+                if self.cpu.v(x) == byte {
+                    self.cpu.increase();
+                }
+            }
+            SNErb { x, byte } => {
+                if self.cpu.v(x) != byte {
+                    self.cpu.increase();
+                }
+            }
+            SErr { x, y } => {
+                if self.cpu.v(x) == self.cpu.v(y) {
+                    self.cpu.increase();
+                }
+            }
             _ => unimplemented!("this instruction is yet to be implemented"),
         }
         Ok(())
@@ -115,9 +115,9 @@ mod api_test {
     #[test]
     fn tick() {
         let mut oito = OitoCore::default();
-		// Next instruction - SE V0 == 1 -> don't skip		// TODO use different and testable instruction
-		oito.ram.set(Cpu::STARTING_ADDRESS, 0x30);
-		oito.ram.set(Cpu::STARTING_ADDRESS + 1, 0x01);
+        // Next instruction - SE V0 == 1 -> don't skip		// TODO use different and testable instruction
+        oito.ram.set(Cpu::STARTING_ADDRESS, 0x30);
+        oito.ram.set(Cpu::STARTING_ADDRESS + 1, 0x01);
 
         oito.tick().unwrap();
         assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc);

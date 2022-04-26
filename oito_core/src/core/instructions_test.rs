@@ -71,37 +71,37 @@ fn call_and_ret() {
 
 #[test]
 fn se_byte() {
-	let mut oito = OitoCore::default();
-	assert_eq!(Cpu::STARTING_ADDRESS, oito.cpu.pc);
-	// Skip
-	oito.execute(Instruction::SErb { x: 0, byte: 0 }).unwrap();
-	assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc);
+    let mut oito = OitoCore::default();
+    assert_eq!(Cpu::STARTING_ADDRESS, oito.cpu.pc);
+    // Skip
+    oito.execute(Instruction::SErb { x: 0, byte: 0 }).unwrap();
+    assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc);
     // No Skip
-	oito.execute(Instruction::SErb { x: 0, byte: 1 }).unwrap();
-	assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc); 
+    oito.execute(Instruction::SErb { x: 0, byte: 1 }).unwrap();
+    assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc);
 }
 
 #[test]
 fn sne() {
-	let mut oito = OitoCore::default();
-	assert_eq!(Cpu::STARTING_ADDRESS, oito.cpu.pc);
-	// No Skip
-	oito.execute(Instruction::SNErb { x: 0, byte: 0 }).unwrap();
-	assert_eq!(Cpu::STARTING_ADDRESS, oito.cpu.pc);
+    let mut oito = OitoCore::default();
+    assert_eq!(Cpu::STARTING_ADDRESS, oito.cpu.pc);
+    // No Skip
+    oito.execute(Instruction::SNErb { x: 0, byte: 0 }).unwrap();
+    assert_eq!(Cpu::STARTING_ADDRESS, oito.cpu.pc);
     // skip
-	oito.execute(Instruction::SNErb { x: 0, byte: 1 }).unwrap();
-	assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc);   
+    oito.execute(Instruction::SNErb { x: 0, byte: 1 }).unwrap();
+    assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc);
 }
 
 #[test]
 fn se_register() {
-	let mut oito = OitoCore::default();
-	assert_eq!(Cpu::STARTING_ADDRESS, oito.cpu.pc);
-	// Skip
-	oito.execute(Instruction::SErr { x: 0, y: 0 }).unwrap();
-	assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc);
+    let mut oito = OitoCore::default();
+    assert_eq!(Cpu::STARTING_ADDRESS, oito.cpu.pc);
+    // Skip
+    oito.execute(Instruction::SErr { x: 0, y: 0 }).unwrap();
+    assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc);
     // No Skip
-	oito.cpu.load_vx(1, 0x1);
-	oito.execute(Instruction::SErr { x: 0, y: 1 }).unwrap();
-	assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc); 
+    oito.cpu.load_vx(1, 0x1);
+    oito.execute(Instruction::SErr { x: 0, y: 1 }).unwrap();
+    assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc);
 }

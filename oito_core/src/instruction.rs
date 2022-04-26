@@ -1,5 +1,5 @@
 use crate::exception::Exception;
-use crate::{Address, Byte, OpCode, RegIndex};
+use crate::{Address, Byte, OpCode, RegIndex, Sprite};
 
 /// Mask to convert a word into 12-byte address
 const ADDRESS_MASK: u16 = 0x0FFF;
@@ -13,11 +13,11 @@ pub enum Instruction {
     /// 00EE - Return from subroutine: `return;`
     RET,
     /// 0nnn - SYS jump to address. Legacy call.
-    SYS (Address),
+    SYS(Address),
     /// 1nnn - Jump to address: `goto nnn`
-    JP (Address),
+    JP(Address),
     /// 2nnn - Call subroutine at address: `*(0xNNN)()`
-    CALL (Address),
+    CALL(Address),
     /// 3xkk - Skip next instruction when register equals byte: `Vx == kk`
     SErb { x: RegIndex, byte: Byte },
     /// 4xkk - Skip next instruction when register don't equals byte `Vx != kk`
@@ -40,16 +40,26 @@ pub enum Instruction {
     ADDrr { x: RegIndex, y: RegIndex },
     /// 8xy5 - Substract register Vy from register Vx `Vx -= Vy`
     SUBrr { x: RegIndex, y: RegIndex },
-	/// 8xy6 - Shift right register `Vx >>= 1`
-	SHRr (RegIndex),
-	/// 8xy7 - Substract register Vx from register Vy and stores in Vx: `Vx = Vy - Vx`
-	SUBNrr { x: RegIndex, y: RegIndex },
-	/// 8xyE - Shift left register `Vx <<= 1
-	SHLr (RegIndex),
-	/// 9xy0 - Skip next instruction when registers are not equals `Vx != Vy`
-	SNEr { x: RegIndex, y: RegIndex },
-	/// Annn - Load address into I `I = nnn`
-	LDi(Address),
+    /// 8xy6 - Shift right register `Vx >>= 1`
+    SHRr(RegIndex),
+    /// 8xy7 - Substract register Vx from register Vy and stores in Vx: `Vx = Vy - Vx`
+    SUBNrr { x: RegIndex, y: RegIndex },
+    /// 8xyE - Shift left register `Vx <<= 1
+    SHLr(RegIndex),
+    /// 9xy0 - Skip next instruction when registers are not equals: `Vx != Vy`
+    SNEr { x: RegIndex, y: RegIndex },
+    /// Annn - Load address into I `I = nnn`
+    LDi(Address),
+    /// Bnnn - Jump to the address + V0: `PC = V0 + nnn`
+    JPr(Address),
+    /// Cxnn - Load random byte AND nn into Vx: `Vx = rand() & nn`
+    RND { x: RegIndex, byte: Byte },
+    /// Dxyn - Display n-byte sprite starting at memory location I at (Vx, Vy) = `draw(Vx, Vy, N)`
+    DRW {
+        x: RegIndex,
+        y: RegIndex,
+        sprite: Sprite,
+    },
 }
 
 impl TryFrom<OpCode> for Instruction {
@@ -117,7 +127,17 @@ impl TryFrom<OpCode> for Instruction {
                 x: vx as RegIndex,
                 y: vy as RegIndex,
             }),
-			(0xA, ..) => Ok(LDi(value & ADDRESS_MASK)),
+            (0xA, ..) => Ok(LDi(value & ADDRESS_MASK)),
+            (0xB, ..) => Ok(JPr(value & ADDRESS_MASK)),
+            (0xC, vx, ..) => Ok(RND {
+                x: vx as RegIndex,
+                byte: (value & BYTE_MASK) as Byte,
+            }),
+			(0xD, vx, vy, sprite) => Ok(DRW { 
+				x: vx as RegIndex, 
+				y: vy as RegIndex, 
+				sprite: sprite as Sprite 
+			}),
             (..) => Err(Exception::WrongOpCode(value)),
         }
     }
@@ -199,18 +219,12 @@ mod test {
             Instruction::SUBrr { x: 0, y: 2 },
             Instruction::try_from(0x8025).unwrap()
         );
-        assert_eq!(
-            Instruction::SHRr(1),
-            Instruction::try_from(0x8126).unwrap()
-        );
+        assert_eq!(Instruction::SHRr(1), Instruction::try_from(0x8126).unwrap());
         assert_eq!(
             Instruction::SUBNrr { x: 4, y: 6 },
             Instruction::try_from(0x8467).unwrap()
         );
-        assert_eq!(
-            Instruction::SHLr(3),
-            Instruction::try_from(0x835E).unwrap()
-        );
+        assert_eq!(Instruction::SHLr(3), Instruction::try_from(0x835E).unwrap());
         assert_eq!(
             Instruction::SNEr { x: 8, y: 10 },
             Instruction::try_from(0x98A0).unwrap()
@@ -219,6 +233,18 @@ mod test {
             Instruction::LDi(0x579),
             Instruction::try_from(0xA579).unwrap()
         );
+        assert_eq!(
+            Instruction::JPr(0xCE0),
+            Instruction::try_from(0xBCE0).unwrap()
+        );
+        assert_eq!(
+            Instruction::RND { x: 11, byte: 0xDF },
+            Instruction::try_from(0xCBDF).unwrap()
+        );
+		assert_eq!(
+			Instruction::DRW { x: 0, y: 3, sprite: 0x6 },
+			Instruction::try_from(0xD036).unwrap()
+		);
         assert_eq!(
             Exception::WrongOpCode(0xFFFF),
             Instruction::try_from(0xFFFF).unwrap_err()

@@ -2,7 +2,7 @@ mod register;
 
 use register::{IRegister, VRegister};
 
-use crate::{Address, RegIndex, Byte};
+use crate::{Address, Byte, RegIndex};
 
 const INSTRUCTION_SIZE: u16 = 2;
 const NUMBER_OF_REGISTERS: usize = 16;
@@ -31,16 +31,15 @@ impl Cpu {
         self.pc = position;
     }
 
-	/// Returns the value stored in the specified register
-	pub fn v(&self, index: RegIndex) -> &VRegister {
-		&self.vreg[index as usize]
-	}
+    /// Returns the value stored in the specified register
+    pub fn v(&self, index: RegIndex) -> &VRegister {
+        &self.vreg[index as usize]
+    }
 
-	/// Loads the value into the specified register
-	pub fn load_vx(&mut self, index: RegIndex, value: Byte) {
-		self.vreg[index as usize].load(value);
-	}
-
+    /// Loads the value into the specified register
+    pub fn load_vx(&mut self, index: RegIndex, value: Byte) {
+        self.vreg[index as usize].load(value);
+    }
 }
 
 impl Default for Cpu {
