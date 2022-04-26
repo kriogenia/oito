@@ -10,7 +10,8 @@ This are the functions that I want working before moving to the next phase:
 * `RAM`
   * `read`, to return the value stored in the given address.
 * `Register`
-  * `get` to return the stored content.
+  * `load` to modify the byte stored by the register.
+  * `eq from PartialEq` to ease the comparison between registers. 
 * `Stack`
   * `push`, to add a new value at top of the stack.
   * `pop`, to return to the top most value of the stack.

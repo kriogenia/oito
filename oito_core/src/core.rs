@@ -70,18 +70,18 @@ impl OitoCore {
                 self.stack.push(self.cpu.pc)?;
                 self.cpu.point_at(address);
             },
-			SErb { vx, byte } => {
-				if self.cpu.register(vx) == byte {
+			SErb { x, byte } => {
+				if self.cpu.v(x) == byte {
 					self.cpu.increase();
 				}
 			},
-			SNErb { vx, byte } => {
-				if self.cpu.register(vx) != byte {
+			SNErb { x, byte } => {
+				if self.cpu.v(x) != byte {
 					self.cpu.increase();
 				}
 			},
-			SErr { vx, vy } => {
-				if self.cpu.register(vx) == self.cpu.register(vy) {
+			SErr { x, y } => {
+				if self.cpu.v(x) == self.cpu.v(y) {
 					self.cpu.increase();
 				}
 			},

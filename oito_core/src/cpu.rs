@@ -32,13 +32,13 @@ impl Cpu {
     }
 
 	/// Returns the value stored in the specified register
-	pub fn register(&self, index: RegIndex) -> Byte {
-		self.vreg[index as usize].get()
+	pub fn v(&self, index: RegIndex) -> &VRegister {
+		&self.vreg[index as usize]
 	}
 
 	/// Loads the value into the specified register
 	pub fn load_vx(&mut self, index: RegIndex, value: Byte) {
-		self.vreg[index as usize].set(value);
+		self.vreg[index as usize].load(value);
 	}
 
 }
