@@ -110,8 +110,8 @@ fn se_register() {
 fn ld_byte_to_register() {
     let x = 1;
     let mut oito = OitoCore::default();
-    assert!(oito.cpu.v(x) == 0x0);
+    assert!(*oito.cpu.v(x) == 0x0);
 
     oito.execute(Instruction::LDbr { x, byte: 0x1 }).unwrap();
-    assert!(oito.cpu.v(x) == 0x1);
+    assert!(*oito.cpu.v(x) == 0x1);
 }

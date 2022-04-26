@@ -7,6 +7,7 @@ pub type IRegister = Register<Address>;
 pub type VRegister = Register<Byte>;
 
 /// Representation of one of the CPU's Registers
+#[derive(PartialEq, Eq)]
 pub struct Register<T>(T);
 
 impl<T> Register<T>
@@ -33,15 +34,12 @@ impl Default for VRegister {
     }
 }
 
-impl PartialEq<Byte> for &VRegister {
-    fn eq(&self, other: &Byte) -> bool {
+impl<T> PartialEq<T> for Register<T>
+where
+	T: PartialEq
+{
+    fn eq(&self, other: &T) -> bool {
         self.0 == *other
-    }
-}
-
-impl<T: PartialEq> PartialEq<&Register<T>> for &Register<T> {
-    fn eq(&self, other: &&Register<T>) -> bool {
-        self.0 == other.0
     }
 }
 
@@ -62,8 +60,8 @@ mod test {
     #[test]
     fn eq_byte() {
         let reg = VRegister::default();
-        assert!(&reg == 0x0);
-        assert!(&reg != 0x1);
+        assert!(reg == 0x0);
+        assert!(reg != 0x1);
     }
 
     #[test]

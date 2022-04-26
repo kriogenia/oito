@@ -71,12 +71,12 @@ impl OitoCore {
                 self.cpu.point_at(address);
             }
             SErb { x, byte } => {
-                if self.cpu.v(x) == byte {
+                if *self.cpu.v(x) == byte {
                     self.cpu.increase();
                 }
             }
             SNErb { x, byte } => {
-                if self.cpu.v(x) != byte {
+                if *self.cpu.v(x) != byte {
                     self.cpu.increase();
                 }
             }
