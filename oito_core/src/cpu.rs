@@ -50,6 +50,7 @@ impl Cpu {
 	pub fn bit_op(&mut self, operation: BitOp) {
 		match operation {
 			BitOp::Or(x, y) => self.vreg[x as usize] |= self.vreg[y as usize],
+			BitOp::And(x, y) => self.vreg[x as usize] &= self.vreg[y as usize],
 			_ => unimplemented!("BitOp not yet implemented"),
 		}
 	}
@@ -95,11 +96,17 @@ mod test {
 	fn bit_op() {
 		let mut cpu = Cpu::default();
 		cpu.load_to_v(0, 0x1);
-		cpu.load_to_v(1, 0x2);
-		assert_eq!(*cpu.v(0), 0x1);
+		cpu.load_to_v(1, 0x6);
+		cpu.load_to_v(2, 0x3);
+		cpu.load_to_v(3, 0x3);
+		cpu.load_to_v(4, 0x3);
+		cpu.load_to_v(5, 0xB);
 		
-		cpu.bit_op(BitOp::Or(0, 1));
-		assert_eq!(*cpu.v(0), 0x3);
+		cpu.bit_op(BitOp::Or(0, 5));
+		assert_eq!(*cpu.v(0), 0xB);
+
+		cpu.bit_op(BitOp::And(1, 5));
+		assert_eq!(*cpu.v(1), 0x2);
 	}
 	
 }

@@ -92,6 +92,7 @@ impl OitoCore {
             ADDbr { x, byte } => self.cpu.add_to_v(x, byte),
             LDrr { x, y } => self.cpu.load_to_v(x, self.cpu.v(y).get()),
 			OR { x, y } => self.cpu.bit_op(BitOp::Or(x, y)),
+			AND { x, y } => self.cpu.bit_op(BitOp::And(x, y)),
             _ => unimplemented!("this instruction is yet to be implemented"),
         }
         Ok(())
