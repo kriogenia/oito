@@ -32,21 +32,21 @@ pub enum Instruction {
     /// 8xy0 - Load register Vy into register Vx `Vx = Vy`
     LDrr { x: RegIndex, y: RegIndex },
     /// 8xy1 - Load into register Vx the result of Vx OR Vy `Vx |= Vy`
-    ORrr { x: RegIndex, y: RegIndex },
+    OR { x: RegIndex, y: RegIndex },
     /// 8xy2 - Load into register Vx the result of Vx AND Vy `Vx &= Vy`
-    ANDrr { x: RegIndex, y: RegIndex },
+    AND { x: RegIndex, y: RegIndex },
     /// 8xy3 - Load into register Vx the result of Vx XOR Vy `Vx ^= Vy`
-    XORrr { x: RegIndex, y: RegIndex },
+    XOR { x: RegIndex, y: RegIndex },
     /// 8xy4 - Add register Vy to register Vx `Vx += Vy`
     ADDrr { x: RegIndex, y: RegIndex },
     /// 8xy5 - Substract register Vy from register Vx `Vx -= Vy`
-    SUBrr { x: RegIndex, y: RegIndex },
+    SUB { x: RegIndex, y: RegIndex },
     /// 8xy6 - Shift right register `Vx >>= 1`
-    SHRr(RegIndex),
+    SHR(RegIndex),
     /// 8xy7 - Substract register Vx from register Vy and stores in Vx: `Vx = Vy - Vx`
-    SUBNrr { x: RegIndex, y: RegIndex },
+    SUBN { x: RegIndex, y: RegIndex },
     /// 8xyE - Shift left register `Vx <<= 1
-    SHLr(RegIndex),
+    SHL(RegIndex),
     /// 9xy0 - Skip next instruction when registers are not equals: `Vx != Vy`
     SNEr { x: RegIndex, y: RegIndex },
     /// Annn - Load address into I `I = nnn`
@@ -63,8 +63,16 @@ pub enum Instruction {
     },
     /// Ex9E - Skip if the key matching Vx is pressed: `if key() == Vx`
     SKP(RegIndex),
-    /// ExA1 - Skip if the key pressed don't match Vx: `if key != Vx`
+    /// ExA1 - Skip if the key pressed don't match Vx: `if key() != Vx`
     SKNP(RegIndex),
+	///	Fx07 - Load delay timer count into Vx: `Vx = dt` 
+	LDdr(RegIndex),
+	/// Fx0A - Wait for key press and load its value into Vx: `Vx = key()`
+	LDkr(RegIndex),
+	/// Fx15 - Set delay timer with Vx: `dt = Vx`
+	LDrd(RegIndex),
+	/// Fx18 - Set sound time with Vx: `st = Vx`
+	LDrs(RegIndex),
 }
 
 impl TryFrom<OpCode> for Instruction {
@@ -102,15 +110,15 @@ impl TryFrom<OpCode> for Instruction {
                 x: vx as RegIndex,
                 y: vy as RegIndex,
             }),
-            (0x8, vx, vy, 0x1) => Ok(ORrr {
+            (0x8, vx, vy, 0x1) => Ok(OR {
                 x: vx as RegIndex,
                 y: vy as RegIndex,
             }),
-            (0x8, vx, vy, 0x2) => Ok(ANDrr {
+            (0x8, vx, vy, 0x2) => Ok(AND {
                 x: vx as RegIndex,
                 y: vy as RegIndex,
             }),
-            (0x8, vx, vy, 0x3) => Ok(XORrr {
+            (0x8, vx, vy, 0x3) => Ok(XOR {
                 x: vx as RegIndex,
                 y: vy as RegIndex,
             }),
@@ -118,16 +126,16 @@ impl TryFrom<OpCode> for Instruction {
                 x: vx as RegIndex,
                 y: vy as RegIndex,
             }),
-            (0x8, vx, vy, 0x5) => Ok(SUBrr {
+            (0x8, vx, vy, 0x5) => Ok(SUB {
                 x: vx as RegIndex,
                 y: vy as RegIndex,
             }),
-            (0x8, vx, _, 0x6) => Ok(SHRr(vx as RegIndex)),
-            (0x8, vx, vy, 0x7) => Ok(SUBNrr {
+            (0x8, vx, _, 0x6) => Ok(SHR(vx as RegIndex)),
+            (0x8, vx, vy, 0x7) => Ok(SUBN {
                 x: vx as RegIndex,
                 y: vy as RegIndex,
             }),
-            (0x8, vx, _, 0xE) => Ok(SHLr(vx as RegIndex)),
+            (0x8, vx, _, 0xE) => Ok(SHL(vx as RegIndex)),
             (0x9, vx, vy, 0x0) => Ok(SNEr {
                 x: vx as RegIndex,
                 y: vy as RegIndex,
@@ -145,6 +153,10 @@ impl TryFrom<OpCode> for Instruction {
             }),
             (0xE, vx, 0x9, 0xE) => Ok(SKP(vx as RegIndex)),
             (0xE, vx, 0xA, 0x1) => Ok(SKNP(vx as RegIndex)),
+            (0xF, vx, 0x0, 0x7) => Ok(LDdr(vx as RegIndex)),
+            (0xF, vx, 0x0, 0xA) => Ok(LDkr(vx as RegIndex)),
+            (0xF, vx, 0x1, 0x5) => Ok(LDrd(vx as RegIndex)),
+            (0xF, vx, 0x1, 0x8) => Ok(LDrs(vx as RegIndex)),
             (..) => Err(Exception::WrongOpCode(value)),
         }
     }
@@ -207,15 +219,15 @@ mod test {
             Instruction::try_from(0x8670).unwrap()
         );
         assert_eq!(
-            Instruction::ORrr { x: 8, y: 9 },
+            Instruction::OR { x: 8, y: 9 },
             Instruction::try_from(0x8891).unwrap()
         );
         assert_eq!(
-            Instruction::ANDrr { x: 10, y: 11 },
+            Instruction::AND { x: 10, y: 11 },
             Instruction::try_from(0x8AB2).unwrap()
         );
         assert_eq!(
-            Instruction::XORrr { x: 12, y: 13 },
+            Instruction::XOR { x: 12, y: 13 },
             Instruction::try_from(0x8CD3).unwrap()
         );
         assert_eq!(
@@ -223,15 +235,15 @@ mod test {
             Instruction::try_from(0x8EF4).unwrap()
         );
         assert_eq!(
-            Instruction::SUBrr { x: 0, y: 2 },
+            Instruction::SUB { x: 0, y: 2 },
             Instruction::try_from(0x8025).unwrap()
         );
-        assert_eq!(Instruction::SHRr(1), Instruction::try_from(0x8126).unwrap());
+        assert_eq!(Instruction::SHR(1), Instruction::try_from(0x8126).unwrap());
         assert_eq!(
-            Instruction::SUBNrr { x: 4, y: 6 },
+            Instruction::SUBN { x: 4, y: 6 },
             Instruction::try_from(0x8467).unwrap()
         );
-        assert_eq!(Instruction::SHLr(3), Instruction::try_from(0x835E).unwrap());
+        assert_eq!(Instruction::SHL(3), Instruction::try_from(0x835E).unwrap());
         assert_eq!(
             Instruction::SNEr { x: 8, y: 10 },
             Instruction::try_from(0x98A0).unwrap()
@@ -258,6 +270,10 @@ mod test {
         );
         assert_eq!(Instruction::SKP(1), Instruction::try_from(0xE19E).unwrap());
         assert_eq!(Instruction::SKNP(2), Instruction::try_from(0xE2A1).unwrap());
+        assert_eq!(Instruction::LDdr(6), Instruction::try_from(0xF607).unwrap());
+        assert_eq!(Instruction::LDkr(4), Instruction::try_from(0xF40A).unwrap());
+        assert_eq!(Instruction::LDrd(5), Instruction::try_from(0xF515).unwrap());
+        assert_eq!(Instruction::LDrs(7), Instruction::try_from(0xF718).unwrap());
         assert_eq!(
             Exception::WrongOpCode(0xFFFF),
             Instruction::try_from(0xFFFF).unwrap_err()
