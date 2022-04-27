@@ -38,6 +38,18 @@ impl Cpu {
         self.pc = position;
     }
 
+	/// Raises a flag in the VF register
+	#[inline]
+	pub fn raise_flag(&mut self) {
+		self.vf.load(FLAG_CARRY);
+	}
+
+	/// Lowers the flag in the VF register
+	#[inline]
+	pub fn low_flag(&mut self) {
+		self.vf.load(NO_FLAG);
+	}
+
     /// Returns the specified register. Will panic if the register doesn't exists.
     #[inline]
     pub fn v(&self, index: RegIndex) -> &VRegister {
@@ -65,11 +77,11 @@ impl Cpu {
     pub fn checked_add_to_v(&mut self, index: RegIndex, value: Byte) {
         match self.vreg[index as usize].get().checked_add(value) {
             Some(result) => {
-                self.vf.load(NO_FLAG);
+                self.low_flag();
                 self.load_to_v(index, result);
             }
             None => {
-                self.vf.load(FLAG_CARRY);
+                self.raise_flag();
                 self.add_to_v(index, value)
             }
         }
@@ -82,9 +94,9 @@ impl Cpu {
     /// To perform an addition without check refer to [add_to_v]
     pub fn checked_sub_to_v(&mut self, index: RegIndex, value: Byte) {
         if self.v(index).get() > value {
-            self.vf.load(FLAG_CARRY);
+            self.raise_flag();
         } else {
-            self.vf.load(NO_FLAG);
+            self.low_flag();
         }
         self.vreg[index as usize] -= value;
     }
@@ -146,6 +158,23 @@ mod test {
 
         assert_eq!(cpu.v(0).get(), 10);
     }
+
+	#[test]
+	fn raise_flag() {
+		let mut cpu = Cpu::default();
+
+		cpu.raise_flag();
+		assert_eq!(cpu.vf, FLAG_CARRY);
+	}
+
+	#[test]
+	fn low_flag() {
+		let mut cpu = Cpu::default();
+		cpu.vf.load(12);
+
+		cpu.low_flag();
+		assert_eq!(cpu.vf, NO_FLAG);
+	}
 
     #[test]
     fn load_to_v() {
