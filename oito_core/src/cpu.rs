@@ -46,12 +46,17 @@ impl Cpu {
         self.vreg[index as usize].load(value);
     }
 
-    /// Adds the value to the specified register
+    /// Adds the value to the specified register.
+	/// In doesn't check overflows, to make an addition with overflow check refer to [checked_add_to_v]
     pub fn add_to_v(&mut self, index: RegIndex, value: Byte) {
         self.vreg[index as usize] += value
     }
 
-	/// Performs a checked sum between to registers
+	/// Performs a checked addition of the value into the specified register.
+	/// In case of overflow the flag register (VF) will be set to 1.
+	/// If the addition doesn't overflow the VF will be set to 0.
+	/// 
+	/// To perform an addition without check refer to [add_to_v]
 	pub fn checked_add_to_v(&mut self, index: RegIndex, value: Byte) {
 		match self.vreg[index as usize].get().checked_add(value) {
 			Some(result) => {
@@ -110,6 +115,35 @@ mod test {
         cpu.point_at(0x100);
         assert_eq!(0x100, cpu.pc);
     }
+
+	#[test]
+	fn v() {
+		let mut cpu = Cpu::default();
+		cpu.vreg[0].load(10);
+		
+		assert_eq!(cpu.v(0).get(), 10);
+	}
+	
+	#[test]
+	fn load_to_v() {
+		let mut cpu = Cpu::default();
+		
+		cpu.load_to_v(0, 100);
+		assert_eq!(cpu.v(0).get(), 100);
+	}
+
+	#[test]
+	fn add_to_v() {
+		let mut cpu = Cpu::default();
+
+		cpu.add_to_v(0, Byte::MAX);
+		assert_eq!(*cpu.v(0), Byte::MAX);
+		assert_eq!(cpu.vf, NO_FLAG);
+		
+		cpu.add_to_v(0, 1);
+		assert_eq!(*cpu.v(0), 0);
+		assert_eq!(cpu.vf, NO_FLAG);
+	}
 
 	#[test]
 	fn checked_add_to_v() {
