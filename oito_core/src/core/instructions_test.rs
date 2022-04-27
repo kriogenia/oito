@@ -119,42 +119,51 @@ fn add_byte_to_register() {
 #[test]
 fn or() {
     let mut oito = OitoCore::default();
-	oito.cpu.load_to_v(1, 0x1);
+    oito.cpu.load_to_v(1, 0x1);
 
-    oito.execute(Instruction::OR { x: 0, y: 1 })
-        .unwrap();
+    oito.execute(Instruction::OR { x: 0, y: 1 }).unwrap();
     assert_eq!(*oito.cpu.v(0), 0x1);
 }
 
 #[test]
 fn and() {
     let mut oito = OitoCore::default();
-	oito.cpu.load_to_v(0, 0x7);
-	oito.cpu.load_to_v(1, 0xD);
+    oito.cpu.load_to_v(0, 0x7);
+    oito.cpu.load_to_v(1, 0xD);
 
-    oito.execute(Instruction::AND { x: 0, y: 1 })
-        .unwrap();
+    oito.execute(Instruction::AND { x: 0, y: 1 }).unwrap();
     assert_eq!(*oito.cpu.v(0), 0x5);
 }
 
 #[test]
 fn xor() {
     let mut oito = OitoCore::default();
-	oito.cpu.load_to_v(0, 0b1010);
-	oito.cpu.load_to_v(1, 0b0111);
+    oito.cpu.load_to_v(0, 0b1010);
+    oito.cpu.load_to_v(1, 0b0111);
 
-    oito.execute(Instruction::XOR { x: 0, y: 1 })
-        .unwrap();
+    oito.execute(Instruction::XOR { x: 0, y: 1 }).unwrap();
     assert_eq!(*oito.cpu.v(0), 0b1101);
 }
 
 #[test]
 fn add_register_to_register() {
-	let mut oito = OitoCore::default();
-	oito.cpu.load_to_v(0, Byte::MAX);
-	oito.cpu.load_to_v(1, 1);
+    let mut oito = OitoCore::default();
+    oito.cpu.load_to_v(0, Byte::MAX);
+    oito.cpu.load_to_v(1, 1);
 
-	oito.execute(Instruction::ADDrr { x: 0, y: 1 }).unwrap();
-	assert_eq!(*oito.cpu.v(0), 0);
-	assert_eq!(oito.cpu.vf, 1);
+    oito.execute(Instruction::ADDrr { x: 0, y: 1 }).unwrap();
+    assert_eq!(*oito.cpu.v(0), 0);
+    assert_eq!(oito.cpu.vf, 1);
+}
+
+
+#[test]
+fn sub() {
+    let mut oito = OitoCore::default();
+    oito.cpu.load_to_v(0, 1);
+    oito.cpu.load_to_v(1, 2);
+
+    oito.execute(Instruction::SUB { x: 0, y: 1 }).unwrap();
+    assert_eq!(*oito.cpu.v(0), Byte::MAX);
+    assert_eq!(oito.cpu.vf, 0);
 }

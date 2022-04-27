@@ -73,16 +73,17 @@ pub enum Instruction {
     LDrd(RegIndex),
     /// Fx18 - Set sound time with Vx: `st = Vx`
     LDrs(RegIndex),
-	/// Fx1E - Add Vx to I: `I += Vx`
-	ADDri(RegIndex),
-	/// Fx29 - Load sprite loaded at Vx memory location into I: `I = sprite_addr[Vx]`
-	LDri(RegIndex),
-	/// Fx33 - Store BCD representation of Vx in memory locations I, I+1, and I+2
-	LDrm(RegIndex),
-	/// Fx55 - Store registers [V0, Vx] in memory starting at I: `reg_dump(Vx, &I)`
-	LDvm(RegIndex),
-	/// Fx65 - Read registers [V0, Vx] from memory starting at I: `reg_load(Vx, &I)`
-	LDmv(RegIndex),}
+    /// Fx1E - Add Vx to I: `I += Vx`
+    ADDri(RegIndex),
+    /// Fx29 - Load sprite loaded at Vx memory location into I: `I = sprite_addr[Vx]`
+    LDri(RegIndex),
+    /// Fx33 - Store BCD representation of Vx in memory locations I, I+1, and I+2
+    LDrm(RegIndex),
+    /// Fx55 - Store registers [V0, Vx] in memory starting at I: `reg_dump(Vx, &I)`
+    LDvm(RegIndex),
+    /// Fx65 - Read registers [V0, Vx] from memory starting at I: `reg_load(Vx, &I)`
+    LDmv(RegIndex),
+}
 
 impl TryFrom<OpCode> for Instruction {
     type Error = Exception;
@@ -288,11 +289,23 @@ mod test {
         assert_eq!(Instruction::LDkr(4), Instruction::try_from(0xF40A).unwrap());
         assert_eq!(Instruction::LDrd(5), Instruction::try_from(0xF515).unwrap());
         assert_eq!(Instruction::LDrs(9), Instruction::try_from(0xF918).unwrap());
-        assert_eq!(Instruction::ADDri(7), Instruction::try_from(0xF71E).unwrap());
+        assert_eq!(
+            Instruction::ADDri(7),
+            Instruction::try_from(0xF71E).unwrap()
+        );
         assert_eq!(Instruction::LDri(8), Instruction::try_from(0xF829).unwrap());
-        assert_eq!(Instruction::LDrm(10), Instruction::try_from(0xFA33).unwrap());
-        assert_eq!(Instruction::LDvm(11), Instruction::try_from(0xFB55).unwrap());
-        assert_eq!(Instruction::LDmv(12), Instruction::try_from(0xFC65).unwrap());
+        assert_eq!(
+            Instruction::LDrm(10),
+            Instruction::try_from(0xFA33).unwrap()
+        );
+        assert_eq!(
+            Instruction::LDvm(11),
+            Instruction::try_from(0xFB55).unwrap()
+        );
+        assert_eq!(
+            Instruction::LDmv(12),
+            Instruction::try_from(0xFC65).unwrap()
+        );
         assert_eq!(
             Exception::WrongOpCode(0xFFFF),
             Instruction::try_from(0xFFFF).unwrap_err()
