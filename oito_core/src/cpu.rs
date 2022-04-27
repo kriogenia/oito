@@ -1,5 +1,7 @@
 mod register;
 
+use std::ops::Shr;
+
 use register::{IRegister, VRegister};
 
 use crate::{core::operations::BitOp, Address, Byte, RegIndex};
@@ -107,6 +109,11 @@ impl Cpu {
             BitOp::And(x, y) => self.vreg[x as usize] &= self.vreg[y as usize],
             BitOp::Or(x, y) => self.vreg[x as usize] |= self.vreg[y as usize],
             BitOp::Xor(x, y) => self.vreg[x as usize] ^= self.vreg[y as usize],
+			BitOp::ShiftRight(x) => {
+				let least_significant_bit = self.vreg[x as usize] & 0b1;
+				self.vf.load(least_significant_bit);
+				self.vreg[x as usize] >>= 1;
+			},
             _ => unimplemented!("BitOp not yet implemented"),
         }
     }
@@ -233,17 +240,21 @@ mod test {
         cpu.load_to_v(0, 0b0001);
         cpu.load_to_v(1, 0b0110);
         cpu.load_to_v(2, 0b1110);
-        cpu.load_to_v(3, 0b0011);
+        cpu.load_to_v(3, 0b0101);
         cpu.load_to_v(4, 0b0011);
         cpu.load_to_v(5, 0b1011);
 
         cpu.bit_op(BitOp::Or(0, 5));
-        assert_eq!(*cpu.v(0), 0xB);
+        assert_eq!(*cpu.v(0), 0b1011);
 
         cpu.bit_op(BitOp::And(1, 5));
-        assert_eq!(*cpu.v(1), 0x2);
+        assert_eq!(*cpu.v(1), 0b0010);
 
         cpu.bit_op(BitOp::Xor(2, 5));
-        assert_eq!(*cpu.v(2), 0x5);
+        assert_eq!(*cpu.v(2), 0b0101);
+
+		cpu.bit_op(BitOp::ShiftRight(3));
+		assert_eq!(*cpu.v(3), 0b0010);
+		assert_eq!(cpu.vf, 1);
     }
 }

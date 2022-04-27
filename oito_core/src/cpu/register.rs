@@ -1,6 +1,6 @@
 use std::{
     fmt::{Debug, LowerHex},
-    ops::{AddAssign, BitAndAssign, BitOrAssign, BitXorAssign, SubAssign},
+    ops::{AddAssign, BitAndAssign, BitOrAssign, BitXorAssign, SubAssign, ShrAssign, BitAnd},
 };
 
 use num_traits::{WrappingAdd, WrappingSub};
@@ -53,6 +53,14 @@ impl<T: WrappingAdd> AddAssign<T> for Register<T> {
     }
 }
 
+impl<T: BitAnd<Output = T>> BitAnd<T> for Register<T> {
+    type Output = T;
+
+    fn bitand(self, rhs: T) -> Self::Output {
+        self.0 & rhs
+    }
+}
+
 impl<T: BitAndAssign> BitAndAssign for Register<T> {
     fn bitand_assign(&mut self, rhs: Self) {
         self.0 &= rhs.0
@@ -80,6 +88,12 @@ impl<T: LowerHex> Debug for Register<T> {
 impl<T: PartialEq> PartialEq<T> for Register<T> {
     fn eq(&self, other: &T) -> bool {
         self.0 == *other
+    }
+}
+
+impl<T: ShrAssign> ShrAssign<T> for Register<T> {
+    fn shr_assign(&mut self, rhs: T) {
+        self.0 >>= rhs
     }
 }
 
@@ -128,6 +142,13 @@ mod test {
         reg += Address::MAX;
         assert_eq!(0x4, reg.0);
     }
+
+	#[test]
+	fn bitand() {
+		let vx = Register(0b1010);
+
+		assert_eq!(0b1000, vx & 0b1100);
+	}
 
     #[test]
     fn bitand_assign() {
@@ -190,6 +211,18 @@ mod test {
         vy.load(0x0);
         assert!(&vx == &vy);
     }
+
+	#[test]
+	fn shr_assign() {
+		let mut vx = Register(0b0010);
+
+		vx >>= 1;
+		assert_eq!(vx, 0b0001);
+
+		vx.load(0b1001);
+		vx >>= 2;
+		assert_eq!(vx, 0b0010);
+	}
 
     #[test]
     fn sub_assign() {

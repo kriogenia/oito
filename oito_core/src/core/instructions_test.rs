@@ -156,7 +156,6 @@ fn add_register_to_register() {
     assert_eq!(oito.cpu.vf, 1);
 }
 
-
 #[test]
 fn sub() {
     let mut oito = OitoCore::default();
@@ -166,4 +165,14 @@ fn sub() {
     oito.execute(Instruction::SUB { x: 0, y: 1 }).unwrap();
     assert_eq!(*oito.cpu.v(0), Byte::MAX);
     assert_eq!(oito.cpu.vf, 0);
+}
+
+#[test]
+fn shr() {
+    let mut oito = OitoCore::default();
+    oito.cpu.load_to_v(0, 0b0101);
+
+    oito.execute(Instruction::SHR(0)).unwrap();
+    assert_eq!(*oito.cpu.v(0), 0b0010);
+    assert_eq!(oito.cpu.vf, 1);
 }
