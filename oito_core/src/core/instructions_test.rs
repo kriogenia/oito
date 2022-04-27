@@ -1,4 +1,4 @@
-use crate::{cpu::Cpu, instruction::Instruction, vram::VRam};
+use crate::{cpu::Cpu, instruction::Instruction, vram::VRam, Byte};
 
 use super::OitoCore;
 
@@ -148,3 +148,13 @@ fn xor() {
     assert_eq!(*oito.cpu.v(0), 0b1101);
 }
 
+#[test]
+fn add_register_to_register() {
+	let mut oito = OitoCore::default();
+	oito.cpu.load_to_v(0, Byte::MAX);
+	oito.cpu.load_to_v(1, 1);
+
+	oito.execute(Instruction::ADDrr { x: 0, y: 1 }).unwrap();
+	assert_eq!(*oito.cpu.v(0), 0);
+	assert_eq!(oito.cpu.vf, 1);
+}

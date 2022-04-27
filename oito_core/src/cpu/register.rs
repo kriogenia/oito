@@ -46,6 +46,8 @@ impl Default for VRegister {
 }
 
 impl<T: WrappingAdd> AddAssign<T> for Register<T> {
+	/// Adds the value to the register. 
+	/// In case of overflow, no panic! is thrown and the result will be the lower bits ignoring the carry
 	fn add_assign(&mut self, rhs: T) {
 		self.0 = self.0.wrapping_add(&rhs)
     }

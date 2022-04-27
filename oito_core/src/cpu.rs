@@ -5,7 +5,10 @@ use register::{IRegister, VRegister};
 use crate::{Address, Byte, RegIndex, core::operations::BitOp};
 
 const INSTRUCTION_SIZE: u16 = 2;
-const NUMBER_OF_REGISTERS: usize = 16;
+const NUMBER_OF_REGISTERS: usize = 15;
+
+const NO_FLAG: u8 = 0b00000000;
+const FLAG_CARRY: u8 = 0b00000001;
 
 /// Simmulated CPU
 pub struct Cpu {
@@ -15,6 +18,8 @@ pub struct Cpu {
     vreg: [VRegister; NUMBER_OF_REGISTERS],
     /// I-Register
     ireg: IRegister,
+	/// Flag Register
+	pub(crate) vf: VRegister
 }
 
 impl Cpu {
@@ -46,6 +51,20 @@ impl Cpu {
         self.vreg[index as usize] += value
     }
 
+	/// Performs a checked sum between to registers
+	pub fn checked_add_to_v(&mut self, index: RegIndex, value: Byte) {
+		match self.vreg[index as usize].get().checked_add(value) {
+			Some(result) => {
+				self.vf.load(NO_FLAG);
+				self.load_to_v(index, result);
+			},
+			None => {
+				self.vf.load(FLAG_CARRY);
+				self.add_to_v(index, value)
+			},
+		}
+	}
+
 	/// Performs the specified bit operation with the registers
 	pub fn bit_op(&mut self, operation: BitOp) {
 		match operation {
@@ -63,20 +82,20 @@ impl Default for Cpu {
             pc: Self::STARTING_ADDRESS,
             vreg: Default::default(),
             ireg: Default::default(),
+			vf: Default::default(),
         }
     }
 }
 
 #[cfg(test)]
 mod test {
-    use crate::core::operations::BitOp;
+    use crate::{core::operations::BitOp, Byte, cpu::{NO_FLAG, FLAG_CARRY}};
 
     use super::Cpu;
 
     #[test]
     fn increase() {
         let mut cpu = Cpu::default();
-        assert_eq!(Cpu::STARTING_ADDRESS, cpu.pc);
 
         for i in 1..4 {
             cpu.increase();
@@ -87,11 +106,26 @@ mod test {
     #[test]
     fn point_at() {
         let mut cpu = Cpu::default();
-        assert_eq!(Cpu::STARTING_ADDRESS, cpu.pc);
 
         cpu.point_at(0x100);
         assert_eq!(0x100, cpu.pc);
     }
+
+	#[test]
+	fn checked_add_to_v() {
+		let mut cpu = Cpu::default();
+		// No overflow
+		cpu.checked_add_to_v(0, 12);
+		cpu.checked_add_to_v(0, 13);
+		assert_eq!(cpu.vreg[0], 12 + 13);
+		assert_eq!(cpu.vf, NO_FLAG);
+		// Overflow
+		cpu.load_to_v(0, Byte::MAX);
+		cpu.checked_add_to_v(0, 11);
+		assert_eq!(cpu.vreg[0], 11 - 1);
+		assert_eq!(cpu.vf, FLAG_CARRY);
+
+	}
 
 	#[test]
 	fn bit_op() {
