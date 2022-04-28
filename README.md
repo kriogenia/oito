@@ -13,8 +13,8 @@ Current state:
 - [x] Components initialization
 - [x] Basic components functionality
 - [x] Emulator cycle
-- [x] Instructions declaration [36/35]
-- [ ] Instructions execution [17/35]
+- [x] Instructions declaration [35/35]
+- [ ] Instructions execution [20/35]
 - [ ] Core interface
 - [ ] SDL2 rendering
 - [ ] Web rendering

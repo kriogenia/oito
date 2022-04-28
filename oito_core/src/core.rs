@@ -99,6 +99,11 @@ impl OitoCore {
             SHR(x) => self.cpu.bit_op(BitOp::ShiftRight(x)),
 			SUBN { x, y } => self.cpu.arith_op(ArithOp::SubN(x, y)),
 			SHL(x) => self.cpu.bit_op(BitOp::ShiftLeft(x)),
+			SNErr { x, y } => {
+                if self.cpu.v(x) != self.cpu.v(y) {
+                    self.cpu.increase();
+                }
+            },
             _ => unimplemented!("this instruction is yet to be implemented"),
         }
         Ok(())

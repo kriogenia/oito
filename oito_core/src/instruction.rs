@@ -48,7 +48,7 @@ pub enum Instruction {
     /// 8xyE - Shift left register `Vx <<= 1
     SHL(RegIndex),
     /// 9xy0 - Skip next instruction when registers are not equals: `Vx != Vy`
-    SNEr { x: RegIndex, y: RegIndex },
+    SNErr { x: RegIndex, y: RegIndex },
     /// Annn - Load address into I `I = nnn`
     LDi(Address),
     /// Bnnn - Jump to the address + V0: `PC = V0 + nnn`
@@ -146,7 +146,7 @@ impl TryFrom<OpCode> for Instruction {
                 y: vy as RegIndex,
             }),
             (0x8, vx, _, 0xE) => Ok(SHL(vx as RegIndex)),
-            (0x9, vx, vy, 0x0) => Ok(SNEr {
+            (0x9, vx, vy, 0x0) => Ok(SNErr {
                 x: vx as RegIndex,
                 y: vy as RegIndex,
             }),
@@ -260,7 +260,7 @@ mod test {
         );
         assert_eq!(Instruction::SHL(3), Instruction::try_from(0x835E).unwrap());
         assert_eq!(
-            Instruction::SNEr { x: 8, y: 10 },
+            Instruction::SNErr { x: 8, y: 10 },
             Instruction::try_from(0x98A0).unwrap()
         );
         assert_eq!(

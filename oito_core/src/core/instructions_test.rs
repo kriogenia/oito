@@ -72,7 +72,7 @@ fn se_byte() {
 }
 
 #[test]
-fn sne() {
+fn sne_byte() {
     let mut oito = OitoCore::default();
     // No Skip
     oito.execute(Instruction::SNErb { x: 0, byte: 0 }).unwrap();
@@ -196,4 +196,16 @@ fn shl() {
     oito.execute(Instruction::SHL(0)).unwrap();
     assert_eq!(*oito.cpu.v(0), 0b01001010);
     assert_eq!(oito.cpu.vf, 1);
+}
+
+#[test]
+fn sne_register() {
+    let mut oito = OitoCore::default();
+	oito.cpu.load_to_v(1, 1);
+    // Skip
+    oito.execute(Instruction::SNErr { x: 0, y: 1 }).unwrap();
+    assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc);
+    // skip
+    oito.execute(Instruction::SNErr { x: 0, y: 2 }).unwrap();
+    assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc);
 }
