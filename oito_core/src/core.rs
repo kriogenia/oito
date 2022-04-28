@@ -105,6 +105,7 @@ impl OitoCore {
                 }
             },
 			LDi(address) => self.cpu.set_i(address),
+			JPr(address) => self.cpu.point_at(self.cpu.v(0).get() as u16 + address),
             _ => unimplemented!("this instruction is yet to be implemented"),
         }
         Ok(())

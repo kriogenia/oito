@@ -217,3 +217,13 @@ fn ld_i() {
 	oito.execute(Instruction::LDi(0xA2C9)).unwrap();
 	assert_eq!(oito.cpu.ireg, 0xA2C9);
 }
+
+#[test]
+fn jp_address() {
+	let mut oito = OitoCore::default();
+	oito.cpu.load_to_v(0, 0x20);
+
+	oito.execute(Instruction::JPr(0x10)).unwrap();
+	assert_eq!(oito.cpu.pc, 0x30);
+
+}
