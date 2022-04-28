@@ -1,9 +1,9 @@
 use std::{
     fmt::{Debug, LowerHex},
-    ops::{AddAssign, BitAndAssign, BitOrAssign, BitXorAssign, SubAssign, ShrAssign, BitAnd},
+    ops::{BitAnd, BitAndAssign, BitOrAssign, BitXorAssign, ShrAssign, SubAssign},
 };
 
-use num_traits::{WrappingAdd, WrappingSub};
+use num_traits::{WrappingSub};
 
 use crate::{Address, Byte};
 
@@ -42,14 +42,6 @@ impl Default for VRegister {
     /// Builds the default for the VRegisters
     fn default() -> Self {
         Self(VREG_INIT)
-    }
-}
-
-impl<T: WrappingAdd> AddAssign<T> for Register<T> {
-    /// Adds the value to the register.
-    /// In case of overflow, **no panic** is thrown and the result will be the lower bits ignoring the carry
-    fn add_assign(&mut self, rhs: T) {
-        self.0 = self.0.wrapping_add(&rhs)
     }
 }
 
@@ -107,10 +99,7 @@ impl<T: WrappingSub> SubAssign<T> for Register<T> {
 
 #[cfg(test)]
 mod test {
-    use crate::{
-        cpu::register::{IRegister, Register},
-        Address,
-    };
+    use crate::cpu::register::{IRegister, Register};
 
     use super::VRegister;
 
@@ -132,23 +121,11 @@ mod test {
     }
 
     #[test]
-    fn add_assign() {
-        let mut reg = IRegister::default();
-        reg.load(0x2);
-        // No overflow
-        reg += 0x3;
-        assert_eq!(0x5, reg.0);
-        // Overflow
-        reg += Address::MAX;
-        assert_eq!(0x4, reg.0);
+    fn bitand() {
+        let vx = Register(0b1010);
+
+        assert_eq!(0b1000, vx & 0b1100);
     }
-
-	#[test]
-	fn bitand() {
-		let vx = Register(0b1010);
-
-		assert_eq!(0b1000, vx & 0b1100);
-	}
 
     #[test]
     fn bitand_assign() {
@@ -212,17 +189,17 @@ mod test {
         assert!(&vx == &vy);
     }
 
-	#[test]
-	fn shr_assign() {
-		let mut vx = Register(0b0010);
+    #[test]
+    fn shr_assign() {
+        let mut vx = Register(0b0010);
 
-		vx >>= 1;
-		assert_eq!(vx, 0b0001);
+        vx >>= 1;
+        assert_eq!(vx, 0b0001);
 
-		vx.load(0b1001);
-		vx >>= 2;
-		assert_eq!(vx, 0b0010);
-	}
+        vx.load(0b1001);
+        vx >>= 2;
+        assert_eq!(vx, 0b0010);
+    }
 
     #[test]
     fn sub_assign() {

@@ -96,7 +96,7 @@ impl OitoCore {
             XOR { x, y } => self.cpu.bit_op(BitOp::Xor(x, y)),
             ADDrr { x, y } => self.cpu.checked_add_to_v(x, self.cpu.v(y).get()),
             SUB { x, y } => self.cpu.checked_sub_to_v(x, self.cpu.v(y).get()),
-			SHR(x) => self.cpu.bit_op(BitOp::ShiftRight(x)),
+            SHR(x) => self.cpu.bit_op(BitOp::ShiftRight(x)),
             _ => unimplemented!("this instruction is yet to be implemented"),
         }
         Ok(())

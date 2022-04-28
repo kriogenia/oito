@@ -1,6 +1,5 @@
+mod alu;
 mod register;
-
-use std::ops::Shr;
 
 use register::{IRegister, VRegister};
 
@@ -40,35 +39,42 @@ impl Cpu {
         self.pc = position;
     }
 
-	/// Raises a flag in the VF register
-	#[inline]
-	pub fn raise_flag(&mut self) {
-		self.vf.load(FLAG_CARRY);
-	}
+    /// Raises a flag in the VF register
+    #[inline]
+    pub fn set_flag(&mut self, flag: u8) {
+        self.vf.load(flag);
+    }
 
-	/// Lowers the flag in the VF register
-	#[inline]
-	pub fn low_flag(&mut self) {
-		self.vf.load(NO_FLAG);
-	}
+    /// Lowers the flag in the VF register
+    #[inline]
+    pub fn low_flag(&mut self) {
+        self.vf.load(NO_FLAG);
+    }
 
-    /// Returns the specified register. Will panic if the register doesn't exists.
+    /// Returns a reference to the specified register. Will panic if the register doesn't exists.
     #[inline]
     pub fn v(&self, index: RegIndex) -> &VRegister {
         &self.vreg[index as usize]
     }
 
+    /// Returns a mutable reference the specified register. Will panic if the register doesn't exists.
+    #[inline]
+    fn v_mut(&mut self, index: RegIndex) -> &mut VRegister {
+        &mut self.vreg[index as usize]
+    }
+
     /// Loads the value into the specified register
     #[inline]
     pub fn load_to_v(&mut self, index: RegIndex, value: Byte) {
-        self.vreg[index as usize].load(value);
+        self.v_mut(index).load(value);
     }
 
     /// Adds the value to the specified register.
     /// In doesn't check overflows, to make an addition with overflow check refer to [checked_add_to_v]
     #[inline]
     pub fn add_to_v(&mut self, index: RegIndex, value: Byte) {
-        self.vreg[index as usize] += value
+		let reg = self.v_mut(index);
+		reg.load(alu::add(reg.get(), value).0);
     }
 
     /// Performs a checked addition of the value into the specified register.
@@ -77,16 +83,9 @@ impl Cpu {
     ///
     /// To perform an addition without check refer to [add_to_v]
     pub fn checked_add_to_v(&mut self, index: RegIndex, value: Byte) {
-        match self.vreg[index as usize].get().checked_add(value) {
-            Some(result) => {
-                self.low_flag();
-                self.load_to_v(index, result);
-            }
-            None => {
-                self.raise_flag();
-                self.add_to_v(index, value)
-            }
-        }
+		let (result, flag) = alu::add(self.v_mut(index).get(), value);
+		self.load_to_v(index, result);
+		self.set_flag(flag);
     }
 
     /// Performs a checked substraction of the value into the specified register.
@@ -96,9 +95,9 @@ impl Cpu {
     /// To perform an addition without check refer to [add_to_v]
     pub fn checked_sub_to_v(&mut self, index: RegIndex, value: Byte) {
         if self.v(index).get() > value {
-            self.raise_flag();
+            //self.raise_flag();
         } else {
-            self.low_flag();
+            //self.low_flag();
         }
         self.vreg[index as usize] -= value;
     }
@@ -109,11 +108,11 @@ impl Cpu {
             BitOp::And(x, y) => self.vreg[x as usize] &= self.vreg[y as usize],
             BitOp::Or(x, y) => self.vreg[x as usize] |= self.vreg[y as usize],
             BitOp::Xor(x, y) => self.vreg[x as usize] ^= self.vreg[y as usize],
-			BitOp::ShiftRight(x) => {
-				let least_significant_bit = self.vreg[x as usize] & 0b1;
-				self.vf.load(least_significant_bit);
-				self.vreg[x as usize] >>= 1;
-			},
+            BitOp::ShiftRight(x) => {
+                let least_significant_bit = self.vreg[x as usize] & 0b1;
+                self.vf.load(least_significant_bit);
+                self.vreg[x as usize] >>= 1;
+            }
             _ => unimplemented!("BitOp not yet implemented"),
         }
     }
@@ -166,22 +165,16 @@ mod test {
         assert_eq!(cpu.v(0).get(), 10);
     }
 
-	#[test]
-	fn raise_flag() {
-		let mut cpu = Cpu::default();
+    #[test]
+    fn set_flag() {
+        let mut cpu = Cpu::default();
 
-		cpu.raise_flag();
-		assert_eq!(cpu.vf, FLAG_CARRY);
-	}
+        cpu.set_flag(FLAG_CARRY);
+        assert_eq!(cpu.vf, FLAG_CARRY);
 
-	#[test]
-	fn low_flag() {
-		let mut cpu = Cpu::default();
-		cpu.vf.load(12);
-
-		cpu.low_flag();
-		assert_eq!(cpu.vf, NO_FLAG);
-	}
+        cpu.set_flag(NO_FLAG);
+        assert_eq!(cpu.vf, NO_FLAG);
+    }
 
     #[test]
     fn load_to_v() {
@@ -253,8 +246,8 @@ mod test {
         cpu.bit_op(BitOp::Xor(2, 5));
         assert_eq!(*cpu.v(2), 0b0101);
 
-		cpu.bit_op(BitOp::ShiftRight(3));
-		assert_eq!(*cpu.v(3), 0b0010);
-		assert_eq!(cpu.vf, 1);
+        cpu.bit_op(BitOp::ShiftRight(3));
+        assert_eq!(*cpu.v(3), 0b0010);
+        assert_eq!(cpu.vf, 1);
     }
 }
