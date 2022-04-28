@@ -36,7 +36,7 @@ impl OitoCore {
 
     /// Performs a cycle of the emulator
     pub fn tick(&mut self) -> Result<(), Exception> {
-        let opcode = self.fetch(self.cpu.pc)?; // fetch
+        let opcode = self.fetch(self.cpu.pc())?; // fetch
         self.cpu.increase(); // advance
         let instruction = Instruction::try_from(opcode)?; // decode
         self.execute(instruction)?; // execute
@@ -72,7 +72,7 @@ impl OitoCore {
                 self.cpu.point_at(address);
             }
             CALL(address) => {
-                self.stack.push(self.cpu.pc)?;
+                self.stack.push(self.cpu.pc())?;
                 self.cpu.point_at(address);
             }
             SErb { x, byte } => {
@@ -144,7 +144,7 @@ mod api_test {
         oito.ram.set(Cpu::STARTING_ADDRESS + 1, 0x01);
 
         oito.tick().unwrap();
-        assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc);
+        assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc());
     }
 
     #[test]

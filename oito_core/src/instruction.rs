@@ -1,5 +1,5 @@
 use crate::exception::Exception;
-use crate::{Address, Byte, OpCode, RegIndex, Sprite};
+use crate::{Address, Byte, OpCode, RegIndex};
 
 /// Mask to convert a word into 12-byte address
 const ADDRESS_MASK: u16 = 0x0FFF;
@@ -59,7 +59,7 @@ pub enum Instruction {
     DRW {
         x: RegIndex,
         y: RegIndex,
-        sprite: Sprite,
+        n: Byte,
     },
     /// Ex9E - Skip if the key matching Vx is pressed: `if key() == Vx`
     SKP(RegIndex),
@@ -156,10 +156,10 @@ impl TryFrom<OpCode> for Instruction {
                 x: vx as RegIndex,
                 byte: (value & BYTE_MASK) as Byte,
             }),
-            (0xD, vx, vy, sprite) => Ok(DRW {
+            (0xD, vx, vy, n) => Ok(DRW {
                 x: vx as RegIndex,
                 y: vy as RegIndex,
-                sprite: sprite as Sprite,
+                n: n as Byte,
             }),
             (0xE, vx, 0x9, 0xE) => Ok(SKP(vx as RegIndex)),
             (0xE, vx, 0xA, 0x1) => Ok(SKNP(vx as RegIndex)),
@@ -279,7 +279,7 @@ mod test {
             Instruction::DRW {
                 x: 0,
                 y: 3,
-                sprite: 0x6
+                n: 0x6
             },
             Instruction::try_from(0xD036).unwrap()
         );

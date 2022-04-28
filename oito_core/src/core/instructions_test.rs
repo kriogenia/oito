@@ -21,7 +21,7 @@ fn ret() {
     oito.stack.push(0x1234).unwrap();
 
     oito.execute(Instruction::RET).unwrap();
-    assert_eq!(0x1234, oito.cpu.pc);
+    assert_eq!(0x1234, oito.cpu.pc());
     assert!(oito.stack.peek().is_none());
 }
 
@@ -30,7 +30,7 @@ fn sys() {
     let mut oito = OitoCore::default();
 
     oito.execute(Instruction::SYS(0xF10F)).unwrap();
-    assert_eq!(0xF10F, oito.cpu.pc);
+    assert_eq!(0xF10F, oito.cpu.pc());
 }
 
 #[test]
@@ -38,7 +38,7 @@ fn jp() {
     let mut oito = OitoCore::default();
 
     oito.execute(Instruction::JP(0x01CF)).unwrap();
-    assert_eq!(0x01CF, oito.cpu.pc);
+    assert_eq!(0x01CF, oito.cpu.pc());
 }
 
 #[test]
@@ -46,7 +46,7 @@ fn call() {
     let mut oito = OitoCore::default();
 
     oito.execute(Instruction::CALL(0x1CC0)).unwrap();
-    assert_eq!(0x1CC0, oito.cpu.pc);
+    assert_eq!(0x1CC0, oito.cpu.pc());
     assert_eq!(Cpu::STARTING_ADDRESS, oito.stack.peek().unwrap());
 }
 
@@ -56,7 +56,7 @@ fn call_and_ret() {
 
     oito.execute(Instruction::CALL(0x2371)).unwrap();
     oito.execute(Instruction::RET).unwrap();
-    assert_eq!(Cpu::STARTING_ADDRESS, oito.cpu.pc);
+    assert_eq!(Cpu::STARTING_ADDRESS, oito.cpu.pc());
     assert!(oito.stack.peek().is_none());
 }
 
@@ -65,10 +65,10 @@ fn se_byte() {
     let mut oito = OitoCore::default();
     // Skip
     oito.execute(Instruction::SErb { x: 0, byte: 0 }).unwrap();
-    assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc);
+    assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc());
     // No Skip
     oito.execute(Instruction::SErb { x: 0, byte: 1 }).unwrap();
-    assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc);
+    assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc());
 }
 
 #[test]
@@ -76,10 +76,10 @@ fn sne_byte() {
     let mut oito = OitoCore::default();
     // No Skip
     oito.execute(Instruction::SNErb { x: 0, byte: 0 }).unwrap();
-    assert_eq!(Cpu::STARTING_ADDRESS, oito.cpu.pc);
+    assert_eq!(Cpu::STARTING_ADDRESS, oito.cpu.pc());
     // skip
     oito.execute(Instruction::SNErb { x: 0, byte: 1 }).unwrap();
-    assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc);
+    assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc());
 }
 
 #[test]
@@ -87,11 +87,11 @@ fn se_register() {
     let mut oito = OitoCore::default();
     // Skip
     oito.execute(Instruction::SErr { x: 0, y: 0 }).unwrap();
-    assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc);
+    assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc());
     // No Skip
     oito.cpu.load_to_v(1, 0x1);
     oito.execute(Instruction::SErr { x: 0, y: 1 }).unwrap();
-    assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc);
+    assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc());
 }
 
 #[test]
@@ -153,7 +153,7 @@ fn add_register_to_register() {
 
     oito.execute(Instruction::ADDrr { x: 0, y: 1 }).unwrap();
     assert_eq!(*oito.cpu.v(0), 0);
-    assert_eq!(oito.cpu.vf, 1);
+    assert_eq!(oito.cpu.vf(), 1);
 }
 
 #[test]
@@ -164,7 +164,7 @@ fn sub() {
 
     oito.execute(Instruction::SUB { x: 0, y: 1 }).unwrap();
     assert_eq!(*oito.cpu.v(0), Byte::MAX);
-    assert_eq!(oito.cpu.vf, 0);
+    assert_eq!(oito.cpu.vf(), 0);
 }
 
 #[test]
@@ -174,7 +174,7 @@ fn shr() {
 
     oito.execute(Instruction::SHR(0)).unwrap();
     assert_eq!(*oito.cpu.v(0), 0b0010);
-    assert_eq!(oito.cpu.vf, 1);
+    assert_eq!(oito.cpu.vf(), 1);
 }
 
 #[test]
@@ -185,7 +185,7 @@ fn subn() {
 
     oito.execute(Instruction::SUBN { x: 0, y: 1 }).unwrap();
     assert_eq!(*oito.cpu.v(0), Byte::MAX);
-    assert_eq!(oito.cpu.vf, 1);
+    assert_eq!(oito.cpu.vf(), 1);
 }
 
 #[test]
@@ -195,7 +195,7 @@ fn shl() {
 
     oito.execute(Instruction::SHL(0)).unwrap();
     assert_eq!(*oito.cpu.v(0), 0b01001010);
-    assert_eq!(oito.cpu.vf, 1);
+    assert_eq!(oito.cpu.vf(), 1);
 }
 
 #[test]
@@ -204,10 +204,10 @@ fn sne_register() {
 	oito.cpu.load_to_v(1, 1);
     // Skip
     oito.execute(Instruction::SNErr { x: 0, y: 1 }).unwrap();
-    assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc);
+    assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc());
     // skip
     oito.execute(Instruction::SNErr { x: 0, y: 2 }).unwrap();
-    assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc);
+    assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc());
 }
 
 #[test]
@@ -215,7 +215,7 @@ fn ld_i() {
 	let mut oito = OitoCore::default();
 
 	oito.execute(Instruction::LDi(0xA2C9)).unwrap();
-	assert_eq!(oito.cpu.ireg, 0xA2C9);
+	assert_eq!(oito.cpu.i(), 0xA2C9);
 }
 
 #[test]
@@ -224,6 +224,6 @@ fn jp_address() {
 	oito.cpu.load_to_v(0, 0x20);
 
 	oito.execute(Instruction::JPr(0x10)).unwrap();
-	assert_eq!(oito.cpu.pc, 0x30);
+	assert_eq!(oito.cpu.pc(), 0x30);
 
 }
