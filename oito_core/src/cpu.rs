@@ -1,4 +1,5 @@
 mod alu;
+mod bitmask;
 mod register;
 
 use register::{IRegister, VRegister};
@@ -45,12 +46,6 @@ impl Cpu {
         self.vf.load(flag);
     }
 
-    /// Lowers the flag in the VF register
-    #[inline]
-    pub fn low_flag(&mut self) {
-        self.vf.load(NO_FLAG);
-    }
-
     /// Returns a reference to the specified register. Will panic if the register doesn't exists.
     #[inline]
     pub fn v(&self, index: RegIndex) -> &VRegister {
@@ -73,8 +68,8 @@ impl Cpu {
     /// In doesn't check overflows, to make an addition with overflow check refer to [checked_add_to_v]
     #[inline]
     pub fn add_to_v(&mut self, index: RegIndex, value: Byte) {
-		let reg = self.v_mut(index);
-		reg.load(alu::add(reg.get(), value).0);
+        let reg = self.v_mut(index);
+        reg.load(alu::add(reg.get(), &value).0);
     }
 
     /// Performs a checked addition of the value into the specified register.
@@ -83,9 +78,9 @@ impl Cpu {
     ///
     /// To perform an addition without check refer to [add_to_v]
     pub fn checked_add_to_v(&mut self, index: RegIndex, value: Byte) {
-		let (result, flag) = alu::add(self.v_mut(index).get(), value);
-		self.load_to_v(index, result);
-		self.set_flag(flag);
+        let (result, flag) = alu::add(self.v(index).get(), &value);
+        self.load_to_v(index, result);
+        self.set_flag(flag);
     }
 
     /// Performs a checked substraction of the value into the specified register.
@@ -94,24 +89,30 @@ impl Cpu {
     ///
     /// To perform an addition without check refer to [add_to_v]
     pub fn checked_sub_to_v(&mut self, index: RegIndex, value: Byte) {
-        if self.v(index).get() > value {
-            //self.raise_flag();
-        } else {
-            //self.low_flag();
-        }
-        self.vreg[index as usize] -= value;
+        let (result, flag) = alu::sub(self.v(index).get(), &value);
+        self.load_to_v(index, result);
+        self.set_flag(flag)
     }
 
     /// Performs the specified bit operation with the registers
     pub fn bit_op(&mut self, operation: BitOp) {
         match operation {
-            BitOp::And(x, y) => self.vreg[x as usize] &= self.vreg[y as usize],
-            BitOp::Or(x, y) => self.vreg[x as usize] |= self.vreg[y as usize],
-            BitOp::Xor(x, y) => self.vreg[x as usize] ^= self.vreg[y as usize],
+            BitOp::And(x, y) => {
+                let result = alu::and(self.v(x).get(), self.v(y).get());
+                self.v_mut(x).load(result);
+            }
+            BitOp::Or(x, y) => {
+                let result = alu::or(self.v(x).get(), self.v(y).get());
+                self.v_mut(x).load(result);
+            }
+            BitOp::Xor(x, y) => {
+                let result = alu::xor(self.v(x).get(), self.v(y).get());
+                self.v_mut(x).load(result);
+            }
             BitOp::ShiftRight(x) => {
-                let least_significant_bit = self.vreg[x as usize] & 0b1;
-                self.vf.load(least_significant_bit);
-                self.vreg[x as usize] >>= 1;
+                let (result, flag) = alu::shr(self.v(x).get());
+                self.set_flag(flag);
+                self.v_mut(x).load(result);
             }
             _ => unimplemented!("BitOp not yet implemented"),
         }
