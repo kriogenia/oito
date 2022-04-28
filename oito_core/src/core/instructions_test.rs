@@ -11,7 +11,7 @@ fn cls() {
 
     oito.execute(Instruction::CLS).unwrap();
     for i in 0..8 {
-        assert_eq!(oito.vram.get(i), VRam::BLACK);
+        assert_eq!(oito.vram[i], VRam::BLACK);
     }
 }
 
@@ -225,5 +225,11 @@ fn jp_address() {
 
 	oito.execute(Instruction::JPr(0x10)).unwrap();
 	assert_eq!(oito.cpu.pc(), 0x30);
+}
 
+#[test]
+fn draw() {
+	let mut oito = OitoCore::default();
+
+	// TODO after implementing prerendered sprites
 }

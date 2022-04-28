@@ -5,12 +5,14 @@ use crate::instruction::Instruction;
 use crate::ram::Ram;
 use crate::stack::Stack;
 use crate::timer::Timer;
-use crate::vram::VRam;
-use crate::{Address, OpCode, Byte};
+use crate::vram::{VRam, SCREEN_WIDTH, SCREEN_HEIGHT};
+use crate::{Address, BitMask, Byte, OpCode};
 
 use rand::random;
 
 pub(crate) mod operations;
+
+const BYTE_SIZE: u8 = 8;
 
 /// Core of the emmulator
 pub struct OitoCore {
@@ -109,6 +111,25 @@ impl OitoCore {
 			LDi(address) => self.cpu.set_i(address),
 			JPr(address) => self.cpu.point_at(self.cpu.v(0).get() as Address + address),
 			RND { x, byte } => self.cpu.load_to_v(x, byte & random::<Byte>()),
+			DRW { x, y, n } => {
+				let mut swapped = false;
+				for i in 0..n {
+					let address = self.cpu.i() + i as Address;
+					let pixels = self.ram.read(address)?;
+					for j in 0..BYTE_SIZE {
+						if (pixels & (Byte::MOST_SIGNIFICANT_BIT >> j)) != 0 {
+							let x = (x + j) as usize % SCREEN_WIDTH;
+							let y = (y + i) as usize % SCREEN_HEIGHT;
+
+							let idx = x + SCREEN_WIDTH * y;
+
+							swapped |= self.vram[idx];
+							self.vram.paint(idx as usize);
+						}
+					}
+				}
+				self.cpu.set_flag(swapped as Byte);
+			}
             _ => unimplemented!("this instruction is yet to be implemented"),
         }
         Ok(())

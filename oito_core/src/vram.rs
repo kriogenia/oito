@@ -1,8 +1,10 @@
-const SCREEN_WIDTH: usize = 64;
-const SCREEN_HEIGHT: usize = 32;
+pub const SCREEN_WIDTH: usize = 64;
+pub const SCREEN_HEIGHT: usize = 32;
 const SCREEN_SIZE: usize = SCREEN_WIDTH * SCREEN_HEIGHT;
 
 type Pixel = bool; // only b&w, so bool is enough
+
+use std::ops::Index;
 
 /// Representation of the screen to draw
 pub struct VRam {
@@ -21,14 +23,14 @@ impl VRam {
         self.buffer = [Self::BLACK; SCREEN_SIZE];
     }
 
-    #[cfg(test)]
-    pub(crate) fn set(&mut self, index: usize) {
-        self.buffer[index] = VRam::WHITE;
+	/// Paints over the pixel. If this already painted, it sets the pixel to not painted.
+    pub fn paint(&mut self, index: usize) {
+        self.buffer[index] ^= VRam::WHITE;
     }
 
     #[cfg(test)]
-    pub(crate) fn get(&self, index: usize) -> Pixel {
-        self.buffer[index]
+    pub(crate) fn set(&mut self, index: usize) {
+        self.buffer[index] = VRam::WHITE;
     }
 }
 
@@ -37,6 +39,14 @@ impl Default for VRam {
         Self {
             buffer: [Self::BLACK; SCREEN_SIZE],
         }
+    }
+}
+
+impl Index<usize> for VRam {
+    type Output = Pixel;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.buffer[index]
     }
 }
 

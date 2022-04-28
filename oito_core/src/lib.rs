@@ -16,3 +16,15 @@ pub type OpCode = u16; // each Chip8 instruction is made of two bytes
 pub type Byte = u8;
 /// Specification of the type for register indices
 pub type RegIndex = u8;
+
+/// Types that can be masked
+pub trait BitMask {
+    const LEAST_SIGNIFICANT_BIT: Self;
+    const MOST_SIGNIFICANT_BIT: Self;
+}
+
+impl BitMask for Byte {
+    const LEAST_SIGNIFICANT_BIT: Self = 0b00000001;
+    const MOST_SIGNIFICANT_BIT: Self = 0b10000000;
+}
+

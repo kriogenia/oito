@@ -1,5 +1,4 @@
 mod alu;
-mod bitmask;
 mod register;
 
 use register::{IRegister, VRegister};
@@ -36,6 +35,7 @@ impl Cpu {
 	}
 
 	/// Returns the state of the Flag Register
+	#[cfg(test)]
 	pub fn vf(&self) -> Byte {
 		self.freg.get()
 	}

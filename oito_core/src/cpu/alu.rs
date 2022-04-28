@@ -5,7 +5,7 @@ use num_traits::{
     Num,
 };
 
-use super::{bitmask::BitMask};
+use crate::BitMask;
 
 #[inline]
 pub fn add<T>(left: T, right: &T) -> (T, T) 
