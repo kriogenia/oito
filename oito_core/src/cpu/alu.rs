@@ -5,23 +5,23 @@ use num_traits::{
     Num,
 };
 
-use crate::Byte;
-
-use super::{bitmask::BitMask, FLAG_CARRY, NO_FLAG};
+use super::{bitmask::BitMask};
 
 #[inline]
-pub fn add<T: OverflowingAdd>(left: T, right: &T) -> (T, Byte) {
+pub fn add<T>(left: T, right: &T) -> (T, T) 
+where T: OverflowingAdd + Num {
     match left.overflowing_add(right) {
-        (result, true) => (result, FLAG_CARRY),
-        (result, false) => (result, NO_FLAG),
+        (result, true) => (result, T::one()),
+        (result, false) => (result, T::zero()),
     }
 }
 
 #[inline]
-pub fn sub<T: OverflowingSub>(left: T, right: &T) -> (T, Byte) {
+pub fn sub<T>(left: T, right: &T) -> (T, T) 
+where T: OverflowingSub + Num {
     match left.overflowing_sub(right) {
-        (result, true) => (result, NO_FLAG),
-        (result, false) => (result, FLAG_CARRY),
+        (result, true) => (result, T::zero()),
+        (result, false) => (result, T::one()),
     }
 }
 

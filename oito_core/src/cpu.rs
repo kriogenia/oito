@@ -9,9 +9,6 @@ use crate::{core::operations::{BitOp, ArithOp}, Address, Byte, RegIndex};
 const INSTRUCTION_SIZE: u16 = 2;
 const NUMBER_OF_REGISTERS: usize = 15;
 
-const NO_FLAG: u8 = 0b00000000;
-const FLAG_CARRY: u8 = 0b00000001;
-
 /// Simmulated CPU
 pub struct Cpu {
     /// Program Counter
@@ -42,7 +39,7 @@ impl Cpu {
 
     /// Raises a flag in the VF register
     #[inline]
-    pub fn set_flag(&mut self, flag: u8) {
+    pub fn set_flag(&mut self, flag: Byte) {
         self.vf.load(flag);
     }
 
@@ -124,9 +121,11 @@ impl Default for Cpu {
 mod test {
     use crate::{
         core::operations::BitOp,
-        cpu::{FLAG_CARRY, NO_FLAG},
         Byte,
     };
+
+	const FLAG_CARRY: u8 = 1;
+	const NO_FLAG: u8 = 0;
 
     use super::Cpu;
 
