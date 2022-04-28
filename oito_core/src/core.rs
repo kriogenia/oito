@@ -1,4 +1,4 @@
-use crate::core::operations::BitOp;
+use crate::core::operations::{BitOp, ArithOp};
 use crate::cpu::Cpu;
 use crate::exception::Exception;
 use crate::instruction::Instruction;
@@ -89,13 +89,13 @@ impl OitoCore {
                 }
             }
             LDbr { x, byte } => self.cpu.load_to_v(x, byte),
-            ADDbr { x, byte } => self.cpu.add_to_v(x, byte),
+            ADDbr { x, byte } => self.cpu.arith_op(ArithOp::Add(x, byte)),
             LDrr { x, y } => self.cpu.load_to_v(x, self.cpu.v(y).get()),
             OR { x, y } => self.cpu.bit_op(BitOp::Or(x, y)),
             AND { x, y } => self.cpu.bit_op(BitOp::And(x, y)),
             XOR { x, y } => self.cpu.bit_op(BitOp::Xor(x, y)),
-            ADDrr { x, y } => self.cpu.checked_add_to_v(x, self.cpu.v(y).get()),
-            SUB { x, y } => self.cpu.checked_sub_to_v(x, self.cpu.v(y).get()),
+            ADDrr { x, y } => self.cpu.arith_op(ArithOp::CheckedAdd(x, y)),
+            SUB { x, y } => self.cpu.arith_op(ArithOp::Sub(x, y)),
             SHR(x) => self.cpu.bit_op(BitOp::ShiftRight(x)),
             _ => unimplemented!("this instruction is yet to be implemented"),
         }

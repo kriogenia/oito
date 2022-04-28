@@ -1,5 +1,11 @@
 use crate::RegIndex;
 
+pub enum ArithOp<T> {
+	Add(RegIndex, T),
+	CheckedAdd(RegIndex, RegIndex),
+	Sub(RegIndex, RegIndex),
+}
+
 pub enum BitOp {
     And(RegIndex, RegIndex),
     Or(RegIndex, RegIndex),

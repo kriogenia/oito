@@ -4,7 +4,7 @@ mod register;
 
 use register::{IRegister, VRegister};
 
-use crate::{core::operations::BitOp, Address, Byte, RegIndex};
+use crate::{core::operations::{BitOp, ArithOp}, Address, Byte, RegIndex};
 
 const INSTRUCTION_SIZE: u16 = 2;
 const NUMBER_OF_REGISTERS: usize = 15;
@@ -64,35 +64,25 @@ impl Cpu {
         self.v_mut(index).load(value);
     }
 
-    /// Adds the value to the specified register.
-    /// In doesn't check overflows, to make an addition with overflow check refer to [checked_add_to_v]
-    #[inline]
-    pub fn add_to_v(&mut self, index: RegIndex, value: Byte) {
-        let reg = self.v_mut(index);
-        reg.load(alu::add(reg.get(), &value).0);
-    }
-
-    /// Performs a checked addition of the value into the specified register.
-    /// In case of overflow the flag register (VF) will be set to 1.
-    /// If the addition doesn't overflow the VF will be set to 0.
-    ///
-    /// To perform an addition without check refer to [add_to_v]
-    pub fn checked_add_to_v(&mut self, index: RegIndex, value: Byte) {
-        let (result, flag) = alu::add(self.v(index).get(), &value);
-        self.load_to_v(index, result);
-        self.set_flag(flag);
-    }
-
-    /// Performs a checked substraction of the value into the specified register.
-    /// In case of overflow the flag register (VF) will be set to 1.
-    /// If the addition doesn't overflow the VF will be set to 0.
-    ///
-    /// To perform an addition without check refer to [add_to_v]
-    pub fn checked_sub_to_v(&mut self, index: RegIndex, value: Byte) {
-        let (result, flag) = alu::sub(self.v(index).get(), &value);
-        self.load_to_v(index, result);
-        self.set_flag(flag)
-    }
+	/// Performs the specified arithmetic operation
+	pub fn arith_op(&mut self, operation: ArithOp<u8>) {
+		match operation {
+			ArithOp::Add(x, value) => {
+				let reg = self.v_mut(x);
+				reg.load(alu::add(reg.get(), &value).0);
+			},
+			ArithOp::CheckedAdd(x, y) => {
+				let (result, flag) = alu::add(self.v(x).get(), &self.v(y).get());
+				self.load_to_v(x, dbg!(result));
+				self.set_flag(flag);
+			},
+			ArithOp::Sub(x, y) => {
+				let (result, flag) = alu::sub(self.v(x).get(), &self.v(y).get());
+				self.load_to_v(x, result);
+				self.set_flag(flag);
+			}
+		}
+	}
 
     /// Performs the specified bit operation with the registers
     pub fn bit_op(&mut self, operation: BitOp) {
@@ -185,48 +175,60 @@ mod test {
         assert_eq!(cpu.v(0).get(), 100);
     }
 
-    #[test]
-    fn add_to_v() {
-        let mut cpu = Cpu::default();
+	mod arith_op {
+		use crate::core::operations::ArithOp;
 
-        cpu.add_to_v(0, Byte::MAX);
-        assert_eq!(*cpu.v(0), Byte::MAX);
-        assert_eq!(cpu.vf, NO_FLAG);
+use super::*;
 
-        cpu.add_to_v(0, 1);
-        assert_eq!(*cpu.v(0), 0);
-        assert_eq!(cpu.vf, NO_FLAG);
-    }
+		#[test]
+		fn add() {
+			let mut cpu = Cpu::default();
+	
+			cpu.arith_op(ArithOp::Add(0, Byte::MAX));
+			assert_eq!(*cpu.v(0), Byte::MAX);
+			assert_eq!(cpu.vf, NO_FLAG);
+	
+			cpu.arith_op(ArithOp::Add(0, 1));
+			assert_eq!(*cpu.v(0), 0);
+			assert_eq!(cpu.vf, NO_FLAG);
+		}
 
-    #[test]
-    fn checked_add_to_v() {
-        let mut cpu = Cpu::default();
-        // No overflow
-        cpu.checked_add_to_v(0, 12);
-        cpu.checked_add_to_v(0, 13);
-        assert_eq!(cpu.vreg[0], 12 + 13);
-        assert_eq!(cpu.vf, NO_FLAG);
-        // Overflow
-        cpu.load_to_v(0, Byte::MAX);
-        cpu.checked_add_to_v(0, 11);
-        assert_eq!(cpu.vreg[0], 11 - 1);
-        assert_eq!(cpu.vf, FLAG_CARRY);
-    }
+		#[test]
+		fn checked_add() {
+			let mut cpu = Cpu::default();
+			// No overflow
+			cpu.load_to_v(1, 12);
+			cpu.arith_op(ArithOp::CheckedAdd(0, 1));
+			cpu.load_to_v(2, 13);			
+			cpu.arith_op(ArithOp::CheckedAdd(0, 2));
+			assert_eq!(cpu.vreg[0], 12 + 13);
+			assert_eq!(cpu.vf, NO_FLAG);
+			// Overflow
+			cpu.load_to_v(0, Byte::MAX);
+			cpu.load_to_v(1, 11);
+			cpu.arith_op(ArithOp::CheckedAdd(0, 1));
+			assert_eq!(cpu.vreg[0], 11 - 1);
+			assert_eq!(cpu.vf, FLAG_CARRY);
+		}
 
-    #[test]
-    fn checked_sub_to_v() {
-        let mut cpu = Cpu::default();
-        // No underflow
-        cpu.load_to_v(0, 12);
-        cpu.checked_sub_to_v(0, 11);
-        assert_eq!(cpu.vreg[0], 12 - 11);
-        assert_eq!(cpu.vf, FLAG_CARRY);
-        // Underflow
-        cpu.load_to_v(0, 1);
-        cpu.checked_sub_to_v(0, 2);
-        assert_eq!(cpu.vreg[0], Byte::MAX);
-        assert_eq!(cpu.vf, NO_FLAG);
-    }
+		#[test]
+		fn checked_sub() {
+			let mut cpu = Cpu::default();
+			// No underflow
+			cpu.load_to_v(0, 12);
+			cpu.load_to_v(1, 11);
+			cpu.arith_op(ArithOp::Sub(0, 1));
+			assert_eq!(cpu.vreg[0], 12 - 11);
+			assert_eq!(cpu.vf, FLAG_CARRY);
+			// Underflow
+			cpu.load_to_v(0, 1);
+			cpu.load_to_v(1, 2);
+			cpu.arith_op(ArithOp::Sub(0, 1));
+			assert_eq!(cpu.vreg[0], Byte::MAX);
+			assert_eq!(cpu.vf, NO_FLAG);
+		}
+
+	}
 
     #[test]
     fn bit_op() {
