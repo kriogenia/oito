@@ -16,9 +16,9 @@ pub struct Cpu {
     /// V-Registers
     vreg: [VRegister; NUMBER_OF_REGISTERS],
     /// I-Register
-    ireg: IRegister,
+    pub(super) ireg: IRegister,
     /// Flag Register
-    pub(crate) vf: VRegister,
+    pub(super) vf: VRegister,
 }
 
 impl Cpu {
@@ -36,6 +36,12 @@ impl Cpu {
     pub fn point_at(&mut self, position: Address) {
         self.pc = position;
     }
+
+	/// Sets the specified address in the register I
+	#[inline]
+	pub fn set_i(&mut self, address: Address) {
+		self.ireg.load(address);
+	}
 
     /// Raises a flag in the VF register
     #[inline]
@@ -174,6 +180,14 @@ mod test {
         cpu.set_flag(NO_FLAG);
         assert_eq!(cpu.vf, NO_FLAG);
     }
+
+	#[test]
+	fn set_i() {
+		let mut cpu = Cpu::default();
+
+		cpu.set_i(0xABCD);
+		assert_eq!(cpu.ireg, 0xABCD);
+	}
 
     #[test]
     fn load_to_v() {

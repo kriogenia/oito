@@ -104,6 +104,7 @@ impl OitoCore {
                     self.cpu.increase();
                 }
             },
+			LDi(address) => self.cpu.set_i(address),
             _ => unimplemented!("this instruction is yet to be implemented"),
         }
         Ok(())

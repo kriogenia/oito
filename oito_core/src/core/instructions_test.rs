@@ -209,3 +209,11 @@ fn sne_register() {
     oito.execute(Instruction::SNErr { x: 0, y: 2 }).unwrap();
     assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc);
 }
+
+#[test]
+fn ld_i() {
+	let mut oito = OitoCore::default();
+
+	oito.execute(Instruction::LDi(0xA2C9)).unwrap();
+	assert_eq!(oito.cpu.ireg, 0xA2C9);
+}
