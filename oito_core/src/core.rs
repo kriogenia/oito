@@ -6,7 +6,9 @@ use crate::ram::Ram;
 use crate::stack::Stack;
 use crate::timer::Timer;
 use crate::vram::VRam;
-use crate::{Address, OpCode};
+use crate::{Address, OpCode, Byte};
+
+use rand::random;
 
 pub(crate) mod operations;
 
@@ -105,7 +107,8 @@ impl OitoCore {
                 }
             },
 			LDi(address) => self.cpu.set_i(address),
-			JPr(address) => self.cpu.point_at(self.cpu.v(0).get() as u16 + address),
+			JPr(address) => self.cpu.point_at(self.cpu.v(0).get() as Address + address),
+			RND { x, byte } => self.cpu.load_to_v(x, byte & random::<Byte>()),
             _ => unimplemented!("this instruction is yet to be implemented"),
         }
         Ok(())
