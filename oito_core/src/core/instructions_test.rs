@@ -176,3 +176,24 @@ fn shr() {
     assert_eq!(*oito.cpu.v(0), 0b0010);
     assert_eq!(oito.cpu.vf, 1);
 }
+
+#[test]
+fn subn() {
+    let mut oito = OitoCore::default();
+    oito.cpu.load_to_v(0, 2);
+    oito.cpu.load_to_v(1, 1);
+
+    oito.execute(Instruction::SUBN { x: 0, y: 1 }).unwrap();
+    assert_eq!(*oito.cpu.v(0), Byte::MAX);
+    assert_eq!(oito.cpu.vf, 1);
+}
+
+#[test]
+fn shl() {
+    let mut oito = OitoCore::default();
+    oito.cpu.load_to_v(0, 0b10100101);
+
+    oito.execute(Instruction::SHL(0)).unwrap();
+    assert_eq!(*oito.cpu.v(0), 0b01001010);
+    assert_eq!(oito.cpu.vf, 1);
+}

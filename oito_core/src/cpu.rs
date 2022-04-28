@@ -106,7 +106,11 @@ impl Cpu {
                 self.set_flag(flag);
                 self.v_mut(x).load(result);
             }
-            _ => unimplemented!("BitOp not yet implemented"),
+            BitOp::ShiftLeft(x) => {
+				let (result, flag) = alu::shl(self.v(x).get());
+				self.set_flag(flag);
+				self.v_mut(x).load(result);
+			}
         }
     }
 }
@@ -254,24 +258,28 @@ use super::*;
     #[test]
     fn bit_op() {
         let mut cpu = Cpu::default();
-        cpu.load_to_v(0, 0b0001);
-        cpu.load_to_v(1, 0b0110);
-        cpu.load_to_v(2, 0b1110);
-        cpu.load_to_v(3, 0b0101);
-        cpu.load_to_v(4, 0b0011);
-        cpu.load_to_v(5, 0b1011);
+        cpu.load_to_v(0, 0b00000001);
+        cpu.load_to_v(1, 0b00000110);
+        cpu.load_to_v(2, 0b00001110);
+        cpu.load_to_v(3, 0b00000101);
+        cpu.load_to_v(4, 0b10101010);
+        cpu.load_to_v(5, 0b00001011);
 
         cpu.bit_op(BitOp::Or(0, 5));
-        assert_eq!(*cpu.v(0), 0b1011);
+        assert_eq!(*cpu.v(0), 0b00001011);
 
         cpu.bit_op(BitOp::And(1, 5));
-        assert_eq!(*cpu.v(1), 0b0010);
+        assert_eq!(*cpu.v(1), 0b00000010);
 
         cpu.bit_op(BitOp::Xor(2, 5));
-        assert_eq!(*cpu.v(2), 0b0101);
+        assert_eq!(*cpu.v(2), 0b00000101);
 
         cpu.bit_op(BitOp::ShiftRight(3));
-        assert_eq!(*cpu.v(3), 0b0010);
+        assert_eq!(*cpu.v(3), 0b00000010);
         assert_eq!(cpu.vf, 1);
+
+		cpu.bit_op(BitOp::ShiftLeft(4));
+		assert_eq!(*cpu.v(4), 0b01010100);
+		assert_eq!(cpu.vf, 1);
     }
 }

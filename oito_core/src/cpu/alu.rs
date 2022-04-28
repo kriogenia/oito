@@ -1,4 +1,4 @@
-use std::ops::{BitAnd, BitOr, BitXor, Shr};
+use std::ops::{BitAnd, BitOr, BitXor, Shr, Shl};
 
 use num_traits::{
     ops::overflowing::{OverflowingAdd, OverflowingSub},
@@ -49,6 +49,15 @@ where
     (value >> T::one(), lsb)
 }
 
+#[inline]
+pub fn shl<T>(value: T) -> (T, T)
+where
+    T: Num + Shl<Output = T> + BitMask + BitAnd<Output = T> + Copy,
+{
+    let msb = and(value, T::MOST_SIGNIFICANT_BIT);
+    (value << T::one(), if msb.is_zero() { T::zero() } else { T::one() })
+}
+
 #[cfg(test)]
 mod test {
 
@@ -83,5 +92,11 @@ mod test {
     fn shr() {
         assert_eq!((0b0101, 0), super::shr(0b1010));
         assert_eq!((0b0101, 1), super::shr(0b1011));
+    }
+
+    #[test]
+    fn shl() {
+        assert_eq!((0b01010100, 1), super::shl(0b10101010));
+        assert_eq!((0b01100110, 0), super::shl(0b00110011));
     }
 }
