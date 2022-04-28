@@ -4,6 +4,7 @@ pub enum ArithOp<T> {
 	Add(RegIndex, T),
 	CheckedAdd(RegIndex, RegIndex),
 	Sub(RegIndex, RegIndex),
+	SubN(RegIndex, RegIndex),
 }
 
 pub enum BitOp {

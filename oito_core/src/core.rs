@@ -97,6 +97,7 @@ impl OitoCore {
             ADDrr { x, y } => self.cpu.arith_op(ArithOp::CheckedAdd(x, y)),
             SUB { x, y } => self.cpu.arith_op(ArithOp::Sub(x, y)),
             SHR(x) => self.cpu.bit_op(BitOp::ShiftRight(x)),
+			SUBN { x, y } => self.cpu.arith_op(ArithOp::SubN(x, y)),
             _ => unimplemented!("this instruction is yet to be implemented"),
         }
         Ok(())

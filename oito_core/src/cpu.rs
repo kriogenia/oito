@@ -77,7 +77,12 @@ impl Cpu {
 				let (result, flag) = alu::sub(self.v(x).get(), &self.v(y).get());
 				self.load_to_v(x, result);
 				self.set_flag(flag);
-			}
+			},
+			ArithOp::SubN(x, y) => {
+				let (result, flag) = alu::sub(self.v(y).get(), &self.v(x).get());
+				self.load_to_v(x, result);
+				self.set_flag(1 - flag);
+			},
 		}
 	}
 
@@ -211,7 +216,7 @@ use super::*;
 		}
 
 		#[test]
-		fn checked_sub() {
+		fn sub() {
 			let mut cpu = Cpu::default();
 			// No underflow
 			cpu.load_to_v(0, 12);
@@ -225,6 +230,23 @@ use super::*;
 			cpu.arith_op(ArithOp::Sub(0, 1));
 			assert_eq!(cpu.vreg[0], Byte::MAX);
 			assert_eq!(cpu.vf, NO_FLAG);
+		}
+
+		#[test]
+		fn subn() {
+			let mut cpu = Cpu::default();
+			// No underflow
+			cpu.load_to_v(0, 11);
+			cpu.load_to_v(1, 12);
+			cpu.arith_op(ArithOp::SubN(0, 1));
+			assert_eq!(cpu.vreg[0], 12 - 11);
+			assert_eq!(cpu.vf, NO_FLAG);
+			// Underflow
+			cpu.load_to_v(0, 2);
+			cpu.load_to_v(1, 1);
+			cpu.arith_op(ArithOp::SubN(0, 1));
+			assert_eq!(cpu.vreg[0], Byte::MAX);
+			assert_eq!(cpu.vf, FLAG_CARRY);
 		}
 
 	}
