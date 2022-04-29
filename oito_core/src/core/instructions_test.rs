@@ -233,3 +233,17 @@ fn draw() {
 
 	// TODO after implementing prerendered sprites
 }
+
+#[test]
+fn skp() {
+	let mut oito = OitoCore::default();
+	oito.cpu.load_to_v(0, 1);
+	oito.keys.press_key(1);
+
+	oito.execute(Instruction::SKP(1)).unwrap();
+	assert_eq!(Cpu::STARTING_ADDRESS, oito.cpu.pc());
+
+	oito.execute(Instruction::SKP(0)).unwrap();
+	assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc());
+
+}

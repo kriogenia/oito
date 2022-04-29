@@ -132,7 +132,12 @@ impl OitoCore {
 					}
 				}
 				self.cpu.set_flag(swapped as Byte);
-			}
+			},
+			SKP(x) => {
+				if self.keys[self.cpu.v(x).get()] {
+					self.cpu.increase();
+				}
+			},
             _ => unimplemented!("this instruction is yet to be implemented"),
         }
         Ok(())

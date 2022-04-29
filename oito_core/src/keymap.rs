@@ -8,6 +8,15 @@ pub struct KeyMap {
 	key_pressed: [ bool; NUMBER_OF_KEYS ]
 }
 
+impl KeyMap {
+
+	#[cfg(test)]
+	pub fn press_key(&mut self, index: usize) {
+		self.key_pressed[index] = true;
+	}
+
+}
+
 impl Default for KeyMap {
     fn default() -> Self {
         Self { key_pressed: [ false; NUMBER_OF_KEYS ] }
