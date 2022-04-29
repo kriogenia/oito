@@ -34,7 +34,6 @@ impl Index<Byte> for KeyMap {
 #[cfg(test)]
 mod test {
     use super::KeyMap;
-
 	
 	#[test]
 	fn index() {

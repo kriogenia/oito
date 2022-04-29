@@ -261,3 +261,12 @@ fn sknp() {
 	oito.execute(Instruction::SKNP(0)).unwrap();
 	assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc());
 }
+
+#[test]
+fn ld_register_to_delay() {
+	let mut oito = OitoCore::default();
+	oito.dt.set(0x12);
+
+	oito.execute(Instruction::LDdr(0)).unwrap();
+	assert_eq!(*oito.cpu.v(0), 0x12);
+}

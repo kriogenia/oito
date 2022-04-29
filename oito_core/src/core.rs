@@ -143,6 +143,7 @@ impl OitoCore {
 					self.cpu.increase();
 				}
 			},
+			LDdr(x) => self.cpu.load_to_v(x, self.dt.get()),
             _ => unimplemented!("this instruction is yet to be implemented"),
         }
         Ok(())
@@ -189,8 +190,8 @@ mod api_test {
         oito.st.set(4);
 
         oito.frame_tick();
-        assert_eq!(4, oito.dt.count());
-        assert_eq!(3, oito.st.count());
+        assert_eq!(4, oito.dt.get());
+        assert_eq!(3, oito.st.get());
     }
 
     #[test]

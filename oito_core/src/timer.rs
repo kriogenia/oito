@@ -18,8 +18,7 @@ impl Timer {
         self.count = value;
     }
 
-    #[cfg(test)]
-    pub(crate) fn count(&self) -> u8 {
+    pub fn get(&self) -> u8 {
         self.count
     }
 }
