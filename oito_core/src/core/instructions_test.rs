@@ -238,6 +238,7 @@ fn draw() {
 fn skp() {
 	let mut oito = OitoCore::default();
 	oito.cpu.load_to_v(0, 1);
+	oito.cpu.load_to_v(1, 2);
 	oito.keys.press_key(1);
 
 	oito.execute(Instruction::SKP(1)).unwrap();
@@ -245,5 +246,18 @@ fn skp() {
 
 	oito.execute(Instruction::SKP(0)).unwrap();
 	assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc());
+}
 
+#[test]
+fn sknp() {
+	let mut oito = OitoCore::default();
+	oito.cpu.load_to_v(0, 1);
+	oito.cpu.load_to_v(1, 2);
+	oito.keys.press_key(1);
+
+	oito.execute(Instruction::SKNP(1)).unwrap();
+	assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc());
+
+	oito.execute(Instruction::SKNP(0)).unwrap();
+	assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc());
 }

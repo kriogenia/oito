@@ -138,6 +138,11 @@ impl OitoCore {
 					self.cpu.increase();
 				}
 			},
+			SKNP(x) => {
+				if !self.keys[self.cpu.v(x).get()] {
+					self.cpu.increase();
+				}
+			},
             _ => unimplemented!("this instruction is yet to be implemented"),
         }
         Ok(())
