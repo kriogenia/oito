@@ -7,7 +7,7 @@ use crate::ram::Ram;
 use crate::stack::Stack;
 use crate::timer::Timer;
 use crate::vram::{VRam, SCREEN_HEIGHT, SCREEN_WIDTH};
-use crate::{Address, BitMask, Byte, OpCode};
+use crate::{fontset, Address, BitMask, Byte, OpCode};
 
 use rand::random;
 
@@ -37,7 +37,9 @@ pub struct OitoCore {
 impl OitoCore {
     /// Returns a new instance of the emulator core
     pub fn new() -> Self {
-        Self::default()
+        let mut oito = Self::default();
+        oito.ram.load(0, &fontset::FONTSET);
+        oito
     }
 
     /// Performs a cycle of the emulator
@@ -148,15 +150,20 @@ impl OitoCore {
             LDkr(x) => {
                 match self.keys.get_key_pressed() {
                     Some(k) => self.cpu.load_to_v(x, k as Byte),
-                    None => self.cpu.decrease(),	// simulate loop pointing to the same instruction
+                    None => self.cpu.decrease(), // simulate loop pointing to the same instruction
                 }
-            },
+            }
             LDrd(x) => self.dt.set(self.cpu.v(x).get()),
             LDrs(x) => self.st.set(self.cpu.v(x).get()),
             ADDri(x) => {
-                let address = self.cpu.i() + self.cpu.v(x).get() as Address;
+                let address = self.cpu.i().wrapping_add(self.cpu.v(x).get() as Address);
                 self.cpu.set_i(address);
             }
+			LDmi(x) => {
+				let character = self.cpu.v(x).get();
+				let sprite_address = fontset::location(character);
+				self.cpu.set_i(sprite_address);
+			}
             _ => unimplemented!("this instruction is yet to be implemented"),
         }
         Ok(())
@@ -164,6 +171,8 @@ impl OitoCore {
 }
 
 impl Default for OitoCore {
+    /// Generates a completely empty emulator. All the contained data will be empty.
+    /// To create an emulator with the preloaded data use [OitoCore::new]
     fn default() -> Self {
         Self {
             cpu: Default::default(),
@@ -184,6 +193,13 @@ mod instructions_test;
 mod api_test {
     use super::OitoCore;
     use crate::cpu::Cpu;
+
+    #[test]
+    fn new() {
+        let oito = OitoCore::new();
+
+        assert_eq!(0xF0, oito.ram.read(0x0).unwrap());
+    }
 
     #[test]
     fn tick() {

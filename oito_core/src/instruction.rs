@@ -72,7 +72,7 @@ pub enum Instruction {
     /// Fx1E - Add Vx to I: `I += Vx`
     ADDri(RegIndex),
     /// Fx29 - Load sprite loaded at Vx memory location into I: `I = sprite_addr[Vx]`
-    LDri(RegIndex),
+    LDmi(RegIndex),
     /// Fx33 - Store BCD representation of Vx in memory locations I, I+1, and I+2
     LDrm(RegIndex),
     /// Fx55 - Store registers [V0, Vx] in memory starting at I: `reg_dump(Vx, &I)`
@@ -164,7 +164,7 @@ impl TryFrom<OpCode> for Instruction {
             (0xF, vx, 0x1, 0x5) => Ok(LDrd(vx as RegIndex)),
             (0xF, vx, 0x1, 0x8) => Ok(LDrs(vx as RegIndex)),
             (0xF, vx, 0x1, 0xE) => Ok(ADDri(vx as RegIndex)),
-            (0xF, vx, 0x2, 0x9) => Ok(LDri(vx as RegIndex)),
+            (0xF, vx, 0x2, 0x9) => Ok(LDmi(vx as RegIndex)),
             (0xF, vx, 0x3, 0x3) => Ok(LDrm(vx as RegIndex)),
             (0xF, vx, 0x5, 0x5) => Ok(LDvm(vx as RegIndex)),
             (0xF, vx, 0x6, 0x5) => Ok(LDmv(vx as RegIndex)),
@@ -285,7 +285,7 @@ mod test {
             Instruction::ADDri(7),
             Instruction::try_from(0xF71E).unwrap()
         );
-        assert_eq!(Instruction::LDri(8), Instruction::try_from(0xF829).unwrap());
+        assert_eq!(Instruction::LDmi(8), Instruction::try_from(0xF829).unwrap());
         assert_eq!(
             Instruction::LDrm(10),
             Instruction::try_from(0xFA33).unwrap()

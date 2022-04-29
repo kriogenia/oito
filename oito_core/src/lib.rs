@@ -1,5 +1,6 @@
 pub mod core;
 pub(crate) mod exception;
+pub(crate) mod fontset;
 
 mod cpu;
 mod instruction;
