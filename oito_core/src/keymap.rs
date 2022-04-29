@@ -4,22 +4,24 @@ use crate::Byte;
 
 const NUMBER_OF_KEYS: usize = 16;
 
+/// Mapping of the keys and their state as pressed or not pressed
+#[derive(Debug)]
 pub struct KeyMap {
-	key_pressed: [ bool; NUMBER_OF_KEYS ]
+    key_pressed: [bool; NUMBER_OF_KEYS],
 }
 
 impl KeyMap {
-
-	#[cfg(test)]
-	pub fn press_key(&mut self, index: usize) {
-		self.key_pressed[index] = true;
-	}
-
+    #[cfg(test)]
+    pub fn press_key(&mut self, index: usize) {
+        self.key_pressed[index] = true;
+    }
 }
 
 impl Default for KeyMap {
     fn default() -> Self {
-        Self { key_pressed: [ false; NUMBER_OF_KEYS ] }
+        Self {
+            key_pressed: [false; NUMBER_OF_KEYS],
+        }
     }
 }
 
@@ -34,13 +36,12 @@ impl Index<Byte> for KeyMap {
 #[cfg(test)]
 mod test {
     use super::KeyMap;
-	
-	#[test]
-	fn index() {
-		let mut map = KeyMap::default();
-		map.key_pressed[0] = true;
 
-		assert!(map[0]);
-	}
+    #[test]
+    fn index() {
+        let mut map = KeyMap::default();
+        map.key_pressed[0] = true;
 
+        assert!(map[0]);
+    }
 }

@@ -1,3 +1,5 @@
+use std::fmt::Debug;
+
 use crate::{exception::Exception, Address};
 
 const STACK_SIZE: usize = 16;
@@ -52,6 +54,14 @@ impl Default for Stack {
             pointer: STACK_POINTER_INIT,
             content: [EMPTY; STACK_SIZE],
         }
+    }
+}
+
+impl Debug for Stack {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Stack")
+            .field("top", &self.content[self.pointer as usize])
+            .finish()
     }
 }
 

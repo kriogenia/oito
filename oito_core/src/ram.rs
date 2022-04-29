@@ -5,6 +5,7 @@ const RAM_SIZE: usize = 4096;
 const EMPTY_MEM: Byte = 0;
 
 /// Simmulated RAM
+#[derive(Debug)]
 pub struct Ram {
     /// Buffer with the memory mantained by the RAM
     memory: [Byte; RAM_SIZE],

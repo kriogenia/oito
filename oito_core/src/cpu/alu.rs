@@ -1,4 +1,4 @@
-use std::ops::{BitAnd, BitOr, BitXor, Shr, Shl};
+use std::ops::{BitAnd, BitOr, BitXor, Shl, Shr};
 
 use num_traits::{
     ops::overflowing::{OverflowingAdd, OverflowingSub},
@@ -8,8 +8,10 @@ use num_traits::{
 use crate::BitMask;
 
 #[inline]
-pub fn add<T>(left: T, right: &T) -> (T, T) 
-where T: OverflowingAdd + Num {
+pub fn add<T>(left: T, right: &T) -> (T, T)
+where
+    T: OverflowingAdd + Num,
+{
     match left.overflowing_add(right) {
         (result, true) => (result, T::one()),
         (result, false) => (result, T::zero()),
@@ -17,8 +19,10 @@ where T: OverflowingAdd + Num {
 }
 
 #[inline]
-pub fn sub<T>(left: T, right: &T) -> (T, T) 
-where T: OverflowingSub + Num {
+pub fn sub<T>(left: T, right: &T) -> (T, T)
+where
+    T: OverflowingSub + Num,
+{
     match left.overflowing_sub(right) {
         (result, true) => (result, T::zero()),
         (result, false) => (result, T::one()),
@@ -55,7 +59,10 @@ where
     T: Num + Shl<Output = T> + BitMask + BitAnd<Output = T> + Copy,
 {
     let msb = and(value, T::MOST_SIGNIFICANT_BIT);
-    (value << T::one(), if msb.is_zero() { T::zero() } else { T::one() })
+    (
+        value << T::one(),
+        if msb.is_zero() { T::zero() } else { T::one() },
+    )
 }
 
 #[cfg(test)]

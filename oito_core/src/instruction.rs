@@ -56,11 +56,7 @@ pub enum Instruction {
     /// Cxnn - Load random byte AND nn into Vx: `Vx = rand() & nn`
     RND { x: RegIndex, byte: Byte },
     /// Dxyn - Display n-byte sprite starting at memory location I at (Vx, Vy) = `draw(Vx, Vy, N)`
-    DRW {
-        x: RegIndex,
-        y: RegIndex,
-        n: Byte,
-    },
+    DRW { x: RegIndex, y: RegIndex, n: Byte },
     /// Ex9E - Skip if the key matching Vx is pressed: `if key() == Vx`
     SKP(RegIndex),
     /// ExA1 - Skip if the key pressed don't match Vx: `if key() != Vx`
@@ -276,11 +272,7 @@ mod test {
             Instruction::try_from(0xCBDF).unwrap()
         );
         assert_eq!(
-            Instruction::DRW {
-                x: 0,
-                y: 3,
-                n: 0x6
-            },
+            Instruction::DRW { x: 0, y: 3, n: 0x6 },
             Instruction::try_from(0xD036).unwrap()
         );
         assert_eq!(Instruction::SKP(1), Instruction::try_from(0xE19E).unwrap());

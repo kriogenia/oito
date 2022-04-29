@@ -7,6 +7,7 @@ type Pixel = bool; // only b&w, so bool is enough
 use std::ops::Index;
 
 /// Representation of the screen to draw
+#[derive(Debug)]
 pub struct VRam {
     /// Buffer of the current visual content
     buffer: [Pixel; SCREEN_SIZE],
@@ -23,7 +24,7 @@ impl VRam {
         self.buffer = [Self::BLACK; SCREEN_SIZE];
     }
 
-	/// Paints over the pixel. If this already painted, it sets the pixel to not painted.
+    /// Paints over the pixel. If this already painted, it sets the pixel to not painted.
     pub fn paint(&mut self, index: usize) {
         self.buffer[index] ^= VRam::WHITE;
     }

@@ -201,7 +201,7 @@ fn shl() {
 #[test]
 fn sne_register() {
     let mut oito = OitoCore::default();
-	oito.cpu.load_to_v(1, 1);
+    oito.cpu.load_to_v(1, 1);
     // Skip
     oito.execute(Instruction::SNErr { x: 0, y: 1 }).unwrap();
     assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc());
@@ -212,61 +212,61 @@ fn sne_register() {
 
 #[test]
 fn ld_i() {
-	let mut oito = OitoCore::default();
+    let mut oito = OitoCore::default();
 
-	oito.execute(Instruction::LDi(0xA2C9)).unwrap();
-	assert_eq!(oito.cpu.i(), 0xA2C9);
+    oito.execute(Instruction::LDi(0xA2C9)).unwrap();
+    assert_eq!(oito.cpu.i(), 0xA2C9);
 }
 
 #[test]
 fn jp_address() {
-	let mut oito = OitoCore::default();
-	oito.cpu.load_to_v(0, 0x20);
+    let mut oito = OitoCore::default();
+    oito.cpu.load_to_v(0, 0x20);
 
-	oito.execute(Instruction::JPr(0x10)).unwrap();
-	assert_eq!(oito.cpu.pc(), 0x30);
+    oito.execute(Instruction::JPr(0x10)).unwrap();
+    assert_eq!(oito.cpu.pc(), 0x30);
 }
 
 #[test]
 fn draw() {
-	let mut _oito = OitoCore::default();
+    let mut _oito = OitoCore::default();
 
-	// TODO after implementing prerendered sprites
+    // TODO after implementing prerendered sprites
 }
 
 #[test]
 fn skp() {
-	let mut oito = OitoCore::default();
-	oito.cpu.load_to_v(0, 1);
-	oito.cpu.load_to_v(1, 2);
-	oito.keys.press_key(1);
+    let mut oito = OitoCore::default();
+    oito.cpu.load_to_v(0, 1);
+    oito.cpu.load_to_v(1, 2);
+    oito.keys.press_key(1);
 
-	oito.execute(Instruction::SKP(1)).unwrap();
-	assert_eq!(Cpu::STARTING_ADDRESS, oito.cpu.pc());
+    oito.execute(Instruction::SKP(1)).unwrap();
+    assert_eq!(Cpu::STARTING_ADDRESS, oito.cpu.pc());
 
-	oito.execute(Instruction::SKP(0)).unwrap();
-	assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc());
+    oito.execute(Instruction::SKP(0)).unwrap();
+    assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc());
 }
 
 #[test]
 fn sknp() {
-	let mut oito = OitoCore::default();
-	oito.cpu.load_to_v(0, 1);
-	oito.cpu.load_to_v(1, 2);
-	oito.keys.press_key(1);
+    let mut oito = OitoCore::default();
+    oito.cpu.load_to_v(0, 1);
+    oito.cpu.load_to_v(1, 2);
+    oito.keys.press_key(1);
 
-	oito.execute(Instruction::SKNP(1)).unwrap();
-	assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc());
+    oito.execute(Instruction::SKNP(1)).unwrap();
+    assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc());
 
-	oito.execute(Instruction::SKNP(0)).unwrap();
-	assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc());
+    oito.execute(Instruction::SKNP(0)).unwrap();
+    assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc());
 }
 
 #[test]
-fn ld_register_to_delay() {
-	let mut oito = OitoCore::default();
-	oito.dt.set(0x12);
+fn ld_delay_to_register() {
+    let mut oito = OitoCore::default();
+    oito.dt.set(0x12);
 
-	oito.execute(Instruction::LDdr(0)).unwrap();
-	assert_eq!(*oito.cpu.v(0), 0x12);
+    oito.execute(Instruction::LDdr(0)).unwrap();
+    assert_eq!(*oito.cpu.v(0), 0x12);
 }

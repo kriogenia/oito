@@ -1,3 +1,5 @@
+use std::fmt::Debug;
+
 /// Abstraction of both timers of the Chip8 CPU
 #[derive(Default)]
 pub struct Timer {
@@ -20,6 +22,12 @@ impl Timer {
 
     pub fn get(&self) -> u8 {
         self.count
+    }
+}
+
+impl Debug for Timer {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		write!(f, "Timer: [{}]", &self.count)
     }
 }
 

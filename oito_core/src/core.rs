@@ -1,4 +1,4 @@
-use crate::core::operations::{BitOp, ArithOp};
+use crate::core::operations::{ArithOp, BitOp};
 use crate::cpu::Cpu;
 use crate::exception::Exception;
 use crate::instruction::Instruction;
@@ -6,7 +6,7 @@ use crate::keymap::KeyMap;
 use crate::ram::Ram;
 use crate::stack::Stack;
 use crate::timer::Timer;
-use crate::vram::{VRam, SCREEN_WIDTH, SCREEN_HEIGHT};
+use crate::vram::{VRam, SCREEN_HEIGHT, SCREEN_WIDTH};
 use crate::{Address, BitMask, Byte, OpCode};
 
 use rand::random;
@@ -16,6 +16,7 @@ pub(crate) mod operations;
 const BYTE_SIZE: u8 = 8;
 
 /// Core of the emmulator
+#[derive(Debug)]
 pub struct OitoCore {
     /// Emmulated CPU
     cpu: Cpu,
@@ -29,8 +30,8 @@ pub struct OitoCore {
     dt: Timer,
     /// Sound timer
     st: Timer,
-	/// Key character map
-	keys: KeyMap
+    /// Key character map
+    keys: KeyMap,
 }
 
 impl OitoCore {
@@ -104,46 +105,46 @@ impl OitoCore {
             ADDrr { x, y } => self.cpu.arith_op(ArithOp::CheckedAdd(x, y)),
             SUB { x, y } => self.cpu.arith_op(ArithOp::Sub(x, y)),
             SHR(x) => self.cpu.bit_op(BitOp::ShiftRight(x)),
-			SUBN { x, y } => self.cpu.arith_op(ArithOp::SubN(x, y)),
-			SHL(x) => self.cpu.bit_op(BitOp::ShiftLeft(x)),
-			SNErr { x, y } => {
+            SUBN { x, y } => self.cpu.arith_op(ArithOp::SubN(x, y)),
+            SHL(x) => self.cpu.bit_op(BitOp::ShiftLeft(x)),
+            SNErr { x, y } => {
                 if self.cpu.v(x) != self.cpu.v(y) {
                     self.cpu.increase();
                 }
-            },
-			LDi(address) => self.cpu.set_i(address),
-			JPr(address) => self.cpu.point_at(self.cpu.v(0).get() as Address + address),
-			RND { x, byte } => self.cpu.load_to_v(x, byte & random::<Byte>()),
-			DRW { x, y, n } => {
-				let mut swapped = false;
-				for i in 0..n {
-					let address = self.cpu.i() + i as Address;
-					let pixels = self.ram.read(address)?;
-					for j in 0..BYTE_SIZE {
-						if (pixels & (Byte::MOST_SIGNIFICANT_BIT >> j)) != 0 {
-							let x = (x + j) as usize % SCREEN_WIDTH;
-							let y = (y + i) as usize % SCREEN_HEIGHT;
+            }
+            LDi(address) => self.cpu.set_i(address),
+            JPr(address) => self.cpu.point_at(self.cpu.v(0).get() as Address + address),
+            RND { x, byte } => self.cpu.load_to_v(x, byte & random::<Byte>()),
+            DRW { x, y, n } => {
+                let mut swapped = false;
+                for i in 0..n {
+                    let address = self.cpu.i() + i as Address;
+                    let pixels = self.ram.read(address)?;
+                    for j in 0..BYTE_SIZE {
+                        if (pixels & (Byte::MOST_SIGNIFICANT_BIT >> j)) != 0 {
+                            let x = (x + j) as usize % SCREEN_WIDTH;
+                            let y = (y + i) as usize % SCREEN_HEIGHT;
 
-							let idx = x + SCREEN_WIDTH * y;
+                            let idx = x + SCREEN_WIDTH * y;
 
-							swapped |= self.vram[idx];
-							self.vram.paint(idx as usize);
-						}
-					}
-				}
-				self.cpu.set_flag(swapped as Byte);
-			},
-			SKP(x) => {
-				if self.keys[self.cpu.v(x).get()] {
-					self.cpu.increase();
-				}
-			},
-			SKNP(x) => {
-				if !self.keys[self.cpu.v(x).get()] {
-					self.cpu.increase();
-				}
-			},
-			LDdr(x) => self.cpu.load_to_v(x, self.dt.get()),
+                            swapped |= self.vram[idx];
+                            self.vram.paint(idx as usize);
+                        }
+                    }
+                }
+                self.cpu.set_flag(swapped as Byte);
+            }
+            SKP(x) => {
+                if self.keys[self.cpu.v(x).get()] {
+                    self.cpu.increase();
+                }
+            }
+            SKNP(x) => {
+                if !self.keys[self.cpu.v(x).get()] {
+                    self.cpu.increase();
+                }
+            }
+            LDdr(x) => self.cpu.load_to_v(x, self.dt.get()),
             _ => unimplemented!("this instruction is yet to be implemented"),
         }
         Ok(())
@@ -159,7 +160,7 @@ impl Default for OitoCore {
             vram: Default::default(),
             dt: Default::default(),
             st: Default::default(),
-			keys: Default::default(),
+            keys: Default::default(),
         }
     }
 }
