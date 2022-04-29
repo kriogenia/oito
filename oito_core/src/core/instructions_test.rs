@@ -270,3 +270,12 @@ fn ld_delay_to_register() {
     oito.execute(Instruction::LDdr(0)).unwrap();
     assert_eq!(*oito.cpu.v(0), 0x12);
 }
+
+#[test]
+fn ld_key_to_register() {
+	let mut oito = OitoCore::default();
+	oito.keys.press_key(5);
+	// Only testable with pressed key
+	oito.execute(Instruction::LDkr(0)).unwrap();
+	assert_eq!(*oito.cpu.v(0), 5);
+}

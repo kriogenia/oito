@@ -145,6 +145,19 @@ impl OitoCore {
                 }
             }
             LDdr(x) => self.cpu.load_to_v(x, self.dt.get()),
+			LDkr(x) => {
+				loop {
+					match self.keys.get_key_pressed() {
+						Some(k) => {
+							self.cpu.load_to_v(x, k as Byte);
+							break;
+						}
+						None => {
+							self.cpu.increase();
+						}
+					}
+				}
+			}
             _ => unimplemented!("this instruction is yet to be implemented"),
         }
         Ok(())

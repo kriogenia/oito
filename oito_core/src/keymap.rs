@@ -11,6 +11,17 @@ pub struct KeyMap {
 }
 
 impl KeyMap {
+
+	/// Returns the first key pressed if any
+	pub fn get_key_pressed(&self) -> Option<usize> {
+		for (i, key) in self.key_pressed.into_iter().enumerate() {
+			if key {
+				return Some(i)
+			}
+		}
+		None
+	}
+
     #[cfg(test)]
     pub fn press_key(&mut self, index: usize) {
         self.key_pressed[index] = true;
@@ -36,6 +47,17 @@ impl Index<Byte> for KeyMap {
 #[cfg(test)]
 mod test {
     use super::KeyMap;
+
+	#[test]
+	fn get_key_pressed() {
+		let mut map = KeyMap::default();
+		// No key pressed
+		assert!(map.get_key_pressed().is_none());
+		// Key pressed, get lowest
+		map.press_key(5);
+		map.press_key(2);
+		assert_eq!(2, map.get_key_pressed().unwrap());
+	}
 
     #[test]
     fn index() {
