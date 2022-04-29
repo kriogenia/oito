@@ -159,6 +159,7 @@ impl OitoCore {
 				}
 			},
 			LDrd(x) => self.dt.set(self.cpu.v(x).get()),
+			LDrs(x) => self.st.set(self.cpu.v(x).get()),
             _ => unimplemented!("this instruction is yet to be implemented"),
         }
         Ok(())

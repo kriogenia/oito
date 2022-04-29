@@ -288,3 +288,12 @@ fn ld_register_to_delay() {
 	oito.execute(Instruction::LDrd(0)).unwrap();
 	assert_eq!(0xA1, oito.dt.get());
 }
+
+#[test]
+fn ld_register_to_sound() {
+	let mut oito = OitoCore::default();
+	oito.cpu.load_to_v(0, 0xA1);
+
+	oito.execute(Instruction::LDrs(0)).unwrap();
+	assert_eq!(0xA1, oito.st.get());
+}
