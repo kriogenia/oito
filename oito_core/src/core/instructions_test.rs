@@ -273,27 +273,37 @@ fn ld_delay_to_register() {
 
 #[test]
 fn ld_key_to_register() {
-	let mut oito = OitoCore::default();
-	oito.keys.press_key(5);
-	// Only testable with pressed key
-	oito.execute(Instruction::LDkr(0)).unwrap();
-	assert_eq!(*oito.cpu.v(0), 5);
+    let mut oito = OitoCore::default();
+    oito.keys.press_key(5);
+    // Only testable with pressed key
+    oito.execute(Instruction::LDkr(0)).unwrap();
+    assert_eq!(*oito.cpu.v(0), 5);
 }
 
 #[test]
 fn ld_register_to_delay() {
-	let mut oito = OitoCore::default();
-	oito.cpu.load_to_v(0, 0xA1);
+    let mut oito = OitoCore::default();
+    oito.cpu.load_to_v(0, 0xA1);
 
-	oito.execute(Instruction::LDrd(0)).unwrap();
-	assert_eq!(0xA1, oito.dt.get());
+    oito.execute(Instruction::LDrd(0)).unwrap();
+    assert_eq!(0xA1, oito.dt.get());
 }
 
 #[test]
 fn ld_register_to_sound() {
-	let mut oito = OitoCore::default();
-	oito.cpu.load_to_v(0, 0xA1);
+    let mut oito = OitoCore::default();
+    oito.cpu.load_to_v(0, 0xA1);
 
-	oito.execute(Instruction::LDrs(0)).unwrap();
-	assert_eq!(0xA1, oito.st.get());
+    oito.execute(Instruction::LDrs(0)).unwrap();
+    assert_eq!(0xA1, oito.st.get());
+}
+
+#[test]
+fn add_register_to_i() {
+    let mut oito = OitoCore::default();
+    oito.cpu.load_to_v(0, 6);
+    oito.cpu.set_i(8);
+
+    oito.execute(Instruction::ADDri(0)).unwrap();
+    assert_eq!(14, oito.cpu.i());
 }

@@ -15,12 +15,12 @@ impl Timer {
         }
     }
 
-	/// Sets the new count of the timer
+    /// Sets the new count of the timer
     pub fn set(&mut self, value: u8) {
         self.count = value;
     }
 
-	/// Returns the current count of the timer
+    /// Returns the current count of the timer
     pub fn get(&self) -> u8 {
         self.count
     }
@@ -28,7 +28,7 @@ impl Timer {
 
 impl Debug for Timer {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		write!(f, "Timer: [{}]", &self.count)
+        write!(f, "Timer: [{}]", &self.count)
     }
 }
 
