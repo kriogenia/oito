@@ -1,4 +1,4 @@
-use crate::{cpu::Cpu, instruction::Instruction, vram::VRam, Byte};
+use crate::{cpu::Cpu, instruction::Instruction, vram::VRam, Address, Byte};
 
 use super::OitoCore;
 
@@ -6,12 +6,12 @@ use super::OitoCore;
 fn cls() {
     let mut oito = OitoCore::default();
     for i in 0..8 {
-        oito.vram.set(i);
+        oito.vram.paint(0, i);
     }
 
     oito.execute(Instruction::CLS).unwrap();
     for i in 0..8 {
-        assert_eq!(oito.vram[i], VRam::BLACK);
+        assert_eq!(oito.vram.get(0, i), VRam::BLACK);
     }
 }
 
@@ -229,9 +229,18 @@ fn jp_address() {
 
 #[test]
 fn draw() {
-    let mut _oito = OitoCore::default();
-
-    // TODO after implementing prerendered sprites
+    let mut oito = OitoCore::new();
+	oito.cpu.load_to_v(1, 0x2);
+	oito.cpu.load_to_v(2, 0x3);
+	oito.cpu.set_i(15);	// point to the '3' sprite
+	// No flag 
+    oito.execute(Instruction::DRW { x: 1, y: 2, n: 5 }).unwrap();
+	assert!(oito.vram.get(0x2, 0x3));
+	assert_eq!(oito.cpu.vf(), 0);
+	// Flag
+    oito.execute(Instruction::DRW { x: 1, y: 2, n: 5 }).unwrap();
+	assert!(!oito.vram.get(0x2, 0x3));
+	assert_eq!(oito.cpu.vf(), 1);
 }
 
 #[test]
@@ -274,15 +283,15 @@ fn ld_delay_to_register() {
 #[test]
 fn ld_key_to_register() {
     let mut oito = OitoCore::default();
-	// Non pressed key
+    // Non pressed key
     oito.execute(Instruction::LDkr(0)).unwrap();
     assert_eq!(*oito.cpu.v(0), 0);
-	assert_eq!(oito.cpu.pc(), Cpu::STARTING_ADDRESS - 2);
+    assert_eq!(oito.cpu.pc(), Cpu::STARTING_ADDRESS - 2);
     // Pressed key
     oito.keys.press_key(5);
     oito.execute(Instruction::LDkr(0)).unwrap();
     assert_eq!(*oito.cpu.v(0), 5);
-	assert_eq!(oito.cpu.pc(), Cpu::STARTING_ADDRESS - 2);
+    assert_eq!(oito.cpu.pc(), Cpu::STARTING_ADDRESS - 2);
 }
 
 #[test]
@@ -308,7 +317,21 @@ fn add_register_to_i() {
     let mut oito = OitoCore::default();
     oito.cpu.load_to_v(0, 6);
     oito.cpu.set_i(8);
-
+    // No overflow
     oito.execute(Instruction::ADDri(0)).unwrap();
     assert_eq!(14, oito.cpu.i());
+    // Overflow
+    oito.cpu.set_i(Address::MAX);
+    oito.cpu.load_to_v(1, 1);
+    oito.execute(Instruction::ADDri(1)).unwrap();
+    assert_eq!(0, oito.cpu.i());
+}
+
+#[test]
+fn ld_sprite_to_i() {
+	let mut oito = OitoCore::new();
+	oito.cpu.load_to_v(0, 1);
+
+	oito.execute(Instruction::LDmi(0)).unwrap();
+	assert_eq!(5, oito.cpu.i());
 }

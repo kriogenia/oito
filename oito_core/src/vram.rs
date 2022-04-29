@@ -4,7 +4,7 @@ const SCREEN_SIZE: usize = SCREEN_WIDTH * SCREEN_HEIGHT;
 
 type Pixel = bool; // only b&w, so bool is enough
 
-use std::{ops::Index, fmt::Debug};
+use std::fmt::Debug;
 
 /// Representation of the screen to draw
 pub struct VRam {
@@ -23,15 +23,22 @@ impl VRam {
         self.buffer = [Self::BLACK; SCREEN_SIZE];
     }
 
-    /// Paints over the pixel. If this already painted, it sets the pixel to not painted.
-    pub fn paint(&mut self, index: usize) {
-        self.buffer[index] ^= VRam::WHITE;
+    /// Paints over the pixel.
+	/// If the coordinates overflow the screen space, it will be drawn counting the overflow from the start.
+	/// If this already painted, it sets the pixel to not painted.
+    pub fn paint(&mut self, x: usize, y: usize) {
+		self.buffer[Self::to_index(x, y)] ^= VRam::WHITE;
     }
 
-    #[cfg(test)]
-    pub(crate) fn get(&mut self, x: usize, y: usize) -> Pixel {
-        self.buffer[y * SCREEN_WIDTH + x]
+	/// Returns the content of the pixel at the specified location
+    pub fn get(&mut self, x: usize, y: usize) -> Pixel {
+        self.buffer[Self::to_index(x, y)]
     }
+
+	/// Converts the coordinates into the index position in the buffer
+	fn to_index(x: usize, y: usize) -> usize {
+		x % SCREEN_WIDTH + (y % SCREEN_HEIGHT) * SCREEN_WIDTH
+	}
 
 }
 
@@ -53,14 +60,6 @@ impl Default for VRam {
         Self {
             buffer: [Self::BLACK; SCREEN_SIZE],
         }
-    }
-}
-
-impl Index<usize> for VRam {
-    type Output = Pixel;
-
-    fn index(&self, index: usize) -> &Self::Output {
-        &self.buffer[index]
     }
 }
 

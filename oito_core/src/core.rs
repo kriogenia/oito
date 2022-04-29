@@ -6,7 +6,7 @@ use crate::keymap::KeyMap;
 use crate::ram::Ram;
 use crate::stack::Stack;
 use crate::timer::Timer;
-use crate::vram::{VRam, SCREEN_HEIGHT, SCREEN_WIDTH};
+use crate::vram::VRam;
 use crate::{fontset, Address, BitMask, Byte, OpCode};
 
 use rand::random;
@@ -118,19 +118,20 @@ impl OitoCore {
             JPr(address) => self.cpu.point_at(self.cpu.v(0).get() as Address + address),
             RND { x, byte } => self.cpu.load_to_v(x, byte & random::<Byte>()),
             DRW { x, y, n } => {
+				let x = self.cpu.v(x).get();
+				let y = self.cpu.v(y).get();
+
                 let mut swapped = false;
                 for i in 0..n {
                     let address = self.cpu.i() + i as Address;
                     let pixels = self.ram.read(address)?;
                     for j in 0..BYTE_SIZE {
                         if (pixels & (Byte::MOST_SIGNIFICANT_BIT >> j)) != 0 {
-                            let x = (x + j) as usize % SCREEN_WIDTH;
-                            let y = (y + i) as usize % SCREEN_HEIGHT;
-
-                            let idx = x + SCREEN_WIDTH * y;
-
-                            swapped |= self.vram[idx];
-                            self.vram.paint(idx as usize);
+							let x = (x + j) as usize;
+							let y = (y + i) as usize;
+							dbg!(x, y);
+                            swapped |= self.vram.get(x, y);
+                            self.vram.paint(x, y);
                         }
                     }
                 }
