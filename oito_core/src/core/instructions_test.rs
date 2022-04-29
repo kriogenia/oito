@@ -229,7 +229,7 @@ fn jp_address() {
 
 #[test]
 fn draw() {
-	let mut oito = OitoCore::default();
+	let mut _oito = OitoCore::default();
 
 	// TODO after implementing prerendered sprites
 }

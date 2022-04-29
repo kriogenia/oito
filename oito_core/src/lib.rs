@@ -3,6 +3,7 @@ pub(crate) mod exception;
 
 mod cpu;
 mod instruction;
+mod keymap;
 mod ram;
 mod stack;
 mod timer;

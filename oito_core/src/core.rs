@@ -2,6 +2,7 @@ use crate::core::operations::{BitOp, ArithOp};
 use crate::cpu::Cpu;
 use crate::exception::Exception;
 use crate::instruction::Instruction;
+use crate::keymap::KeyMap;
 use crate::ram::Ram;
 use crate::stack::Stack;
 use crate::timer::Timer;
@@ -28,6 +29,8 @@ pub struct OitoCore {
     dt: Timer,
     /// Sound timer
     st: Timer,
+	/// Key character map
+	keys: KeyMap
 }
 
 impl OitoCore {
@@ -145,6 +148,7 @@ impl Default for OitoCore {
             vram: Default::default(),
             dt: Default::default(),
             st: Default::default(),
+			keys: Default::default(),
         }
     }
 }
