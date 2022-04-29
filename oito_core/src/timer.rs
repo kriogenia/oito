@@ -15,11 +15,12 @@ impl Timer {
         }
     }
 
-    #[cfg(test)]
-    pub(crate) fn set(&mut self, value: u8) {
+	/// Sets the new count of the timer
+    pub fn set(&mut self, value: u8) {
         self.count = value;
     }
 
+	/// Returns the current count of the timer
     pub fn get(&self) -> u8 {
         self.count
     }
