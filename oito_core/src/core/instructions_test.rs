@@ -335,3 +335,14 @@ fn ld_sprite_to_i() {
 	oito.execute(Instruction::LDmi(0)).unwrap();
 	assert_eq!(5, oito.cpu.i());
 }
+
+#[test]
+fn ld_bcd() {
+	let mut oito = OitoCore::new();
+	oito.cpu.load_to_v(1, 234);
+
+	oito.execute(Instruction::LDrm(1)).unwrap();
+	assert_eq!(2, oito.ram.read(0).unwrap());
+	assert_eq!(3, oito.ram.read(1).unwrap());
+	assert_eq!(4, oito.ram.read(2).unwrap());
+}

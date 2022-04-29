@@ -165,6 +165,16 @@ impl OitoCore {
 				let sprite_address = fontset::location(character);
 				self.cpu.set_i(sprite_address);
 			}
+			LDrm(x) => {
+				let binary = self.cpu.v(x).get();
+				let (h, t, u) = (binary / 100, (binary % 100) / 10, binary % 10);
+				let i = self.cpu.i() as usize;
+				
+				self.ram.load(i, &[h]);
+				self.ram.load(i + 1, &[t]);
+				self.ram.load(i + 2, &[u]);
+			}
+			
             _ => unimplemented!("this instruction is yet to be implemented"),
         }
         Ok(())
