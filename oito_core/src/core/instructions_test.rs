@@ -274,10 +274,15 @@ fn ld_delay_to_register() {
 #[test]
 fn ld_key_to_register() {
     let mut oito = OitoCore::default();
+	// Non pressed key
+    oito.execute(Instruction::LDkr(0)).unwrap();
+    assert_eq!(*oito.cpu.v(0), 0);
+	assert_eq!(oito.cpu.pc(), Cpu::STARTING_ADDRESS - 2);
+    // Pressed key
     oito.keys.press_key(5);
-    // Only testable with pressed key
     oito.execute(Instruction::LDkr(0)).unwrap();
     assert_eq!(*oito.cpu.v(0), 5);
+	assert_eq!(oito.cpu.pc(), Cpu::STARTING_ADDRESS - 2);
 }
 
 #[test]

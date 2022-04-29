@@ -145,22 +145,18 @@ impl OitoCore {
                 }
             }
             LDdr(x) => self.cpu.load_to_v(x, self.dt.get()),
-            LDkr(x) => loop {
+            LDkr(x) => {
                 match self.keys.get_key_pressed() {
-                    Some(k) => {
-                        self.cpu.load_to_v(x, k as Byte);
-                        break;
-                    }
-                    None => {
-                        self.cpu.increase();
-                    }
+                    Some(k) => self.cpu.load_to_v(x, k as Byte),
+                    None => self.cpu.decrease(),	// simulate loop pointing to the same instruction
                 }
             },
             LDrd(x) => self.dt.set(self.cpu.v(x).get()),
             LDrs(x) => self.st.set(self.cpu.v(x).get()),
-            ADDri(x) => self
-                .cpu
-                .set_i(self.cpu.i() + self.cpu.v(x).get() as Address),
+            ADDri(x) => {
+                let address = self.cpu.i() + self.cpu.v(x).get() as Address;
+                self.cpu.set_i(address);
+            }
             _ => unimplemented!("this instruction is yet to be implemented"),
         }
         Ok(())

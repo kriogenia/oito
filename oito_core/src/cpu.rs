@@ -50,6 +50,12 @@ impl Cpu {
         self.pc += INSTRUCTION_SIZE;
     }
 
+    /// Decreases the Program Counter to point to the previous instruction
+    #[inline]
+    pub fn decrease(&mut self) {
+        self.pc -= INSTRUCTION_SIZE;
+    }
+
     /// Points the Program Counter to the specified address
     #[inline]
     pub fn point_at(&mut self, position: Address) {
@@ -167,6 +173,16 @@ mod test {
         for i in 1..4 {
             cpu.increase();
             assert_eq!(i * 2 + Cpu::STARTING_ADDRESS, cpu.pc);
+        }
+    }
+
+    #[test]
+    fn decrease() {
+        let mut cpu = Cpu::default();
+
+        for i in 1..4 {
+            cpu.decrease();
+            assert_eq!(Cpu::STARTING_ADDRESS - i * 2, cpu.pc);
         }
     }
 
