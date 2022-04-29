@@ -4,10 +4,9 @@ const SCREEN_SIZE: usize = SCREEN_WIDTH * SCREEN_HEIGHT;
 
 type Pixel = bool; // only b&w, so bool is enough
 
-use std::ops::Index;
+use std::{ops::Index, fmt::Debug};
 
 /// Representation of the screen to draw
-#[derive(Debug)]
 pub struct VRam {
     /// Buffer of the current visual content
     buffer: [Pixel; SCREEN_SIZE],
@@ -30,8 +29,22 @@ impl VRam {
     }
 
     #[cfg(test)]
-    pub(crate) fn set(&mut self, index: usize) {
-        self.buffer[index] = VRam::WHITE;
+    pub(crate) fn get(&mut self, x: usize, y: usize) -> Pixel {
+        self.buffer[y * SCREEN_WIDTH + x]
+    }
+
+}
+
+impl Debug for VRam {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        writeln!(f, "VRAM: ").unwrap();
+		for i in 0..SCREEN_HEIGHT {
+			for j in 0..SCREEN_WIDTH {
+				write!(f, "{}", if self.buffer[i * SCREEN_WIDTH + j] { "X" } else { "_" }).unwrap();
+			}
+			writeln!(f).unwrap();
+		}
+		write!(f, "")
     }
 }
 

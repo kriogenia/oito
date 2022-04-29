@@ -1,11 +1,10 @@
-use std::ops::Index;
+use std::{ops::Index, fmt::Debug};
 
 use crate::Byte;
 
 const NUMBER_OF_KEYS: usize = 16;
 
 /// Mapping of the keys and their state as pressed or not pressed
-#[derive(Debug)]
 pub struct KeyMap {
     key_pressed: [bool; NUMBER_OF_KEYS],
 }
@@ -24,6 +23,16 @@ impl KeyMap {
     #[cfg(test)]
     pub fn press_key(&mut self, index: usize) {
         self.key_pressed[index] = true;
+    }
+}
+
+impl Debug for KeyMap {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		write!(f, "KeyMap: [ ").unwrap();
+		for (i, state) in self.key_pressed.iter().enumerate() {
+			write!(f, "{i}: {}, ", if *state { "X" } else { "-" }).unwrap();
+		}
+		write!(f, " ]")
     }
 }
 
