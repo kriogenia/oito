@@ -14,7 +14,8 @@ pub struct Ram {
 
 impl Ram {
     /// Loads the slice starting in the specified position
-    pub fn load(&mut self, start: usize, content: &[Byte]) {
+    pub fn load(&mut self, start: Address, content: &[Byte]) {
+		let start = start as usize;
         self.memory[start..start + content.len()].copy_from_slice(content);
     }
 

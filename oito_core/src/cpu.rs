@@ -9,7 +9,8 @@ use crate::{
 };
 
 const INSTRUCTION_SIZE: u16 = 2;
-const NUMBER_OF_REGISTERS: usize = 15;
+const NUMBER_OF_REGISTERS: usize = 16;
+const FLAG_REG_INDEX: usize = 15;
 
 /// Simmulated CPU
 #[derive(Debug)]
@@ -20,8 +21,6 @@ pub struct Cpu {
     vreg: [VRegister; NUMBER_OF_REGISTERS],
     /// I-Register
     ireg: IRegister,
-    /// Flag Register
-    freg: VRegister,
 }
 
 impl Cpu {
@@ -41,7 +40,7 @@ impl Cpu {
     /// Returns the state of the Flag Register
     #[cfg(test)]
     pub fn vf(&self) -> Byte {
-        self.freg.get()
+        self.vreg[FLAG_REG_INDEX].get()
     }
 
     /// Increases the Program Counter to point to the next instruction
@@ -71,7 +70,7 @@ impl Cpu {
     /// Raises a flag in the VF register
     #[inline]
     pub fn set_flag(&mut self, flag: Byte) {
-        self.freg.load(flag);
+        self.vreg[FLAG_REG_INDEX].load(flag);
     }
 
     /// Returns a reference to the specified register. Will panic if the register doesn't exists.
@@ -152,7 +151,6 @@ impl Default for Cpu {
             pc: Self::STARTING_ADDRESS,
             vreg: Default::default(),
             ireg: Default::default(),
-            freg: Default::default(),
         }
     }
 }
@@ -207,10 +205,10 @@ mod test {
         let mut cpu = Cpu::default();
 
         cpu.set_flag(FLAG_CARRY);
-        assert_eq!(cpu.freg, FLAG_CARRY);
+        assert_eq!(cpu.vf(), FLAG_CARRY);
 
         cpu.set_flag(NO_FLAG);
-        assert_eq!(cpu.freg, NO_FLAG);
+        assert_eq!(cpu.vf(), NO_FLAG);
     }
 
     #[test]
@@ -240,11 +238,11 @@ mod test {
 
             cpu.arith_op(ArithOp::Add(0, Byte::MAX));
             assert_eq!(*cpu.v(0), Byte::MAX);
-            assert_eq!(cpu.freg, NO_FLAG);
+            assert_eq!(cpu.vf(), NO_FLAG);
 
             cpu.arith_op(ArithOp::Add(0, 1));
             assert_eq!(*cpu.v(0), 0);
-            assert_eq!(cpu.freg, NO_FLAG);
+            assert_eq!(cpu.vf(), NO_FLAG);
         }
 
         #[test]
@@ -256,13 +254,13 @@ mod test {
             cpu.load_to_v(2, 13);
             cpu.arith_op(ArithOp::CheckedAdd(0, 2));
             assert_eq!(cpu.vreg[0], 12 + 13);
-            assert_eq!(cpu.freg, NO_FLAG);
+            assert_eq!(cpu.vf(), NO_FLAG);
             // Overflow
             cpu.load_to_v(0, Byte::MAX);
             cpu.load_to_v(1, 11);
             cpu.arith_op(ArithOp::CheckedAdd(0, 1));
             assert_eq!(cpu.vreg[0], 11 - 1);
-            assert_eq!(cpu.freg, FLAG_CARRY);
+            assert_eq!(cpu.vf(), FLAG_CARRY);
         }
 
         #[test]
@@ -273,13 +271,13 @@ mod test {
             cpu.load_to_v(1, 11);
             cpu.arith_op(ArithOp::Sub(0, 1));
             assert_eq!(cpu.vreg[0], 12 - 11);
-            assert_eq!(cpu.freg, FLAG_CARRY);
+            assert_eq!(cpu.vf(), FLAG_CARRY);
             // Underflow
             cpu.load_to_v(0, 1);
             cpu.load_to_v(1, 2);
             cpu.arith_op(ArithOp::Sub(0, 1));
             assert_eq!(cpu.vreg[0], Byte::MAX);
-            assert_eq!(cpu.freg, NO_FLAG);
+            assert_eq!(cpu.vf(), NO_FLAG);
         }
 
         #[test]
@@ -290,13 +288,13 @@ mod test {
             cpu.load_to_v(1, 12);
             cpu.arith_op(ArithOp::SubN(0, 1));
             assert_eq!(cpu.vreg[0], 12 - 11);
-            assert_eq!(cpu.freg, NO_FLAG);
+            assert_eq!(cpu.vf(), NO_FLAG);
             // Underflow
             cpu.load_to_v(0, 2);
             cpu.load_to_v(1, 1);
             cpu.arith_op(ArithOp::SubN(0, 1));
             assert_eq!(cpu.vreg[0], Byte::MAX);
-            assert_eq!(cpu.freg, FLAG_CARRY);
+            assert_eq!(cpu.vf(), FLAG_CARRY);
         }
     }
 
@@ -321,10 +319,10 @@ mod test {
 
         cpu.bit_op(BitOp::ShiftRight(3));
         assert_eq!(*cpu.v(3), 0b00000010);
-        assert_eq!(cpu.freg, 1);
+        assert_eq!(cpu.vf(), 1);
 
         cpu.bit_op(BitOp::ShiftLeft(4));
         assert_eq!(*cpu.v(4), 0b01010100);
-        assert_eq!(cpu.freg, 1);
+        assert_eq!(cpu.vf(), 1);
     }
 }

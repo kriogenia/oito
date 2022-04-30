@@ -168,13 +168,19 @@ impl OitoCore {
 			LDrm(x) => {
 				let binary = self.cpu.v(x).get();
 				let (h, t, u) = (binary / 100, (binary % 100) / 10, binary % 10);
-				let i = self.cpu.i() as usize;
-				
-				self.ram.load(i, &[h]);
-				self.ram.load(i + 1, &[t]);
-				self.ram.load(i + 2, &[u]);
+
+				self.ram.load(self.cpu.i(), &[h]);
+				self.ram.load(self.cpu.i() + 1, &[t]);
+				self.ram.load(self.cpu.i() + 2, &[u]);
 			}
-			
+			LDvm(x) => {
+				let start = self.cpu.i();
+				for i in 0..x {
+					let address = start + i as Address;
+					let content = self.cpu.v(i as u8).get();
+					self.ram.load(address, &[content]);
+				}
+			}
             _ => unimplemented!("this instruction is yet to be implemented"),
         }
         Ok(())
