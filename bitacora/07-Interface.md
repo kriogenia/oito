@@ -1,0 +1,8 @@
+# Emmulator API
+
+We need to define the functions that should be exposed in out emmulator struct to allow its use with the frontend of our choice. So, what would the frontend need to work?
+
+* First, we need a way to load the game and start the execution. Something like a `load(rom)` function. We could be passing the file and manage the reading of that file, but I want the core to have only emmulation logic. So, I'm thinking about passing a `Rom` with the content ready to be injected into the RAM and passed thorugh a `read()` function. How do we handle the file load and parsing then? We'll make a new crate to provide that logic. This way we can also load roms from memory without a previous file writting, this is perfect for the testing, which is the a key point of this project.
+* A `get_frame()` function to retrieve the pixels that should be drawn in the screen. This should return a reference to the current buffer of the VRAM so any front-end can read it draw it as it pleases.
+* A way to input to read user input. Something like `key_pressed(key)` and `key_released(key)` could be enough looking at how Chip8 are controlled. We could also combine both into a `key_event(key, event)` or `key_event(event(key?))` that could receive both events from an exposed enum. This is at the user choice.
+* Some information options like functions to expose the width and height of the screen. So, any front-end can draw the screen without having to investigate the dimmensions of the Chip8 to draw the buffer. It can just be provided. This could also go into a tuple with the `get_frame` function but as the size won't change, it's better to erase that logic from something that will be called that much.

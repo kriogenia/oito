@@ -2,9 +2,9 @@ pub const SCREEN_WIDTH: usize = 64;
 pub const SCREEN_HEIGHT: usize = 32;
 const SCREEN_SIZE: usize = SCREEN_WIDTH * SCREEN_HEIGHT;
 
-type Pixel = bool; // only b&w, so bool is enough
-
 use std::fmt::Debug;
+
+use crate::Pixel;
 
 /// Representation of the screen to draw
 pub struct VRam {

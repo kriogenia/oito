@@ -18,6 +18,8 @@ pub type OpCode = u16; // each Chip8 instruction is made of two bytes
 pub type Byte = u8;
 /// Specification of the type for register indices
 pub type RegIndex = u8;
+/// Specification of the type to represent the pixels that will be drawn in the buffer
+pub type Pixel = bool; // only b&w, so bool is enough
 
 /// Types that can be masked
 pub trait BitMask {

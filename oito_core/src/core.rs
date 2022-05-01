@@ -7,7 +7,7 @@ use crate::ram::Ram;
 use crate::stack::Stack;
 use crate::timer::Timer;
 use crate::vram::VRam;
-use crate::{fontset, Address, BitMask, Byte, OpCode};
+use crate::{fontset, Address, BitMask, Byte, OpCode, Pixel};
 
 use rand::random;
 
@@ -56,6 +56,32 @@ impl OitoCore {
         self.dt.decrease();
         self.st.decrease();
     }
+
+	/// Returns the booleans buffer of the next frame to draw.
+	/// The value of the pixel indicates if the value it's drawn or not. 
+	pub fn get_frame(&self) -> &[Pixel] {
+		todo!("return vram buffer reference")
+	}
+	
+	/// Emmulates the pressing of the desired key
+	pub fn key_press(key: u8) {
+		todo!("implement the key enumerate and make the conversion")
+	}
+	
+	/// Emmulates the release of the desired key
+	pub fn key_release(key: u8) {
+		todo!("implement the key enumerate and make the conversion")
+	}
+
+	/// Returns the width of the screen
+	pub fn screen_width() -> u8 {
+		todo!("return the width")
+	}
+
+	/// Returns the width of the screen
+	pub fn screen_height() -> u8 {
+		todo!("return the height")
+	}
 
     /// Reads from memory the next instruction and points to the next one
     fn fetch(&mut self, address: Address) -> Result<OpCode, Exception> {
