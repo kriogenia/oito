@@ -9,6 +9,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         return Err(String::from("Usage: cargo run path/to/rom").into());
     }
 
+	let path = if args[1] == "test" {
+		"../rom_loader/test/test_opcode.ch8"
+	} else  {
+		&args[1]
+	};
+
     let sdl = sdl2::init().expect("error during SDL2 initialization");
     let video = sdl.video().expect("error during setup of SDL2 video");
     let window = video
@@ -25,7 +31,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 	let mut event_pump = sdl.event_pump().expect("error obtaining the event SDL2 event pump");
 
 	let mut oito = OitoCore::new();
-	let loader = FilePathLoader::new("../rom_loader/test/test_opcode.ch8");
+	let loader = FilePathLoader::new(path);
 	oito.load(loader.rom());
 
 	'gameloop: loop {

@@ -150,7 +150,6 @@ impl OitoCore {
                         if (pixels & (Byte::MOST_SIGNIFICANT_BIT >> j)) != 0 {
                             let x = (x + j) as usize;
                             let y = (y + i) as usize;
-                            dbg!(x, y);
                             swapped |= self.vram.get(x, y);
                             self.vram.paint(x, y);
                         }
