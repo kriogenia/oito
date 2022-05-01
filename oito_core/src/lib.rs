@@ -1,10 +1,11 @@
 pub mod core;
+pub mod key;
+
 pub(crate) mod exception;
 pub(crate) mod fontset;
 
 mod cpu;
 mod instruction;
-mod keymap;
 mod ram;
 mod stack;
 mod timer;

@@ -2,7 +2,7 @@ use crate::core::operations::{ArithOp, BitOp};
 use crate::cpu::Cpu;
 use crate::exception::Exception;
 use crate::instruction::Instruction;
-use crate::keymap::KeyMap;
+use crate::key::{KeyMap, Key};
 use crate::ram::Ram;
 use crate::stack::Stack;
 use crate::timer::Timer;
@@ -64,13 +64,13 @@ impl OitoCore {
 	}
 	
 	/// Emmulates the pressing of the desired key
-	pub fn key_press(key: u8) {
-		todo!("implement the key enumerate and make the conversion")
+	pub fn key_press(&mut self, key: Key) {
+		self.keys.press_key(key);
 	}
 	
 	/// Emmulates the release of the desired key
-	pub fn key_release(key: u8) {
-		todo!("implement the key enumerate and make the conversion")
+	pub fn key_release(&mut self, key: Key) {
+		self.keys.release_key(key);
 	}
 
 	/// Returns the width of the screen
@@ -241,7 +241,7 @@ mod instructions_test;
 #[cfg(test)]
 mod api_test {
     use super::OitoCore;
-    use crate::cpu::Cpu;
+    use crate::{cpu::Cpu, key::Key};
 
     #[test]
     fn new() {
@@ -253,12 +253,13 @@ mod api_test {
     #[test]
     fn tick() {
         let mut oito = OitoCore::default();
-        // Next instruction - SE V0 == 1 -> don't skip		// TODO use different and testable instruction
-        oito.ram.set(Cpu::STARTING_ADDRESS, 0x30);
-        oito.ram.set(Cpu::STARTING_ADDRESS + 1, 0x01);
+        // Next instruction - 6xkk => LD kk into Vx
+        oito.ram.set(Cpu::STARTING_ADDRESS, 0x63);
+        oito.ram.set(Cpu::STARTING_ADDRESS + 1, 0xA2);
 
         oito.tick().unwrap();
         assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc());
+		assert_eq!(*oito.cpu.v(3), 0xA2);
     }
 
     #[test]
@@ -271,6 +272,24 @@ mod api_test {
         assert_eq!(4, oito.dt.get());
         assert_eq!(3, oito.st.get());
     }
+
+	#[test]
+	fn press_key() {
+		let mut oito = OitoCore::default();
+
+		oito.key_press(Key::Five);
+		assert_eq!(oito.keys.get_key_pressed().unwrap(), 5);
+	}
+
+	#[test]
+	fn release_key() {
+		let mut oito = OitoCore::default();
+		oito.key_press(Key::Five);
+		assert_eq!(oito.keys.get_key_pressed().unwrap(), 5);
+
+		oito.key_release(Key::Five);
+		assert!(oito.keys.get_key_pressed().is_none());
+	}
 
     #[test]
     fn fetch() {

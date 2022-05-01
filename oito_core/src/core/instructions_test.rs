@@ -1,4 +1,4 @@
-use crate::{cpu::Cpu, instruction::Instruction, vram::VRam, Address, Byte};
+use crate::{cpu::Cpu, instruction::Instruction, vram::VRam, Address, Byte, key::Key};
 
 use super::OitoCore;
 
@@ -248,7 +248,7 @@ fn skp() {
     let mut oito = OitoCore::default();
     oito.cpu.load_to_v(0, 1);
     oito.cpu.load_to_v(1, 2);
-    oito.keys.press_key(1);
+    oito.keys.press_key(Key::One);
 
     oito.execute(Instruction::SKP(1)).unwrap();
     assert_eq!(Cpu::STARTING_ADDRESS, oito.cpu.pc());
@@ -262,7 +262,7 @@ fn sknp() {
     let mut oito = OitoCore::default();
     oito.cpu.load_to_v(0, 1);
     oito.cpu.load_to_v(1, 2);
-    oito.keys.press_key(1);
+    oito.keys.press_key(Key::One);
 
     oito.execute(Instruction::SKNP(1)).unwrap();
     assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc());
@@ -288,7 +288,7 @@ fn ld_key_to_register() {
     assert_eq!(*oito.cpu.v(0), 0);
     assert_eq!(oito.cpu.pc(), Cpu::STARTING_ADDRESS - 2);
     // Pressed key
-    oito.keys.press_key(5);
+    oito.keys.press_key(Key::Five);
     oito.execute(Instruction::LDkr(0)).unwrap();
     assert_eq!(*oito.cpu.v(0), 5);
     assert_eq!(oito.cpu.pc(), Cpu::STARTING_ADDRESS - 2);

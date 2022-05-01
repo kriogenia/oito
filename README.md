@@ -15,9 +15,9 @@ Current state:
 - [x] Emulator cycle
 - [x] Instructions declaration [35/35]
 - [x] Instructions execution [35/35]
+- [x] Input reading
 - [ ] Core interface
 - [ ] SDL2 rendering
 - [ ] Web rendering
-- [ ] Input reading
 - [ ] ROM loading
 - [ ] Finished

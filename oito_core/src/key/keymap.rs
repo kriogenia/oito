@@ -1,12 +1,10 @@
 use std::{ops::Index, fmt::Debug};
 
-use crate::Byte;
-
-const NUMBER_OF_KEYS: usize = 16;
+use crate::{Byte, key::Key};
 
 /// Mapping of the keys and their state as pressed or not pressed
 pub struct KeyMap {
-    key_pressed: [bool; NUMBER_OF_KEYS],
+    key_pressed: [bool; Key::SIZE],
 }
 
 impl KeyMap {
@@ -20,10 +18,17 @@ impl KeyMap {
         None
     }
 
-    #[cfg(test)]
-    pub fn press_key(&mut self, index: usize) {
-        self.key_pressed[index] = true;
-    }
+	/// Marks the specified key as pressed
+	pub fn press_key(&mut self, key: Key) {
+		let index: usize = key.into();
+		self.key_pressed[index] = true;
+	}
+	
+	/// Marks the specified key as not pressed
+	pub fn release_key(&mut self, key: Key) {
+		let index: usize = key.into();
+		self.key_pressed[index] = false;
+	}
 }
 
 impl Debug for KeyMap {
@@ -39,7 +44,7 @@ impl Debug for KeyMap {
 impl Default for KeyMap {
     fn default() -> Self {
         Self {
-            key_pressed: [false; NUMBER_OF_KEYS],
+            key_pressed: [false; Key::SIZE],
         }
     }
 }
@@ -54,6 +59,8 @@ impl Index<Byte> for KeyMap {
 
 #[cfg(test)]
 mod test {
+    use crate::key::Key;
+
     use super::KeyMap;
 
     #[test]
@@ -62,10 +69,31 @@ mod test {
         // No key pressed
         assert!(map.get_key_pressed().is_none());
         // Key pressed, get lowest
-        map.press_key(5);
-        map.press_key(2);
+        map.key_pressed[5] = true;
+        map.key_pressed[2] = true;
         assert_eq!(2, map.get_key_pressed().unwrap());
     }
+
+	#[test]
+	fn press_key() {
+		let mut map = KeyMap::default();
+		
+		map.press_key(Key::Three);
+		assert!(map.key_pressed[3]);
+	}
+	
+	#[test]
+	fn release_key() {
+		let mut map = KeyMap::default();
+		map.press_key(Key::Three);
+		map.press_key(Key::Five);
+		assert!(map.key_pressed[3]);
+		assert!(map.key_pressed[5]);
+		
+		map.release_key(Key::Three);
+		assert!(!map.key_pressed[3]);
+		assert!(map.key_pressed[5]);
+	}
 
     #[test]
     fn index() {
