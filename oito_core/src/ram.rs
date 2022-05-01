@@ -15,7 +15,7 @@ pub struct Ram {
 impl Ram {
     /// Loads the slice starting in the specified position
     pub fn load(&mut self, start: Address, content: &[Byte]) {
-		let start = start as usize;
+        let start = start as usize;
         self.memory[start..start + content.len()].copy_from_slice(content);
     }
 
@@ -38,12 +38,12 @@ impl Ram {
 impl Debug for Ram {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         for i in 0..16 {
-			for j in 0..(RAM_SIZE/16) {
-				write!(f, "{:?}", self.memory[i * 16 + j]).unwrap();
-			}
-			writeln!(f).unwrap();
-		}
-		write!(f, "")
+            for j in 0..(RAM_SIZE / 16) {
+                write!(f, "{:?}", self.memory[i * 16 + j]).unwrap();
+            }
+            writeln!(f).unwrap();
+        }
+        write!(f, "")
     }
 }
 

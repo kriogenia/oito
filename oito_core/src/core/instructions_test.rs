@@ -1,40 +1,39 @@
-use crate::{cpu::Cpu, instruction::Instruction, vram::VRam, Address, Byte, key::Key};
+use crate::{cpu::Cpu, instruction::Instruction, key::Key, vram::VRam, Address, Byte};
 
 use super::OitoCore;
 
 #[test]
 fn execution_test() {
-	let mut oito = OitoCore::new();
-	let program = [
-		0x61, 0x02,				// load 0x22 to V1		V1 = 0x02, PC = 514
-		0x82, 0x10,				// load V1 to V2		V2 = 0x02, PC = 516
-		0x71, 0x01,				// add 1 to V1			V1 = 0x03, PC = 518
-		0xF1, 0x29,				// load sprite[V1] in I	I  = 0x0F, PC = 520
-		0xD1, 0x25,				// draw *I at V1, V2	VRAM[0x23, 0x22] = true, PC = 522
-		0xF0, 0x0A,				// load key into V0		V0 = key (will be six), PC = 524
-		0xF0, 0x1E,				// add V0 to I			I  = 0x15, PC = 526
-		0x30, 0x06,				// skip if V0 == 6 (T)  PC = 530
-		0x00, 0xE0,				// clear (skipped)		
-		0x83, 0x11,				// V3 = V3 OR V1		V3 = 0x03, PC = 532
-	];
-	oito.load(&program);
-	oito.key_press(Key::Six);
+    let mut oito = OitoCore::new();
+    let program = [
+        0x61, 0x02, // load 0x22 to V1		V1 = 0x02, PC = 514
+        0x82, 0x10, // load V1 to V2		V2 = 0x02, PC = 516
+        0x71, 0x01, // add 1 to V1			V1 = 0x03, PC = 518
+        0xF1, 0x29, // load sprite[V1] in I	I  = 0x0F, PC = 520
+        0xD1, 0x25, // draw *I at V1, V2	VRAM[0x23, 0x22] = true, PC = 522
+        0xF0, 0x0A, // load key into V0		V0 = key (will be six), PC = 524
+        0xF0, 0x1E, // add V0 to I			I  = 0x15, PC = 526
+        0x30, 0x06, // skip if V0 == 6 (T)  PC = 530
+        0x00, 0xE0, // clear (skipped)
+        0x83, 0x11, // V3 = V3 OR V1		V3 = 0x03, PC = 532
+    ];
+    oito.load(&program);
+    oito.key_press(Key::Six);
 
-	for _ in 0..9 {
-		oito.tick().unwrap();	// Run the nine instructions (one will be skipped)
-	}
-	dbg!(&oito);
+    for _ in 0..9 {
+        oito.tick().unwrap(); // Run the nine instructions (one will be skipped)
+    }
 
-	assert_eq!(*oito.cpu.v(0), 0x06);
-	assert_eq!(*oito.cpu.v(1), 0x03);
-	assert_eq!(*oito.cpu.v(2), 0x02);
-	assert_eq!(*oito.cpu.v(3), 0x03);
-	assert_eq!(oito.cpu.i(), 0x15);
-	assert!(oito.vram.get(0x03, 0x02));
-	assert!(oito.vram.get(0x04, 0x02));
-	assert!(oito.vram.get(0x05, 0x02));
-	assert!(oito.vram.get(0x06, 0x02));
-	assert!(oito.vram.get(0x06, 0x03));
+    assert_eq!(*oito.cpu.v(0), 0x06);
+    assert_eq!(*oito.cpu.v(1), 0x03);
+    assert_eq!(*oito.cpu.v(2), 0x02);
+    assert_eq!(*oito.cpu.v(3), 0x03);
+    assert_eq!(oito.cpu.i(), 0x15);
+    assert!(oito.vram.get(0x03, 0x02));
+    assert!(oito.vram.get(0x04, 0x02));
+    assert!(oito.vram.get(0x05, 0x02));
+    assert!(oito.vram.get(0x06, 0x02));
+    assert!(oito.vram.get(0x06, 0x03));
 }
 
 #[test]
@@ -265,17 +264,17 @@ fn jp_address() {
 #[test]
 fn draw() {
     let mut oito = OitoCore::new();
-	oito.cpu.load_to_v(1, 0x2);
-	oito.cpu.load_to_v(2, 0x3);
-	oito.cpu.set_i(15);	// point to the '3' sprite
-	// No flag 
+    oito.cpu.load_to_v(1, 0x2);
+    oito.cpu.load_to_v(2, 0x3);
+    oito.cpu.set_i(15); // point to the '3' sprite
+                        // No flag
     oito.execute(Instruction::DRW { x: 1, y: 2, n: 5 }).unwrap();
-	assert!(oito.vram.get(0x2, 0x3));
-	assert_eq!(oito.cpu.vf(), 0);
-	// Flag
+    assert!(oito.vram.get(0x2, 0x3));
+    assert_eq!(oito.cpu.vf(), 0);
+    // Flag
     oito.execute(Instruction::DRW { x: 1, y: 2, n: 5 }).unwrap();
-	assert!(!oito.vram.get(0x2, 0x3));
-	assert_eq!(oito.cpu.vf(), 1);
+    assert!(!oito.vram.get(0x2, 0x3));
+    assert_eq!(oito.cpu.vf(), 1);
 }
 
 #[test]
@@ -364,54 +363,53 @@ fn add_register_to_i() {
 
 #[test]
 fn ld_sprite_to_i() {
-	let mut oito = OitoCore::new();
-	oito.cpu.load_to_v(0, 1);
+    let mut oito = OitoCore::new();
+    oito.cpu.load_to_v(0, 1);
 
-	oito.execute(Instruction::LDmi(0)).unwrap();
-	assert_eq!(5, oito.cpu.i());
+    oito.execute(Instruction::LDmi(0)).unwrap();
+    assert_eq!(5, oito.cpu.i());
 }
 
 #[test]
 fn ld_bcd() {
-	let mut oito = OitoCore::new();
-	oito.cpu.load_to_v(1, 234);
+    let mut oito = OitoCore::new();
+    oito.cpu.load_to_v(1, 234);
 
-	oito.execute(Instruction::LDrm(1)).unwrap();
-	assert_eq!(2, oito.ram.read(0).unwrap());
-	assert_eq!(3, oito.ram.read(1).unwrap());
-	assert_eq!(4, oito.ram.read(2).unwrap());
+    oito.execute(Instruction::LDrm(1)).unwrap();
+    assert_eq!(2, oito.ram.read(0).unwrap());
+    assert_eq!(3, oito.ram.read(1).unwrap());
+    assert_eq!(4, oito.ram.read(2).unwrap());
 }
 
 #[test]
 fn ld_registers_to_memory() {
-	let mut oito = OitoCore::default();
-	let start = 0xA;
-	oito.cpu.set_i(start);
-	oito.cpu.load_to_v(0, 0x1);
-	oito.cpu.load_to_v(1, 0x2);
-	oito.cpu.load_to_v(2, 0x3);
-	oito.cpu.load_to_v(3, 0x4);
+    let mut oito = OitoCore::default();
+    let start = 0xA;
+    oito.cpu.set_i(start);
+    oito.cpu.load_to_v(0, 0x1);
+    oito.cpu.load_to_v(1, 0x2);
+    oito.cpu.load_to_v(2, 0x3);
+    oito.cpu.load_to_v(3, 0x4);
 
-	oito.execute(Instruction::LDvm(2)).unwrap();
-	for i in 0..=2 {
-		assert_eq!(oito.ram.read(i + start).unwrap() as Address, i + 1);
-	}
-	assert_eq!(oito.ram.read(3 + start).unwrap(), 0);
+    oito.execute(Instruction::LDvm(2)).unwrap();
+    for i in 0..=2 {
+        assert_eq!(oito.ram.read(i + start).unwrap() as Address, i + 1);
+    }
+    assert_eq!(oito.ram.read(3 + start).unwrap(), 0);
 }
 
 #[test]
 fn ld_memory_to_registers() {
-	let mut oito = OitoCore::default();
-	let start = 100;
-	oito.cpu.set_i(start);
-	for i in 0..0xF {
-		oito.ram.load(start + i, &[i as Byte]);
-	}
+    let mut oito = OitoCore::default();
+    let start = 100;
+    oito.cpu.set_i(start);
+    for i in 0..0xF {
+        oito.ram.load(start + i, &[i as Byte]);
+    }
 
-	oito.execute(Instruction::LDmv(10)).unwrap();
-	for i in 0..=10 {
-		assert_eq!(*oito.cpu.v(i), i);
-	}
-	assert_eq!(*oito.cpu.v(11), 0);
-
+    oito.execute(Instruction::LDmv(10)).unwrap();
+    for i in 0..=10 {
+        assert_eq!(*oito.cpu.v(i), i);
+    }
+    assert_eq!(*oito.cpu.v(11), 0);
 }

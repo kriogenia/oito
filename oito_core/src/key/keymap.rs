@@ -1,6 +1,6 @@
-use std::{ops::Index, fmt::Debug};
+use std::{fmt::Debug, ops::Index};
 
-use crate::{Byte, key::Key};
+use crate::{key::Key, Byte};
 
 /// Mapping of the keys and their state as pressed or not pressed
 pub struct KeyMap {
@@ -18,26 +18,26 @@ impl KeyMap {
         None
     }
 
-	/// Marks the specified key as pressed
-	pub fn press_key(&mut self, key: Key) {
-		let index: usize = key.into();
-		self.key_pressed[index] = true;
-	}
-	
-	/// Marks the specified key as not pressed
-	pub fn release_key(&mut self, key: Key) {
-		let index: usize = key.into();
-		self.key_pressed[index] = false;
-	}
+    /// Marks the specified key as pressed
+    pub fn press_key(&mut self, key: Key) {
+        let index: usize = key.into();
+        self.key_pressed[index] = true;
+    }
+
+    /// Marks the specified key as not pressed
+    pub fn release_key(&mut self, key: Key) {
+        let index: usize = key.into();
+        self.key_pressed[index] = false;
+    }
 }
 
 impl Debug for KeyMap {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		write!(f, "KeyMap: [ ").unwrap();
-		for (i, state) in self.key_pressed.iter().enumerate() {
-			write!(f, "{i}: {}, ", if *state { "X" } else { "-" }).unwrap();
-		}
-		write!(f, " ]")
+        write!(f, "KeyMap: [ ").unwrap();
+        for (i, state) in self.key_pressed.iter().enumerate() {
+            write!(f, "{i}: {}, ", if *state { "X" } else { "-" }).unwrap();
+        }
+        write!(f, " ]")
     }
 }
 
@@ -74,26 +74,26 @@ mod test {
         assert_eq!(2, map.get_key_pressed().unwrap());
     }
 
-	#[test]
-	fn press_key() {
-		let mut map = KeyMap::default();
-		
-		map.press_key(Key::Three);
-		assert!(map.key_pressed[3]);
-	}
-	
-	#[test]
-	fn release_key() {
-		let mut map = KeyMap::default();
-		map.press_key(Key::Three);
-		map.press_key(Key::Five);
-		assert!(map.key_pressed[3]);
-		assert!(map.key_pressed[5]);
-		
-		map.release_key(Key::Three);
-		assert!(!map.key_pressed[3]);
-		assert!(map.key_pressed[5]);
-	}
+    #[test]
+    fn press_key() {
+        let mut map = KeyMap::default();
+
+        map.press_key(Key::Three);
+        assert!(map.key_pressed[3]);
+    }
+
+    #[test]
+    fn release_key() {
+        let mut map = KeyMap::default();
+        map.press_key(Key::Three);
+        map.press_key(Key::Five);
+        assert!(map.key_pressed[3]);
+        assert!(map.key_pressed[5]);
+
+        map.release_key(Key::Three);
+        assert!(!map.key_pressed[3]);
+        assert!(map.key_pressed[5]);
+    }
 
     #[test]
     fn index() {

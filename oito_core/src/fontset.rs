@@ -24,5 +24,5 @@ pub const FONTSET: [u8; FONTSET_SIZE] = [
 ];
 
 pub fn location(character: Byte) -> Address {
-	(character * FONT_BYTE_LENGTH as Byte) as Address
+    (character * FONT_BYTE_LENGTH as Byte) as Address
 }

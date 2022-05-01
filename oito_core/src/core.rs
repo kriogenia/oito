@@ -2,7 +2,7 @@ use crate::core::operations::{ArithOp, BitOp};
 use crate::cpu::Cpu;
 use crate::exception::Exception;
 use crate::instruction::Instruction;
-use crate::key::{KeyMap, Key};
+use crate::key::{Key, KeyMap};
 use crate::ram::Ram;
 use crate::stack::Stack;
 use crate::timer::Timer;
@@ -42,10 +42,10 @@ impl OitoCore {
         oito
     }
 
-	/// Loads the ROM content into the emmulator to run it
-	pub fn load(&mut self, data: Rom) {
-		self.ram.load(Cpu::STARTING_ADDRESS, data);
-	}
+    /// Loads the ROM content into the emmulator to run it
+    pub fn load(&mut self, data: Rom) {
+        self.ram.load(Cpu::STARTING_ADDRESS, data);
+    }
 
     /// Performs a cycle of the emulator
     pub fn tick(&mut self) -> Result<(), Exception> {
@@ -62,21 +62,21 @@ impl OitoCore {
         self.st.decrease();
     }
 
-	/// Returns the boolean's buffer of the next frame to draw.
-	/// The value of the pixel indicates if the value it's drawn or not. 
-	pub fn frame_buffer(&self) -> &[Pixel] {
-		self.vram.buffer()
-	}
-	
-	/// Emmulates the pressing of the desired key
-	pub fn key_press(&mut self, key: Key) {
-		self.keys.press_key(key);
-	}
-	
-	/// Emmulates the release of the desired key
-	pub fn key_release(&mut self, key: Key) {
-		self.keys.release_key(key);
-	}
+    /// Returns the boolean's buffer of the next frame to draw.
+    /// The value of the pixel indicates if the value it's drawn or not.
+    pub fn frame_buffer(&self) -> &[Pixel] {
+        self.vram.buffer()
+    }
+
+    /// Emmulates the pressing of the desired key
+    pub fn key_press(&mut self, key: Key) {
+        self.keys.press_key(key);
+    }
+
+    /// Emmulates the release of the desired key
+    pub fn key_release(&mut self, key: Key) {
+        self.keys.release_key(key);
+    }
 
     /// Reads from memory the next instruction and points to the next one
     fn fetch(&mut self, address: Address) -> Result<OpCode, Exception> {
@@ -139,8 +139,8 @@ impl OitoCore {
             JPr(address) => self.cpu.point_at(self.cpu.v(0).get() as Address + address),
             RND { x, byte } => self.cpu.load_to_v(x, byte & random::<Byte>()),
             DRW { x, y, n } => {
-				let x = self.cpu.v(x).get();
-				let y = self.cpu.v(y).get();
+                let x = self.cpu.v(x).get();
+                let y = self.cpu.v(y).get();
 
                 let mut swapped = false;
                 for i in 0..n {
@@ -148,9 +148,9 @@ impl OitoCore {
                     let pixels = self.ram.read(address)?;
                     for j in 0..BYTE_SIZE {
                         if (pixels & (Byte::MOST_SIGNIFICANT_BIT >> j)) != 0 {
-							let x = (x + j) as usize;
-							let y = (y + i) as usize;
-							dbg!(x, y);
+                            let x = (x + j) as usize;
+                            let y = (y + i) as usize;
+                            dbg!(x, y);
                             swapped |= self.vram.get(x, y);
                             self.vram.paint(x, y);
                         }
@@ -181,34 +181,34 @@ impl OitoCore {
                 let address = self.cpu.i().wrapping_add(self.cpu.v(x).get() as Address);
                 self.cpu.set_i(address);
             }
-			LDmi(x) => {
-				let character = self.cpu.v(x).get();
-				let sprite_address = fontset::location(character);
-				self.cpu.set_i(sprite_address);
-			}
-			LDrm(x) => {
-				let binary = self.cpu.v(x).get();
-				let (h, t, u) = (binary / 100, (binary % 100) / 10, binary % 10);
+            LDmi(x) => {
+                let character = self.cpu.v(x).get();
+                let sprite_address = fontset::location(character);
+                self.cpu.set_i(sprite_address);
+            }
+            LDrm(x) => {
+                let binary = self.cpu.v(x).get();
+                let (h, t, u) = (binary / 100, (binary % 100) / 10, binary % 10);
 
-				self.ram.load(self.cpu.i(), &[h]);
-				self.ram.load(self.cpu.i() + 1, &[t]);
-				self.ram.load(self.cpu.i() + 2, &[u]);
-			}
-			LDvm(x) => {
-				let start = self.cpu.i();
-				for i in 0..=x {
-					let address = start + i as Address;
-					let content = self.cpu.v(i as u8).get();
-					self.ram.load(address, &[content]);
-				}
-			}
-			LDmv(x) => {
-				let start = self.cpu.i();
-				for i in 0..=x {
-					let content = self.ram.read(start + i as Address)?;
-					self.cpu.load_to_v(i, content);
-				}
-			}
+                self.ram.load(self.cpu.i(), &[h]);
+                self.ram.load(self.cpu.i() + 1, &[t]);
+                self.ram.load(self.cpu.i() + 2, &[u]);
+            }
+            LDvm(x) => {
+                let start = self.cpu.i();
+                for i in 0..=x {
+                    let address = start + i as Address;
+                    let content = self.cpu.v(i as u8).get();
+                    self.ram.load(address, &[content]);
+                }
+            }
+            LDmv(x) => {
+                let start = self.cpu.i();
+                for i in 0..=x {
+                    let content = self.ram.read(start + i as Address)?;
+                    self.cpu.load_to_v(i, content);
+                }
+            }
         }
         Ok(())
     }
@@ -245,16 +245,19 @@ mod api_test {
         assert_eq!(0xF0, oito.ram.read(0x0).unwrap());
     }
 
-	#[test]
-	fn load() {
-		let mut oito = OitoCore::new();
-		let data = [ 0x30, 0x25, 0x31, 0x27, 0x0E, 0x00 ];
+    #[test]
+    fn load() {
+        let mut oito = OitoCore::new();
+        let data = [0x30, 0x25, 0x31, 0x27, 0x0E, 0x00];
 
-		oito.load(&data);
-		for i in 0..data.len() {
-			assert_eq!(oito.ram.read(Cpu::STARTING_ADDRESS + i as Address).unwrap(), data[i]);
-		}
-	}
+        oito.load(&data);
+        for i in 0..data.len() {
+            assert_eq!(
+                oito.ram.read(Cpu::STARTING_ADDRESS + i as Address).unwrap(),
+                data[i]
+            );
+        }
+    }
 
     #[test]
     fn tick() {
@@ -265,7 +268,7 @@ mod api_test {
 
         oito.tick().unwrap();
         assert_eq!(Cpu::STARTING_ADDRESS + 2, oito.cpu.pc());
-		assert_eq!(*oito.cpu.v(3), 0xA2);
+        assert_eq!(*oito.cpu.v(3), 0xA2);
     }
 
     #[test]
@@ -279,33 +282,33 @@ mod api_test {
         assert_eq!(3, oito.st.get());
     }
 
-	#[test]
-	fn frame_buffer() {
-		let mut oito = OitoCore::default();
-		oito.vram.paint(1, 1);
+    #[test]
+    fn frame_buffer() {
+        let mut oito = OitoCore::default();
+        oito.vram.paint(1, 1);
 
-		let buffer = oito.frame_buffer();
-		assert!(!buffer[0]);
-		assert!(buffer[65]);
-	}
+        let buffer = oito.frame_buffer();
+        assert!(!buffer[0]);
+        assert!(buffer[65]);
+    }
 
-	#[test]
-	fn press_key() {
-		let mut oito = OitoCore::default();
+    #[test]
+    fn press_key() {
+        let mut oito = OitoCore::default();
 
-		oito.key_press(Key::Five);
-		assert_eq!(oito.keys.get_key_pressed().unwrap(), 5);
-	}
+        oito.key_press(Key::Five);
+        assert_eq!(oito.keys.get_key_pressed().unwrap(), 5);
+    }
 
-	#[test]
-	fn release_key() {
-		let mut oito = OitoCore::default();
-		oito.key_press(Key::Five);
-		assert_eq!(oito.keys.get_key_pressed().unwrap(), 5);
+    #[test]
+    fn release_key() {
+        let mut oito = OitoCore::default();
+        oito.key_press(Key::Five);
+        assert_eq!(oito.keys.get_key_pressed().unwrap(), 5);
 
-		oito.key_release(Key::Five);
-		assert!(oito.keys.get_key_pressed().is_none());
-	}
+        oito.key_release(Key::Five);
+        assert!(oito.keys.get_key_pressed().is_none());
+    }
 
     #[test]
     fn fetch() {
