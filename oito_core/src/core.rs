@@ -57,10 +57,10 @@ impl OitoCore {
         self.st.decrease();
     }
 
-	/// Returns the booleans buffer of the next frame to draw.
+	/// Returns the boolean's buffer of the next frame to draw.
 	/// The value of the pixel indicates if the value it's drawn or not. 
-	pub fn get_frame(&self) -> &[Pixel] {
-		todo!("return vram buffer reference")
+	pub fn frame_buffer(&self) -> &[Pixel] {
+		self.vram.buffer()
 	}
 	
 	/// Emmulates the pressing of the desired key
@@ -71,16 +71,6 @@ impl OitoCore {
 	/// Emmulates the release of the desired key
 	pub fn key_release(&mut self, key: Key) {
 		self.keys.release_key(key);
-	}
-
-	/// Returns the width of the screen
-	pub fn screen_width() -> u8 {
-		todo!("return the width")
-	}
-
-	/// Returns the width of the screen
-	pub fn screen_height() -> u8 {
-		todo!("return the height")
 	}
 
     /// Reads from memory the next instruction and points to the next one
@@ -272,6 +262,16 @@ mod api_test {
         assert_eq!(4, oito.dt.get());
         assert_eq!(3, oito.st.get());
     }
+
+	#[test]
+	fn frame_buffer() {
+		let mut oito = OitoCore::default();
+		oito.vram.paint(1, 1);
+
+		let buffer = oito.frame_buffer();
+		assert!(!buffer[0]);
+		assert!(buffer[65]);
+	}
 
 	#[test]
 	fn press_key() {

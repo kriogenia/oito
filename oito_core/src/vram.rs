@@ -1,10 +1,8 @@
-pub const SCREEN_WIDTH: usize = 64;
-pub const SCREEN_HEIGHT: usize = 32;
-const SCREEN_SIZE: usize = SCREEN_WIDTH * SCREEN_HEIGHT;
-
 use std::fmt::Debug;
 
-use crate::Pixel;
+use crate::{Pixel, SCREEN_WIDTH, SCREEN_HEIGHT};
+
+const SCREEN_SIZE: usize = SCREEN_WIDTH * SCREEN_HEIGHT;
 
 /// Representation of the screen to draw
 pub struct VRam {
@@ -17,6 +15,10 @@ impl VRam {
     pub const BLACK: bool = false;
     /// Value representing the a white pixel
     pub const WHITE: bool = true;
+
+	pub fn buffer(&self) -> &[Pixel] {
+		&self.buffer
+	} 
 
     /// Clears the current buffered content
     pub fn clear(&mut self) {

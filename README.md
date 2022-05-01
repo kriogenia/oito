@@ -16,7 +16,7 @@ Current state:
 - [x] Instructions declaration [35/35]
 - [x] Instructions execution [35/35]
 - [x] Input reading
-- [ ] Core interface
+- [x] Core interface
 - [ ] SDL2 rendering
 - [ ] Web rendering
 - [ ] ROM loading

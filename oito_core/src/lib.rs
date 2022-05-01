@@ -32,3 +32,9 @@ impl BitMask for Byte {
     const LEAST_SIGNIFICANT_BIT: Self = 0b00000001;
     const MOST_SIGNIFICANT_BIT: Self = 0b10000000;
 }
+
+/// Width of the emmulated screen
+pub const SCREEN_WIDTH: usize = 64;
+
+/// Height of the emmulated screen
+pub const SCREEN_HEIGHT: usize = 32;
