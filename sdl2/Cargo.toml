@@ -1,0 +1,10 @@
+[package]
+name = "sdl2"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+oito_core = { path = "../oito_core" }
+sdl2 = "^0.34.3"
