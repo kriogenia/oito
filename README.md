@@ -16,8 +16,10 @@ Current state:
 - [x] Instructions declaration [35/35]
 - [x] Instructions execution [35/35]
 - [x] Input reading
+- [x] ROM loading 
 - [x] Core interface
-- [ ] SDL2 rendering
-- [ ] Web rendering
-- [ ] ROM loading
+- [ ] SDL2 front-end
+- [ ] Ferrux Canvas front-end
+- [ ] Web front-end
 - [ ] Finished
+- [ ] Super-Chip8?

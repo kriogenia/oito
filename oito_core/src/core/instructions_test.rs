@@ -3,6 +3,41 @@ use crate::{cpu::Cpu, instruction::Instruction, vram::VRam, Address, Byte, key::
 use super::OitoCore;
 
 #[test]
+fn execution_test() {
+	let mut oito = OitoCore::new();
+	let program = [
+		0x61, 0x02,				// load 0x22 to V1		V1 = 0x02, PC = 514
+		0x82, 0x10,				// load V1 to V2		V2 = 0x02, PC = 516
+		0x71, 0x01,				// add 1 to V1			V1 = 0x03, PC = 518
+		0xF1, 0x29,				// load sprite[V1] in I	I  = 0x0F, PC = 520
+		0xD1, 0x25,				// draw *I at V1, V2	VRAM[0x23, 0x22] = true, PC = 522
+		0xF0, 0x0A,				// load key into V0		V0 = key (will be six), PC = 524
+		0xF0, 0x1E,				// add V0 to I			I  = 0x15, PC = 526
+		0x30, 0x06,				// skip if V0 == 6 (T)  PC = 530
+		0x00, 0xE0,				// clear (skipped)		
+		0x83, 0x11,				// V3 = V3 OR V1		V3 = 0x03, PC = 532
+	];
+	oito.load(&program);
+	oito.key_press(Key::Six);
+
+	for _ in 0..9 {
+		oito.tick().unwrap();	// Run the nine instructions (one will be skipped)
+	}
+	dbg!(&oito);
+
+	assert_eq!(*oito.cpu.v(0), 0x06);
+	assert_eq!(*oito.cpu.v(1), 0x03);
+	assert_eq!(*oito.cpu.v(2), 0x02);
+	assert_eq!(*oito.cpu.v(3), 0x03);
+	assert_eq!(oito.cpu.i(), 0x15);
+	assert!(oito.vram.get(0x03, 0x02));
+	assert!(oito.vram.get(0x04, 0x02));
+	assert!(oito.vram.get(0x05, 0x02));
+	assert!(oito.vram.get(0x06, 0x02));
+	assert!(oito.vram.get(0x06, 0x03));
+}
+
+#[test]
 fn cls() {
     let mut oito = OitoCore::default();
     for i in 0..8 {

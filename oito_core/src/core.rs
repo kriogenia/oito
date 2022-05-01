@@ -7,7 +7,7 @@ use crate::ram::Ram;
 use crate::stack::Stack;
 use crate::timer::Timer;
 use crate::vram::VRam;
-use crate::{fontset, Address, BitMask, Byte, OpCode, Pixel};
+use crate::{fontset, Address, BitMask, Byte, OpCode, Pixel, Rom};
 
 use rand::random;
 
@@ -41,6 +41,11 @@ impl OitoCore {
         oito.ram.load(0, &fontset::FONTSET);
         oito
     }
+
+	/// Loads the ROM content into the emmulator to run it
+	pub fn load(&mut self, data: Rom) {
+		self.ram.load(Cpu::STARTING_ADDRESS, data);
+	}
 
     /// Performs a cycle of the emulator
     pub fn tick(&mut self) -> Result<(), Exception> {
@@ -231,7 +236,7 @@ mod instructions_test;
 #[cfg(test)]
 mod api_test {
     use super::OitoCore;
-    use crate::{cpu::Cpu, key::Key};
+    use crate::{cpu::Cpu, key::Key, Address};
 
     #[test]
     fn new() {
@@ -239,6 +244,17 @@ mod api_test {
 
         assert_eq!(0xF0, oito.ram.read(0x0).unwrap());
     }
+
+	#[test]
+	fn load() {
+		let mut oito = OitoCore::new();
+		let data = [ 0x30, 0x25, 0x31, 0x27, 0x0E, 0x00 ];
+
+		oito.load(&data);
+		for i in 0..data.len() {
+			assert_eq!(oito.ram.read(Cpu::STARTING_ADDRESS + i as Address).unwrap(), data[i]);
+		}
+	}
 
     #[test]
     fn tick() {

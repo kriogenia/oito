@@ -20,7 +20,9 @@ pub type Byte = u8;
 /// Specification of the type for register indices
 pub type RegIndex = u8;
 /// Specification of the type to represent the pixels that will be drawn in the buffer
-pub type Pixel = bool; // only b&w, so bool is enough
+pub type Pixel = bool;
+/// Specification of the type representing the ROMs to run
+pub type Rom<'a> = &'a [u8];
 
 /// Types that can be masked
 pub trait BitMask {
