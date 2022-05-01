@@ -175,13 +175,19 @@ impl OitoCore {
 			}
 			LDvm(x) => {
 				let start = self.cpu.i();
-				for i in 0..x {
+				for i in 0..=x {
 					let address = start + i as Address;
 					let content = self.cpu.v(i as u8).get();
 					self.ram.load(address, &[content]);
 				}
 			}
-            _ => unimplemented!("this instruction is yet to be implemented"),
+			LDmv(x) => {
+				let start = self.cpu.i();
+				for i in 0..=x {
+					let content = self.ram.read(start + i as Address)?;
+					self.cpu.load_to_v(i, content);
+				}
+			}
         }
         Ok(())
     }

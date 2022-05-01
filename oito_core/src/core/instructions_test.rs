@@ -350,14 +350,33 @@ fn ld_bcd() {
 #[test]
 fn ld_registers_to_memory() {
 	let mut oito = OitoCore::default();
-	oito.cpu.set_i(0xA);
+	let start = 0xA;
+	oito.cpu.set_i(start);
 	oito.cpu.load_to_v(0, 0x1);
 	oito.cpu.load_to_v(1, 0x2);
 	oito.cpu.load_to_v(2, 0x3);
 	oito.cpu.load_to_v(3, 0x4);
 
 	oito.execute(Instruction::LDvm(2)).unwrap();
-	for i in 0..2 {
-		assert_eq!(oito.ram.read(i + 0xA).unwrap() as Address, i + 1);
+	for i in 0..=2 {
+		assert_eq!(oito.ram.read(i + start).unwrap() as Address, i + 1);
 	}
+	assert_eq!(oito.ram.read(3 + start).unwrap(), 0);
+}
+
+#[test]
+fn ld_memory_to_registers() {
+	let mut oito = OitoCore::default();
+	let start = 100;
+	oito.cpu.set_i(start);
+	for i in 0..0xF {
+		oito.ram.load(start + i, &[i as Byte]);
+	}
+
+	oito.execute(Instruction::LDmv(10)).unwrap();
+	for i in 0..=10 {
+		assert_eq!(*oito.cpu.v(i), i);
+	}
+	assert_eq!(*oito.cpu.v(11), 0);
+
 }
