@@ -100,7 +100,7 @@ impl Cpu {
             }
             ArithOp::CheckedAdd(x, y) => {
                 let (result, flag) = alu::add(self.v(x).get(), &self.v(y).get());
-                self.load_to_v(x, dbg!(result));
+                self.load_to_v(x, result);
                 self.set_flag(flag);
             }
             ArithOp::Sub(x, y) => {
