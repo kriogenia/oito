@@ -1,12 +1,12 @@
-use std::env;
-use oito_core::*;
+use std::{env, error::Error};
+use oito_core::{*, core::OitoCore};
+use rom_loader::{RomLoader, desktop::FilePathLoader};
 use sdl2::event::Event;
 
-fn main() {
+fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<_> = env::args().collect();
     if args.len() != 2 {
-        println!("Usage: cargo run path/to/rom");
-        return;
+        return Err(String::from("Usage: cargo run path/to/rom").into());
     }
 
     let sdl = sdl2::init().expect("error during SDL2 initialization");
@@ -24,6 +24,10 @@ fn main() {
 
 	let mut event_pump = sdl.event_pump().expect("error obtaining the event SDL2 event pump");
 
+	let mut oito = OitoCore::new();
+	let loader = FilePathLoader::new("../rom_loader/test/test_opcode.ch8");
+	oito.load(loader.rom());
+
 	'gameloop: loop {
 		 for e in event_pump.poll_iter() {
 			match e {
@@ -32,7 +36,10 @@ fn main() {
 				},
 				_ => {}
 			}
+
+			oito.tick()?;
 		 }
 	}
 
+	Ok(())
 }

@@ -17,7 +17,7 @@ impl FilePathLoader {
 }
 
 impl RomLoader for FilePathLoader {
-    fn rom(&mut self) -> &[u8] {
+    fn rom(&self) -> &[u8] {
         &self.buffer
     }
 }

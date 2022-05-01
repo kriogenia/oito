@@ -1,7 +1,7 @@
 pub mod desktop;
 
 /// Used to load Chip-8 ROMs to run them in **OitoCore**
-trait RomLoader {
+pub trait RomLoader {
     /// Returns the ROM ready to be injected in the OitoCore.
-    fn rom(&mut self) -> &[u8];
+    fn rom(&self) -> &[u8];
 }
