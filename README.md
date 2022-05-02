@@ -19,7 +19,7 @@ Current state:
 - [x] ROM loading 
 - [x] Core interface
 - [x] File loading
-- [ ] SDL2 front-end
+- [x] SDL2 front-end
 - [ ] Ferrux Canvas front-end
 - [ ] Web front-end
 - [ ] Finished
