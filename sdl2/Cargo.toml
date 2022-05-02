@@ -7,5 +7,7 @@ edition = "2021"
 
 [dependencies]
 oito_core = { path = "../oito_core" }
+quicli = "0.4"
 rom_loader = { path = "../rom_loader" }
 sdl2 = "^0.34.3"
+structopt = "0.2"
