@@ -26,4 +26,9 @@ impl OitoWasm {
 		self.oito.frame_tick();
 	}
 
+	#[wasm_bindgen]
+	pub fn reset(&mut self) {
+		self.oito = OitoCore::new();
+	}
+
 }
