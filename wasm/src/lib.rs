@@ -27,6 +27,11 @@ impl OitoWasm {
 	}
 
 	#[wasm_bindgen]
+	pub fn load(&mut self, data: js_sys::Uint8Array) {
+		self.oito.load(&data.to_vec());
+	}
+
+	#[wasm_bindgen]
 	pub fn reset(&mut self) {
 		self.oito = OitoCore::new();
 	}
