@@ -15,7 +15,7 @@ const TICKS_PER_FRAME: usize = 10;
 fn main() -> Result<(), Box<dyn Error>> {
 	let args = args::Args::from_args();
 
-    let renderer = Renderer::new(args.scale);
+    let renderer = Renderer::new(args.scale, args.bg.into(), args.fg.into());
 
     let sdl = sdl2::init().expect("error during SDL2 initialization");
     let video = sdl.video().expect("error during setup of SDL2 video");
