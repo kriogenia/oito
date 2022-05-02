@@ -32,6 +32,11 @@ impl OitoWasm {
 	}
 
 	#[wasm_bindgen]
+	pub fn draw(&mut self, scale: usize) {
+		console.log("draw frame");
+	}
+
+	#[wasm_bindgen]
 	pub fn reset(&mut self) {
 		self.oito = OitoCore::new();
 	}
