@@ -1,7 +1,7 @@
 use oito_core::{core::OitoCore, SCREEN_HEIGHT, SCREEN_WIDTH};
 use sdl2::{rect::{Rect}, render::Canvas, video::Window, pixels::Color};
 
-const DEFAULT_SCALE: u32 = 10;
+const DEFAULT_SCALE: u32 = 15;
 
 pub struct Renderer {
     scale: u32,
@@ -24,9 +24,8 @@ impl Renderer {
 		canvas.set_draw_color(Color::WHITE);
         for (i, pixel) in oito.frame_buffer().iter().enumerate() {
             if *pixel {
-                let x = (i % SCREEN_WIDTH) as i32;
-                let y = (i / SCREEN_WIDTH) as i32;
-
+                let x = (i % SCREEN_WIDTH) as i32 * self.scale as i32;
+                let y = (i / SCREEN_WIDTH) as i32 * self.scale as i32;
 				let rect = Rect::new(x, y, self.scale, self.scale);
 
                 canvas

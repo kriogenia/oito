@@ -1,10 +1,14 @@
+use input::map_key;
 use oito_core::core::OitoCore;
 use render::Renderer;
 use rom_loader::{desktop::FilePathLoader, RomLoader};
-use sdl2::event::Event;
+use sdl2::{event::Event, keyboard::Scancode};
 use std::{env, error::Error};
 
+mod input;
 mod render;
+
+const TICKS_PER_FRAME: usize = 10;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<_> = env::args().collect();
@@ -52,14 +56,27 @@ fn main() -> Result<(), Box<dyn Error>> {
     'gameloop: loop {
         for e in event_pump.poll_iter() {
             match e {
-                Event::Quit { .. } => {
+                Event::Quit { .. } | Event::KeyDown{scancode: Some(Scancode::Escape), ..} => {
                     break 'gameloop;
                 }
+				Event::KeyDown { scancode, .. } => {
+					if let Some(key) = map_key(scancode) {
+						oito.key_press(key);
+					}
+				}
+				Event::KeyUp { scancode, .. } => {
+					if let Some(key) = map_key(scancode) {
+						oito.key_release(key);
+					}
+				}
                 _ => {}
             }
         }
 
-        oito.tick()?;
+		for _ in 0..TICKS_PER_FRAME {
+			oito.tick()?;
+		}
+		oito.frame_tick();
         renderer.draw_frame(&oito, &mut canvas);
     }
 
