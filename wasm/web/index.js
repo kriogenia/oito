@@ -61,13 +61,13 @@ const mainloop = (oito) => {
 	for (let i = 0; i < TICKS_PER_FRAME; i++) {
 		oito.tick();
 	}
-	oito.tick_timers();
+	oito.frame_tick();
 
 	ctx.fillStyle = "black";
 	ctx.fillRect(0, 0, WIDTH * SCALE, HEIGHT * SCALE);
 
 	ctx.fillStyle = "white";
-	oito.draw_screen(SCALE);
+	oito.draw(SCALE);
 
 	current_frame = window.requestAnimationFrame(() => {
 		mainloop(oito);
