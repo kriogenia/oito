@@ -1,6 +1,8 @@
 use oito_core::{core::OitoCore, SCREEN_WIDTH, SCREEN_HEIGHT};
 use wasm_bindgen::{prelude::*, JsCast};
-use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement};
+use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, KeyboardEvent};
+
+mod input;
 
 #[wasm_bindgen]
 pub struct OitoWasm {
@@ -45,6 +47,22 @@ impl OitoWasm {
     #[wasm_bindgen]
     pub fn load(&mut self, data: js_sys::Uint8Array) {
         self.oito.load(&data.to_vec());
+    }
+
+    /// Emmulates the pressing of the desired key
+    pub fn key_press(&mut self, key: KeyboardEvent) {
+		let code = key.code();
+		if let Some(key) = input::map_key(&code) {
+			self.oito.key_press(key);
+		}
+    }
+
+    /// Emmulates the release of the desired key
+    pub fn key_release(&mut self, key: KeyboardEvent) {
+        let code = key.code();
+		if let Some(key) = input::map_key(&code) {
+			self.oito.key_release(key);
+		}
     }
 
     #[wasm_bindgen]

@@ -23,11 +23,11 @@ const run = async () => {
 	let oito = new wasm.OitoWasm();
 
 	document.addEventListener("keydown", (e) => {
-		console.log(e);
+		oito.key_press(e);
 	});
 
 	document.addEventListener("keyup", (e) => {
-		console.log(e);
+		oito.key_release(e);
 	});
 
 	input.addEventListener(

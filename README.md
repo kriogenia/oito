@@ -21,6 +21,6 @@ Current state:
 - [x] File loading
 - [x] SDL2 front-end
 - [ ] Ferrux Canvas front-end
-- [ ] Web front-end
+- [x] WASM front-end
 - [ ] Finished
 - [ ] Super-Chip8?
