@@ -5,10 +5,11 @@
 		<meta charset="utf-8" />
 		<meta name="author" content="ricardo@sotoestevez.dev" />
 		<meta
-			name="description"
-			content="Chip8 Emulator made in Rust and compiled to WASM"
+		name="description"
+		content="Chip8 Emulator made in Rust and compiled to WASM"
 		/>
 		<meta name="keywords" content="Chip8, Rust, WASM" />
+		<link rel="icon" href="/favicon.ico">
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
@@ -25,25 +26,35 @@
 		<div id="title">
 			<h1>Oito</h1>
 			<p>Chip-8 emulator. Made in Rust. Compiled to WebAssembly.</p>
+			<a href="https://github.com/kriogenia/oito" class="compound">
+				<img src="github.svg" alt="GitHub Logo" id="ghlogo" />
+				<p>Repository</p>
+			</a>
 		</div>
-		<div id="upload">
-			<label for="rom_input">Upload a Chip-8 ROM: </label>
-			<input type="file" id="rom_input" autocomplete="off" />
+		<div id="instructions">
+			<p>
+				Grab a Chip-8 ROM
+				<a href="https://github.com/kripod/chip8-roms">here</a>
+			</p>
+			<div id="upload">
+				<label for="rom_input">And load it: </label>
+				<input type="file" id="rom_input" autocomplete="off" />
+			</div>
 		</div>
 		<div id="settings">
 			<label for="bg_picker">Background</label>
-			<input type="color" id="bg_picker" value="#000000">
-			
+			<input type="color" id="bg_picker" value="#000000" />
+
 			<label for="fg_picker">Foreground</label>
-			<input type="color" id="fg_picker" value="#ffffff">
-			
+			<input type="color" id="fg_picker" value="#ffffff" />
+
 			<label for="scale_picker">Scale</label>
 			<select name="scale_picker" id="scale_picker">
-			  <option value=10>x10</option>
-			  <option value=12 selected=true>x12</option>
-			  <option value=15>x15</option>
-			  <option value=18>x18</option>
-			</select> 
+				<option value="10">x10</option>
+				<option value="12" selected="true">x12</option>
+				<option value="15">x15</option>
+				<option value="18">x18</option>
+			</select>
 		</div>
 		<div>
 			<canvas id="viewport"

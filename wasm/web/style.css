@@ -12,7 +12,8 @@ body {
 	background-color: #2a3542;
 	padding: 10px;
 	font-weight: bolder;
-	border-radius: 15px;
+	border-top-left-radius: 15px;
+	border-top-right-radius: 15px;
 }
 
 #title>h1 {
@@ -22,8 +23,32 @@ body {
 	font-family: 'Press Start 2P';
 }
 
+a {
+	color: #df691a;
+	font-weight: bolder;
+	text-decoration: none;
+}
+
+a.compound {
+	display: flex;
+	justify-content: center;
+	gap: 5px;
+}
+
+#ghlogo {
+	width: 25px;
+	color: #df691a;
+}
+
+#instructions {
+	background-color: #2a354266;
+	border-bottom-left-radius: 15px;
+	border-bottom-right-radius: 15px;
+	margin-bottom: 15px;
+}
+
 #upload {
-	margin: 25px;
+	margin-bottom: 25px;
 	display: flex;
 	gap: 10px;
 	justify-content: center;
