@@ -9,6 +9,7 @@ use crate::timer::Timer;
 use crate::vram::VRam;
 use crate::{fontset, Address, BitMask, Byte, OpCode, Pixel, Rom};
 
+use num_traits::Zero;
 use rand::random;
 
 pub(crate) mod operations;
@@ -66,6 +67,11 @@ impl OitoCore {
     /// The value of the pixel indicates if the value it's drawn or not.
     pub fn frame_buffer(&self) -> &[Pixel] {
         self.vram.buffer()
+    }
+
+    /// Returns true if the sound timer it's set to not zero and the sound should be played
+    pub fn sound(&self) -> bool {
+        !self.st.get().is_zero()
     }
 
     /// Emmulates the pressing of the desired key

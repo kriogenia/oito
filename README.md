@@ -25,6 +25,7 @@ OitoCore offers the following interface to use it and it's what's implemented in
 * `frame_buffer`, returns the buffer representing the next frame to draw. It's made of booleans indicating if the pixel should be drawn or not (Chip8 was black and white).
 * `key_press`, to execute a key press event.
 * `key_release`, to execute a key release event.
+* `sound`, to know when to play the beep sound. It should be called after each frame tick.
 * `default`, returns a new instance without the preloaded sprites. This can't work with the common ROMs but it's useful for testing.
 
 Any front-end should be able to make `OitoCore` run with this functions.
@@ -35,5 +36,4 @@ Refer to the instructions of each front-end:
 * [Web](./wasm/README.md)
 
 ## Next
-
-I'm not finished with Oito. First, because I'm still lacking the sounds and that's not good. And second, because I want to build some insights out of this experience. I always wanted to make a MdBook and I think that some kind of tutorial to make this could be a good option. I would also like to make some post over DEV or Medium, but I don't know yet.
+I'm not finished with Oito. I want to build some insights out of this experience. I always wanted to make a MdBook and I think that some kind of tutorial to make this could be a good option. I would also like to make some post over DEV or Medium, but I don't know yet.

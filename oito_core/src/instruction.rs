@@ -61,7 +61,7 @@ pub enum Instruction {
     SKP(RegIndex),
     /// ExA1 - Skip if the key pressed don't match Vx: `if key() != Vx`
     SKNP(RegIndex),
-    ///	Fx07 - Load delay timer count into Vx: `Vx = dt`
+    /// Fx07 - Load delay timer count into Vx: `Vx = dt`
     LDdr(RegIndex),
     /// Fx0A - Wait for key press and load its value into Vx: `Vx = key()`
     LDkr(RegIndex),
