@@ -1,7 +1,16 @@
 [package]
 name = "oito_core"
+description = "Core functionality of a Chip8 emulator"
 version = "0.1.0"
+authors = ["Soto Estévez <ricardo@sotoestevez.dev>"]
 edition = "2021"
+readme = "./README.md"
+homepage = "https://crates.io/crates/oito_core"
+repository = "https://github.com/kriogenia/oito/oito_core"
+documentation = "https://docs.rs/oito_core/latest"
+license = "MIT OR Apache-2.0"
+keywords = [ "chip8", "emulation" ]
+categories = [ "emulators" ]
 
 [dependencies]
 getrandom = { version = "0.2", features = ["js"] }

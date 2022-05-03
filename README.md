@@ -16,6 +16,13 @@ Oito architecture is based on real-life world architectures and components and i
 
 ![Oito architecture](https://www.planttext.com/api/plantuml/svg/SoWkIImgAStDuOhspop9TyulIerLqDMrKuXs3WYDnH0CSlJ550p3AXfSafYSZIdiafgJM1cIcPjQX4LBVcbU2amEP3z4EC0PXMjeLg4G5fIQdbbSWgRG4o7ga9gN0lGL0000)
 
+## Crates
+The Oito emulator is made of four crates:
+* `oito_core`, library with all the internal logic of the emulator to be executed. The backend.
+* `rom_loader`, utility library to load the ROM in the OitoCore. It could have been part of SDL2 as it's the only crate using it but I don't discard to make another desktop version.
+* `sdl2`, executable that allows you to run the emulator in desktop with SDL2.
+* `wasm`, bundle of a library that compiles the emulator to WebAssembly, the script to execute and the rest of files to conform the webpage.
+
 ## API
 OitoCore offers the following interface to use it and it's what's implemented in both front-ends:
 * `new`, returns a new instance of the core with the preloaded sprites ready to be used.

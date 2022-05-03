@@ -1,7 +1,15 @@
 [package]
 name = "wasm"
+description = "WebAssembly front-end bundler for Oito"
 version = "0.1.0"
+authors = ["Soto Estévez <ricardo@sotoestevez.dev>"]
 edition = "2021"
+readme = "./README.md"
+homepage = "https://oito.sotoestevez.dev"
+repository = "https://github.com/kriogenia/oito/wasm"
+license = "MIT OR Apache-2.0"
+keywords = [ "chip8", "emulation", "wasm", "graphics", "web" ]
+categories = [ "emulators", "wasm" ]
 
 [lib]
 crate-type = ["cdylib"]

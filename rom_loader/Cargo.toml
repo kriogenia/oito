@@ -1,8 +1,12 @@
 [package]
 name = "rom_loader"
+description = "Utility to ease the local load of ROMs into oito_core"
 version = "0.1.0"
+authors = ["Soto Estévez <ricardo@sotoestevez.dev>"]
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+repository = "https://github.com/kriogenia/oito/rom_loader"
+license = "MIT OR Apache-2.0"
+keywords = [ "chip8", "emulation" ]
+categories = [ "emulators" ]
 
 [dependencies]
