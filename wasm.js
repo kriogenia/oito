@@ -254,6 +254,13 @@ export class OitoWasm {
         wasm.oitowasm_draw(this.ptr, scale);
     }
     /**
+    * @returns {boolean}
+    */
+    sound() {
+        const ret = wasm.oitowasm_sound(this.ptr);
+        return ret !== 0;
+    }
+    /**
     */
     reset() {
         wasm.oitowasm_reset(this.ptr);

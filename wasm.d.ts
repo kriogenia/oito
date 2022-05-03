@@ -32,6 +32,10 @@ export class OitoWasm {
 */
   draw(scale: number): void;
 /**
+* @returns {boolean}
+*/
+  sound(): boolean;
+/**
 */
   reset(): void;
 }
@@ -48,6 +52,7 @@ export interface InitOutput {
   readonly oitowasm_key_press: (a: number, b: number) => void;
   readonly oitowasm_key_release: (a: number, b: number) => void;
   readonly oitowasm_draw: (a: number, b: number) => void;
+  readonly oitowasm_sound: (a: number) => number;
   readonly oitowasm_reset: (a: number) => void;
   readonly __wbindgen_malloc: (a: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number) => number;

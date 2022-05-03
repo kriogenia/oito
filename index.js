@@ -9,6 +9,8 @@ let background = "#000000";
 let foreground = "#ffffff";
 let scale = 12;
 
+const audio = new Audio("beep.wav");
+
 const canvas = document.getElementById("viewport");
 canvas.width = WIDTH * scale;
 canvas.height = HEIGHT * scale;
@@ -103,6 +105,10 @@ const gameloop = (oito) => {
 	current_frame = window.requestAnimationFrame(() => {
 		gameloop(oito);
 	});
+
+	if (oito.sound()) {
+		audio.play();
+	}
 };
 
 run().catch(console.error);
