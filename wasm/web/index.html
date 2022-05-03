@@ -30,12 +30,6 @@
 			<label for="rom_input">Upload a Chip-8 ROM: </label>
 			<input type="file" id="rom_input" autocomplete="off" />
 		</div>
-		<div>
-			<canvas id="viewport"
-				>If you see this message, your browser doesn't support HTML5 and as so,
-				you can't run this emulator</canvas
-			>
-		</div>
 		<div id="settings">
 			<label for="bg_picker">Background</label>
 			<input type="color" id="bg_picker" value="#000000">
@@ -46,10 +40,16 @@
 			<label for="scale_picker">Scale</label>
 			<select name="scale_picker" id="scale_picker">
 			  <option value=10>x10</option>
-			  <option value=12>x12</option>
+			  <option value=12 selected=true>x12</option>
 			  <option value=15>x15</option>
 			  <option value=18>x18</option>
 			</select> 
+		</div>
+		<div>
+			<canvas id="viewport"
+				>If you see this message, your browser doesn't support HTML5 and as so,
+				you can't run this emulator</canvas
+			>
 		</div>
 	</body>
 	<script type="module" src="index.js"></script>

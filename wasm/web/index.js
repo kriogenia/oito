@@ -2,24 +2,25 @@ import init, * as wasm from "./wasm.js";
 
 const WIDTH = 64;
 const HEIGHT = 32;
-const SCALE = 12;
 const TICKS_PER_FRAME = 10;
 
 let current_frame = 0;
 let background = "#000000";
 let foreground = "#ffffff";
+let scale = 12;
 
 const canvas = document.getElementById("viewport");
-canvas.width = WIDTH * SCALE;
-canvas.height = HEIGHT * SCALE;
+canvas.width = WIDTH * scale;
+canvas.height = HEIGHT * scale;
 
 const ctx = canvas.getContext("2d");
 ctx.fillStyle = "black";
-ctx.fillRect(0, 0, WIDTH * SCALE, HEIGHT * SCALE);
+ctx.fillRect(0, 0, WIDTH * scale, HEIGHT * scale);
 
+const input = document.getElementById("rom_input");
 const bg_picker = document.getElementById("bg_picker");
 const fg_picker = document.getElementById("fg_picker");
-const input = document.getElementById("rom_input");
+const scale_picker = document.getElementById("scale_picker");
 
 const run = async () => {
 	await init();
@@ -49,6 +50,16 @@ const run = async () => {
 		},
 		false
 	);
+
+	scale_picker.addEventListener(
+		"change",
+		(e) => {
+			scale = e.target.value;
+			canvas.width = WIDTH * scale;
+			canvas.height = WIDTH * scale;
+		},
+		false
+	)
 
 	input.addEventListener(
 		"change",
@@ -84,10 +95,10 @@ const gameloop = (oito) => {
 	oito.frame_tick();
 
 	ctx.fillStyle = background;
-	ctx.fillRect(0, 0, WIDTH * SCALE, HEIGHT * SCALE);
+	ctx.fillRect(0, 0, WIDTH * scale, HEIGHT * scale);
 
 	ctx.fillStyle = foreground;
-	oito.draw(SCALE);
+	oito.draw(scale);
 
 	current_frame = window.requestAnimationFrame(() => {
 		gameloop(oito);
