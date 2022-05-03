@@ -1,21 +1,26 @@
 import init, * as wasm from "./wasm.js";
 
 const WIDTH = 64;
-const HEIGHT = 48;
-const SCALE = 15;
+const HEIGHT = 32;
 const TICKS_PER_FRAME = 10;
 
 let current_frame = 0;
+let background = "#000000";
+let foreground = "#ffffff";
+let scale = 12;
 
 const canvas = document.getElementById("viewport");
-canvas.width = WIDTH * SCALE;
-canvas.height = HEIGHT * SCALE;
+canvas.width = WIDTH * scale;
+canvas.height = HEIGHT * scale;
 
 const ctx = canvas.getContext("2d");
 ctx.fillStyle = "black";
-ctx.fillRect(0, 0, WIDTH * SCALE, HEIGHT * SCALE);
+ctx.fillRect(0, 0, WIDTH * scale, HEIGHT * scale);
 
 const input = document.getElementById("rom_input");
+const bg_picker = document.getElementById("bg_picker");
+const fg_picker = document.getElementById("fg_picker");
+const scale_picker = document.getElementById("scale_picker");
 
 const run = async () => {
 	await init();
@@ -30,11 +35,37 @@ const run = async () => {
 		oito.key_release(e);
 	});
 
+	bg_picker.addEventListener(
+		"change",
+		(e) => {
+			background = e.target.value;
+		},
+		false
+	);
+
+	fg_picker.addEventListener(
+		"change",
+		(e) => {
+			foreground = e.target.value;
+		},
+		false
+	);
+
+	scale_picker.addEventListener(
+		"change",
+		(e) => {
+			scale = e.target.value;
+			canvas.width = WIDTH * scale;
+			canvas.height = WIDTH * scale;
+		},
+		false
+	)
+
 	input.addEventListener(
 		"change",
 		(e) => {
 			if (current_frame != 0) {
-				window.cancelAnimationFrame(anim_frame);
+				window.cancelAnimationFrame(current_frame);
 			}
 
 			let file = e.target.files[0];
@@ -49,7 +80,7 @@ const run = async () => {
 				const rom = new Uint8Array(buffer);
 				oito.reset();
 				oito.load(rom);
-				mainloop(oito);
+				gameloop(oito);
 			};
 			fr.readAsArrayBuffer(file);
 		},
@@ -57,20 +88,20 @@ const run = async () => {
 	);
 };
 
-const mainloop = (oito) => {
+const gameloop = (oito) => {
 	for (let i = 0; i < TICKS_PER_FRAME; i++) {
 		oito.tick();
 	}
 	oito.frame_tick();
 
-	ctx.fillStyle = "black";
-	ctx.fillRect(0, 0, WIDTH * SCALE, HEIGHT * SCALE);
+	ctx.fillStyle = background;
+	ctx.fillRect(0, 0, WIDTH * scale, HEIGHT * scale);
 
-	ctx.fillStyle = "white";
-	oito.draw(SCALE);
+	ctx.fillStyle = foreground;
+	oito.draw(scale);
 
 	current_frame = window.requestAnimationFrame(() => {
-		mainloop(oito);
+		gameloop(oito);
 	});
 };
 

@@ -1,0 +1,65 @@
+body {
+	background-color: #4e5d6c;
+	color: white;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	text-align: center;
+	font-family: Roboto;
+}
+
+#title {
+	background-color: #2a3542;
+	padding: 10px;
+	font-weight: bolder;
+	border-top-left-radius: 15px;
+	border-top-right-radius: 15px;
+}
+
+#title>h1 {
+	margin: 16px;
+	font-size: 3em;
+	color: #df691a;
+	font-family: 'Press Start 2P';
+}
+
+a {
+	color: #df691a;
+	font-weight: bolder;
+	text-decoration: none;
+}
+
+a.compound {
+	display: flex;
+	justify-content: center;
+	gap: 5px;
+}
+
+#ghlogo {
+	width: 25px;
+	color: #df691a;
+}
+
+#instructions {
+	background-color: #2a354266;
+	border-bottom-left-radius: 15px;
+	border-bottom-right-radius: 15px;
+	margin-bottom: 15px;
+}
+
+#upload {
+	margin-bottom: 25px;
+	display: flex;
+	gap: 10px;
+	justify-content: center;
+	align-items: center;
+}
+
+#settings {
+	margin: 10px 0px;
+}
+
+#settings>label {
+	margin-left: 20px;
+	margin-right: 5px;
+}
