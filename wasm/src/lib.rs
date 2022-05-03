@@ -82,6 +82,11 @@ impl OitoWasm {
         }
     }
 
+	#[wasm_bindgen]
+	pub fn sound(&self) -> bool {
+		self.oito.sound()
+	}
+
     #[wasm_bindgen]
     pub fn reset(&mut self) {
         self.oito = OitoCore::new();
