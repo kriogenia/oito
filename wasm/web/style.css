@@ -1,0 +1,40 @@
+body {
+	background-color: #4e5d6c;
+	color: white;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	text-align: center;
+	font-family: Roboto;
+}
+
+#title {
+	background-color: #2a3542;
+	padding: 10px;
+	font-weight: bolder;
+	border-radius: 15px;
+}
+
+h1 {
+	margin: 16px;
+	font-size: 3em;
+	color: #df691a;
+	font-family: 'Press Start 2P';
+}
+
+#upload {
+	margin: 10px;
+	display: flex;
+	gap: 10px;
+	justify-content: center;
+	align-items: center;
+}
+
+#settings {
+	margin-top: 10px;
+}
+
+#settings>label {
+	margin-left: 20px;
+	margin-right: 5px;
+}

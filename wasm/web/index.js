@@ -2,7 +2,7 @@ import init, * as wasm from "./wasm.js";
 
 const WIDTH = 64;
 const HEIGHT = 48;
-const SCALE = 15;
+const SCALE = 12;
 const TICKS_PER_FRAME = 10;
 
 let current_frame = 0;
@@ -49,7 +49,7 @@ const run = async () => {
 				const rom = new Uint8Array(buffer);
 				oito.reset();
 				oito.load(rom);
-				mainloop(oito);
+				gameloop(oito);
 			};
 			fr.readAsArrayBuffer(file);
 		},
@@ -57,7 +57,7 @@ const run = async () => {
 	);
 };
 
-const mainloop = (oito) => {
+const gameloop = (oito) => {
 	for (let i = 0; i < TICKS_PER_FRAME; i++) {
 		oito.tick();
 	}
@@ -70,7 +70,7 @@ const mainloop = (oito) => {
 	oito.draw(SCALE);
 
 	current_frame = window.requestAnimationFrame(() => {
-		mainloop(oito);
+		gameloop(oito);
 	});
 };
 
