@@ -58,7 +58,7 @@ const run = async () => {
 		(e) => {
 			scale = e.target.value;
 			canvas.width = WIDTH * scale;
-			canvas.height = WIDTH * scale;
+			canvas.height = HEIGHT * scale;
 		},
 		false
 	)
